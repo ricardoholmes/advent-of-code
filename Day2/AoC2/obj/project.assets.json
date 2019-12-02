@@ -14,11 +14,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "X:\\GitHub\\AdventOfCode\\Day1\\Advent Of Code\\Advent Of Code.csproj",
-      "projectName": "Advent Of Code",
-      "projectPath": "X:\\GitHub\\AdventOfCode\\Day1\\Advent Of Code\\Advent Of Code.csproj",
+      "projectUniqueName": "X:\\GitHub\\AdventOfCode\\Day2\\AoC2\\AoC2.csproj",
+      "projectName": "AoC2",
+      "projectPath": "X:\\GitHub\\AdventOfCode\\Day2\\AoC2\\AoC2.csproj",
       "packagesPath": "C:\\Users\\ricar\\.nuget\\packages\\",
-      "outputPath": "X:\\GitHub\\AdventOfCode\\Day1\\Advent Of Code\\obj\\",
+      "outputPath": "X:\\GitHub\\AdventOfCode\\Day2\\AoC2\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

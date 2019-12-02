@@ -9,3 +9,14 @@ X:\GitHub\AdventOfCode\Day 1\Advent Of Code\bin\Debug\netcoreapp3.0\Advent Of Co
 X:\GitHub\AdventOfCode\Day 1\Advent Of Code\bin\Debug\netcoreapp3.0\Advent Of Code.pdb
 X:\GitHub\AdventOfCode\Day 1\Advent Of Code\obj\Debug\netcoreapp3.0\Advent Of Code.dll
 X:\GitHub\AdventOfCode\Day 1\Advent Of Code\obj\Debug\netcoreapp3.0\Advent Of Code.pdb
+X:\GitHub\AdventOfCode\Day1\Advent Of Code\bin\Debug\netcoreapp3.0\Advent Of Code.exe
+X:\GitHub\AdventOfCode\Day1\Advent Of Code\bin\Debug\netcoreapp3.0\Advent Of Code.deps.json
+X:\GitHub\AdventOfCode\Day1\Advent Of Code\bin\Debug\netcoreapp3.0\Advent Of Code.runtimeconfig.json
+X:\GitHub\AdventOfCode\Day1\Advent Of Code\bin\Debug\netcoreapp3.0\Advent Of Code.runtimeconfig.dev.json
+X:\GitHub\AdventOfCode\Day1\Advent Of Code\bin\Debug\netcoreapp3.0\Advent Of Code.dll
+X:\GitHub\AdventOfCode\Day1\Advent Of Code\bin\Debug\netcoreapp3.0\Advent Of Code.pdb
+X:\GitHub\AdventOfCode\Day1\Advent Of Code\obj\Debug\netcoreapp3.0\Advent Of Code.csprojAssemblyReference.cache
+X:\GitHub\AdventOfCode\Day1\Advent Of Code\obj\Debug\netcoreapp3.0\Advent Of Code.AssemblyInfoInputs.cache
+X:\GitHub\AdventOfCode\Day1\Advent Of Code\obj\Debug\netcoreapp3.0\Advent Of Code.AssemblyInfo.cs
+X:\GitHub\AdventOfCode\Day1\Advent Of Code\obj\Debug\netcoreapp3.0\Advent Of Code.dll
+X:\GitHub\AdventOfCode\Day1\Advent Of Code\obj\Debug\netcoreapp3.0\Advent Of Code.pdb

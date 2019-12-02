@@ -9,7 +9,7 @@ namespace Advent_Of_Code
         public static void Main()
         {
             string text = "";
-            using (FileStream fs = File.OpenRead("X:\\GitHub\\AdventOfCode\\Day 1\\input1.txt"))
+            using (FileStream fs = File.OpenRead("input1.txt"))
             {
                 byte[] b = new byte[1024];
                 UTF8Encoding temp = new UTF8Encoding(true);
