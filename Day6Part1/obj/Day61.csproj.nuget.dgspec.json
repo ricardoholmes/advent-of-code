@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "X:\\GitHub\\AdventOfCode\\Day2\\AoC2.csproj": {}
+    "X:\\GitHub\\AdventOfCode\\Day6\\Day61.csproj": {}
   },
   "projects": {
-    "X:\\GitHub\\AdventOfCode\\Day2\\AoC2.csproj": {
+    "X:\\GitHub\\AdventOfCode\\Day6\\Day61.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "X:\\GitHub\\AdventOfCode\\Day2\\AoC2.csproj",
-        "projectName": "AoC2",
-        "projectPath": "X:\\GitHub\\AdventOfCode\\Day2\\AoC2.csproj",
+        "projectUniqueName": "X:\\GitHub\\AdventOfCode\\Day6\\Day61.csproj",
+        "projectName": "Day61",
+        "projectPath": "X:\\GitHub\\AdventOfCode\\Day6\\Day61.csproj",
         "packagesPath": "C:\\Users\\ricar\\.nuget\\packages\\",
-        "outputPath": "X:\\GitHub\\AdventOfCode\\Day2\\obj\\",
+        "outputPath": "X:\\GitHub\\AdventOfCode\\Day6\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
