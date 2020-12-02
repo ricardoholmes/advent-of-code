@@ -43,5 +43,6 @@ class MainClass
 
         Console.WriteLine($"Part 1 answer: {Part1(puzzleInput)}");
         Console.WriteLine($"Part 2 answer: {Part2(puzzleInput)}");
+        Console.ReadKey();
     }
 }

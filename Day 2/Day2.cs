@@ -60,5 +60,8 @@ class Day2
             }
         }
         Console.WriteLine($"Part 2 answer: {count}");
+
+
+        Console.ReadKey();
     }
 }
