@@ -118,7 +118,7 @@ class Day20
         }
         return flippedTile;
     }
-    /*
+
     static List<List<string>> TileTransformations(List<string> tile)
     {
         List<List<string>> tiles = new List<List<string>>();
@@ -135,7 +135,7 @@ class Day20
 
         return tiles;
     }
-    */
+
     static List<string> GetTransformation(List<string> tile, int index)
     {
         if (index == 0)
@@ -168,38 +168,60 @@ class Day20
 
     static int Part2(List<List<string>> tiles)
     {
-        List<List<string>> possibleBorders = new List<List<string>>();
+        List<List<string>> borders = new List<List<string>>();
         foreach (List<string> tile in tiles)
-            possibleBorders.Add(Borders(tile, true));
+            borders.Add(Borders(tile, true));
 
         List<List<List<string>>> map = new List<List<List<string>>>();
         map.Add(new List<List<string>>());
-        for (int i = 0; i < possibleBorders.Count; i++)
+
+        // find a corner (with correct orientation) to use as top left tile
+        for (int i = 0; i < tiles.Count; i++)
         {
-            List<string> tile1 = possibleBorders[i];
-            int count = 0;
-            List<string> skipTiles = new List<string>() { String.Join("", tile1) };
-            foreach (string border in tile1)
+            for (int j = 0; j < 8; j++)
             {
-                foreach (List<string> tile2 in possibleBorders)
+                int count = 0;
+                List<String> currentTile = GetTransformation(tiles[i], j);
+                List<String> currentBorders = Borders(currentTile);
+
+                for (int k = 0; k < currentBorders.Count; k++)
                 {
-                    if (!skipTiles.Contains(String.Join("", tile2)) && tile2.Contains(border))
+                    string border = currentBorders[k];
+                    for (int l = 0; l < borders.Count; l++)
                     {
-                        skipTiles.Add(String.Join("", tile2));
-                        count++;
-                        break;
+                        if (i == l)
+                            continue;
+
+                        else if (borders[l].Contains(border))
+                        {
+                            count++;
+                            // If connects to a border that isn't the right one or the bottom one,
+                            // either the orientation is wrong or the tile is
+                            if (k != 1 && k != 2)
+                            {
+                                k = currentBorders.Count;
+                                count = 0;
+                            }
+                            break;
+                        }
                     }
                 }
-            }
 
-            if (count == 2)
-            {
-                map[0].Add(tiles[i]);
-                break;
+                // Doesn't find any, regardless of above
+                if (count == 2)
+                {
+                    map[0].Add(currentTile);
+                    goto CornerFound;
+                }
             }
         }
+        throw (new Exception("Corner not found"));
+
+        CornerFound:
+        map[0][0].ForEach(Console.WriteLine);
 
         // (y, x), top left = (0, 0)
+        /*
         List<List<List<string>>> tilesOrdered = new List<List<List<string>>>();
 
         int side_len = (int)Math.Pow(tiles.Count, 0.5f);
@@ -211,6 +233,7 @@ class Day20
                 tilesOrdered[i].Add(tiles[j]);
             }
         }
+        */
         /*
         // remove borders
         string[] map = new string[tilesOrdered.Count*(tilesOrdered[0][0].Count-2)];
@@ -229,10 +252,6 @@ class Day20
                 }
             }
         }
-        */
-        /*
-        foreach (string line in map)
-            Console.WriteLine(line);
         */
 
         return 0;
