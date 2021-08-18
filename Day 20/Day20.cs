@@ -9,8 +9,6 @@ class Day20
     static List<string> Borders(List<string> tile, bool includeFlipped = false)
     {
         List<string> borders = new List<string>();
-        borders.Add(tile[0]);
-        borders.Add(tile[tile.Count-1]);
 
         string leftBorder = "";
         string rightBorder = "";
@@ -20,8 +18,10 @@ class Day20
             rightBorder += row[row.Length-1];
         }
 
-        borders.Add(leftBorder);
+        borders.Add(tile[0]);
         borders.Add(rightBorder);
+        borders.Add(tile[tile.Count-1]);
+        borders.Add(leftBorder);
 
         if (includeFlipped)
         {
@@ -45,16 +45,16 @@ class Day20
         List<int> corners = new List<int>();
         for (int i = 0; i < possibleBorders.Count; i++)
         {
-            List<string> tile1 = possibleBorders[i];
+            List<string> currentTile = possibleBorders[i];
             int count = 0;
-            List<string> skipTiles = new List<string>() { String.Join("", tile1) };
-            foreach (string border in tile1)
+            List<string> skipTiles = new List<string>() { String.Join("", currentTile) };
+            foreach (string border in currentTile)
             {
-                foreach (List<string> tile2 in possibleBorders)
+                foreach (List<string> tempTile in possibleBorders)
                 {
-                    if (!skipTiles.Contains(String.Join("", tile2)) && tile2.Contains(border))
+                    if (!skipTiles.Contains(String.Join("", tempTile)) && tempTile.Contains(border))
                     {
-                        skipTiles.Add(String.Join("", tile2));
+                        skipTiles.Add(String.Join("", tempTile));
                         count++;
                         break;
                     }
@@ -65,7 +65,7 @@ class Day20
                 corners.Add(tileIDs[i]);
 
             if (count < 2)
-                Console.WriteLine("aaaaaaaaaa");
+                Console.WriteLine(count);
         }
 
         long total = 1;
@@ -77,6 +77,7 @@ class Day20
         return total;
     }
 
+    // Rotate the tile clockwise
     static List<string> Rotate(List<string> tile, int rotateCount)
     {
         for (int rotations = 0; rotations < rotateCount; rotations++)
@@ -117,7 +118,7 @@ class Day20
         }
         return flippedTile;
     }
-
+    /*
     static List<List<string>> TileTransformations(List<string> tile)
     {
         List<List<string>> tiles = new List<List<string>>();
@@ -132,38 +133,47 @@ class Day20
         tiles.Add(Rotate(flippedX, 2));
         tiles.Add(Rotate(flippedX, 3));
 
-        List<string> flippedY = FlipY(tile);
-        tiles.Add(flippedY);
-        tiles.Add(Rotate(flippedY, 1));
-        tiles.Add(Rotate(flippedY, 2));
-        tiles.Add(Rotate(flippedY, 3));
-
-        // List<string> flipped = FlipY(FlipX(tile));
-        // for (int i = 0; i < tiles.Count; i++)
-        // {
-        //     List<string> transform = tiles[i];
-        //     if (String.Join("", transform) == String.Join("", flipped))
-        //         Console.WriteLine($"oops {i}");
-        // }
-        // tiles.Add(flipped);
-        // tiles.Add(Rotate(flipped, 1));
-        // tiles.Add(Rotate(flipped, 2));
-        // tiles.Add(Rotate(flipped, 3));
-
         return tiles;
+    }
+    */
+    static List<string> GetTransformation(List<string> tile, int index)
+    {
+        if (index == 0)
+            return tile;
+
+        else if (index == 1)
+            return Rotate(tile, 1);
+
+        else if (index == 2)
+            return Rotate(tile, 2);
+
+        else if (index == 3)
+            return Rotate(tile, 3);
+
+        else if (index == 4)
+            return FlipX(tile);
+
+        else if (index == 5)
+            return Rotate(FlipX(tile), 1);
+
+        else if (index == 6)
+            return Rotate(FlipX(tile), 2);
+
+        else if (index == 7)
+            return Rotate(FlipX(tile), 3);
+
+        else
+            throw new IndexOutOfRangeException();
     }
 
     static int Part2(List<List<string>> tiles)
     {
-        TileTransformations(tiles[7]);
-
         List<List<string>> possibleBorders = new List<List<string>>();
         foreach (List<string> tile in tiles)
             possibleBorders.Add(Borders(tile, true));
 
-        List<List<string>> cornerTiles = new List<List<string>>();
-        List<List<string>> sideTiles = new List<List<string>>();
-        List<List<string>> centerTiles = new List<List<string>>();
+        List<List<List<string>>> map = new List<List<List<string>>>();
+        map.Add(new List<List<string>>());
         for (int i = 0; i < possibleBorders.Count; i++)
         {
             List<string> tile1 = possibleBorders[i];
@@ -183,16 +193,10 @@ class Day20
             }
 
             if (count == 2)
-                cornerTiles.Add(tiles[i]);
-            
-            else if (count == 3)
-                sideTiles.Add(tiles[i]);
-
-            else if (count == 4)
-                centerTiles.Add(tiles[i]);
-            
-            else
-                Console.WriteLine($"oh no, tile {i}");
+            {
+                map[0].Add(tiles[i]);
+                break;
+            }
         }
 
         // (y, x), top left = (0, 0)
@@ -207,7 +211,7 @@ class Day20
                 tilesOrdered[i].Add(tiles[j]);
             }
         }
-
+        /*
         // remove borders
         string[] map = new string[tilesOrdered.Count*(tilesOrdered[0][0].Count-2)];
         for (int tilesRow = 0; tilesRow < tilesOrdered.Count; tilesRow++)
@@ -225,7 +229,7 @@ class Day20
                 }
             }
         }
-
+        */
         /*
         foreach (string line in map)
             Console.WriteLine(line);
@@ -255,8 +259,6 @@ class Day20
             else
                 tiles[tile].Add(line);
         }
-
-        List<List<string>> transformations = TileTransformations(".#.\n#.#\n###");
 
         Console.WriteLine($"Part 1: {Part1(tiles, tileIDs)}");
         Console.WriteLine($"Part 2: {Part2(tiles)}");
