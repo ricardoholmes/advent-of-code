@@ -166,7 +166,7 @@ class Day20
             throw new IndexOutOfRangeException();
     }
 
-    static int Part2(List<List<string>> tiles)
+    static int Part2(List<List<string>> tiles, List<int> tileIDs)
     {
         List<List<string>> borders = new List<List<string>>();
         foreach (List<string> tile in tiles)
@@ -175,10 +175,13 @@ class Day20
         List<List<List<string>>> map = new List<List<List<string>>>();
         map.Add(new List<List<string>>());
 
+        List<List<int>> mapIDs = new List<List<int>>();
+        mapIDs.Add(new List<int>());
+
         // find a corner (with correct orientation) to use as top left tile
         for (int i = 0; i < tiles.Count; i++)
         {
-            for (int j = 0; j < 8; j++)
+            for (int j = 0; j < 8; j++) // 8 total transformations for each tiles
             {
                 int count = 0;
                 List<String> currentTile = GetTransformation(tiles[i], j);
@@ -207,18 +210,53 @@ class Day20
                     }
                 }
 
-                // Doesn't find any, regardless of above
                 if (count == 2)
                 {
                     map[0].Add(currentTile);
+                    mapIDs[0].Add(tileIDs[i]);
                     goto CornerFound;
                 }
             }
         }
+        // If a corner hasn't been found, raise an exception
+        // If one has been found it will go to CornerFound and skip this
         throw (new Exception("Corner not found"));
 
         CornerFound:
-        map[0][0].ForEach(Console.WriteLine);
+
+        // First row
+        for (int i = 0; i < tiles.Count; i++)
+        {
+            bool found = false;
+            string border = Borders(map[0][i])[1];
+            for (int j = 0; j < tiles.Count; j++)
+            {
+                if (mapIDs[0][i] == tileIDs[j])
+                {
+                    Console.WriteLine("hiya");
+                    continue;
+                }
+                
+                for (int k = 0; k < 8; k++)
+                {
+                    List<string> currentTile = GetTransformation(tiles[j], k);
+                    
+                    if (Borders(currentTile)[3] == border)
+                    {
+                        mapIDs[0].Add(tileIDs[j]);
+                        map[0].Add(currentTile);
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (found)
+                    break;
+            }
+
+            if (!found)
+                break;
+        }
 
         // (y, x), top left = (0, 0)
         /*
@@ -280,6 +318,6 @@ class Day20
         }
 
         Console.WriteLine($"Part 1: {Part1(tiles, tileIDs)}");
-        Console.WriteLine($"Part 2: {Part2(tiles)}");
+        Console.WriteLine($"Part 2: {Part2(tiles, tileIDs)}");
     }
 }
