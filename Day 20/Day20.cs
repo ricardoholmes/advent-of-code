@@ -246,7 +246,7 @@ class Day20
                 }
             }
         }
-        
+
         // remove borders
         string[] mapBorderless = new string[map.Count*(map[0][0].Count-2)];
         for (int rowIndex = 0; rowIndex < map.Count; rowIndex++)
@@ -258,7 +258,7 @@ class Day20
                 tile = tile.GetRange(1, tile.Count-2);
                 for (int j = 0; j < tile.Count; j++)
                 {
-                    tile[j] = tile[j].Substring(1, tile[j].Length-1);
+                    tile[j] = tile[j].Substring(1, tile[j].Length-2);
                     mapBorderless[rowIndex*tile.Count + j] += tile[j];
                 }
             }
@@ -277,6 +277,49 @@ class Day20
         part1 *= mapIDs[mapHeight-1][mapWidth-1];
 
         return part1;
+    }
+
+    static int Part2(List<string> map)
+    {
+        /*
+        Find sea monsters
+                          #  * Row 1
+        #    ##    ##    ### * Row 2
+         #  #  #  #  #  #    * Row 3
+        Count amount of them, subtract from # count to get roughness
+        If there are 0 sea monsters, try another transformation
+        */
+        Regex regexRow2 = new Regex("#[.#]{4}##[.#]{4}##[.#]{4}###", RegexOptions.Compiled);
+        Regex regexRow3 = new Regex("#[.#]{2}#[.#]{2}#[.#]{2}#[.#]{2}#[.#]{2}#", RegexOptions.Compiled);
+
+        for (int i = 0; i < 8; i++)
+        {
+            List<string> currentMap = GetTransformation(map, i);
+            int count = 0;
+            for (int y = 0; y < currentMap.Count()-2; y++)
+            {
+                for (int x = 18; x < currentMap[y].Count()-1; x++)
+                {
+                    if (currentMap[y][x] == '#')
+                    {
+                        string row2 = currentMap[y+1].Substring(x-18, 20);
+                        string row3 = currentMap[y+2].Substring(x-17, 16);
+
+                        if (regexRow2.Match(row2).Success && regexRow3.Match(row3).Success)
+                        {
+                            // monster found
+                            count++;
+                        }
+                    }
+                }
+            }
+
+            if (count > 0)
+            {
+                return String.Join("", currentMap).Count(c => c == '#') - (count * 15);
+            }
+        }
+        return -1;
     }
 
     public static void Main(string[] args)
@@ -306,5 +349,6 @@ class Day20
         (map, mapIDs) = GenerateMap(tiles, tileIDs);
 
         Console.WriteLine($"Part 1: {Part1(mapIDs)}");
+        Console.WriteLine($"Part 2: {Part2(map)}");
     }
 }
