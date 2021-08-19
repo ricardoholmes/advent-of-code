@@ -232,10 +232,7 @@ class Day20
             for (int j = 0; j < tiles.Count; j++)
             {
                 if (mapIDs[0][i] == tileIDs[j])
-                {
-                    Console.WriteLine("hiya");
                     continue;
-                }
                 
                 for (int k = 0; k < 8; k++)
                 {
@@ -258,26 +255,44 @@ class Day20
                 break;
         }
 
-        // (y, x), top left = (0, 0)
-        /*
-        List<List<List<string>>> tilesOrdered = new List<List<List<string>>>();
-
-        int side_len = (int)Math.Pow(tiles.Count, 0.5f);
-        for (int i = 0; i < side_len; i++)
+        // Rest of the rows
+        for (int y = 1; y < map[0].Count; y++)
         {
-            tilesOrdered.Add(new List<List<string>>());
-            for (int j = 0; j < side_len; j++)
+            map.Add(new List<List<string>>());
+            mapIDs.Add(new List<int>());
+            for (int x = 0; x < map[0].Count; x++)
             {
-                tilesOrdered[i].Add(tiles[j]);
+                bool found = false;
+                string border = Borders(map[y-1][x])[2];
+                for (int i = 0; i < tiles.Count; i++)
+                {
+                    if (mapIDs[y-1][x] == tileIDs[i])
+                        continue;
+                    
+                    for (int j = 0; j < 8; j++)
+                    {
+                        List<string> currentTile = GetTransformation(tiles[i], j);
+                        
+                        if (Borders(currentTile)[0] == border)
+                        {
+                            mapIDs[y].Add(tileIDs[i]);
+                            map[y].Add(currentTile);
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (found)
+                        break;
+                }
             }
         }
-        */
-        /*
+        
         // remove borders
-        string[] map = new string[tilesOrdered.Count*(tilesOrdered[0][0].Count-2)];
-        for (int tilesRow = 0; tilesRow < tilesOrdered.Count; tilesRow++)
+        string[] mapBorderless = new string[map.Count*(map[0][0].Count-2)];
+        for (int rowIndex = 0; rowIndex < map.Count; rowIndex++)
         {
-            List<List<string>> row = tilesOrdered[tilesRow];
+            List<List<string>> row = map[rowIndex];
             for (int i = 0; i < row.Count; i++)
             {
                 List<string> tile = new List<string>(row[i]);
@@ -286,11 +301,10 @@ class Day20
                 {
                     tile[j] = tile[j].Substring(1, tile[j].Length-1);
 
-                    map[tilesRow*tile.Count + j] += tile[j];
+                    mapBorderless[rowIndex*tile.Count + j] += tile[j];
                 }
             }
         }
-        */
 
         return 0;
     }
