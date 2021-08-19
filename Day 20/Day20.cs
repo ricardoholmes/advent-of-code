@@ -36,48 +36,7 @@ class Day20
         return borders;
     }
 
-    static long Part1(List<List<string>> tiles, List<int> tileIDs)
-    {
-        List<List<string>> possibleBorders = new List<List<string>>();
-        foreach (List<string> tile in tiles)
-            possibleBorders.Add(Borders(tile, true));
-
-        List<int> corners = new List<int>();
-        for (int i = 0; i < possibleBorders.Count; i++)
-        {
-            List<string> currentTile = possibleBorders[i];
-            int count = 0;
-            List<string> skipTiles = new List<string>() { String.Join("", currentTile) };
-            foreach (string border in currentTile)
-            {
-                foreach (List<string> tempTile in possibleBorders)
-                {
-                    if (!skipTiles.Contains(String.Join("", tempTile)) && tempTile.Contains(border))
-                    {
-                        skipTiles.Add(String.Join("", tempTile));
-                        count++;
-                        break;
-                    }
-                }
-            }
-
-            if (count == 2)
-                corners.Add(tileIDs[i]);
-
-            if (count < 2)
-                Console.WriteLine(count);
-        }
-
-        long total = 1;
-        foreach (int corner in corners)
-        {
-            total *= corner;
-        }
-
-        return total;
-    }
-
-    // Rotate the tile clockwise
+    // Rotate the tile 90° clockwise
     static List<string> Rotate(List<string> tile, int rotateCount)
     {
         for (int rotations = 0; rotations < rotateCount; rotations++)
@@ -166,7 +125,7 @@ class Day20
             throw new IndexOutOfRangeException();
     }
 
-    static int Part2(List<List<string>> tiles, List<int> tileIDs)
+    static (List<string>, List<List<int>>) GenerateMap(List<List<string>> tiles, List<int> tileIDs)
     {
         List<List<string>> borders = new List<List<string>>();
         foreach (List<string> tile in tiles)
@@ -300,13 +259,24 @@ class Day20
                 for (int j = 0; j < tile.Count; j++)
                 {
                     tile[j] = tile[j].Substring(1, tile[j].Length-1);
-
                     mapBorderless[rowIndex*tile.Count + j] += tile[j];
                 }
             }
         }
 
-        return 0;
+        return (mapBorderless.ToList(), mapIDs);
+    }
+
+    static long Part1(List<List<int>> mapIDs)
+    {
+        int mapHeight = mapIDs.Count;
+        int mapWidth = mapIDs[0].Count;
+        long part1 = mapIDs[0][0];
+        part1 *= mapIDs[0][mapWidth-1]; 
+        part1 *= mapIDs[mapHeight-1][0]; 
+        part1 *= mapIDs[mapHeight-1][mapWidth-1];
+
+        return part1;
     }
 
     public static void Main(string[] args)
@@ -330,8 +300,11 @@ class Day20
             else
                 tiles[tile].Add(line);
         }
+        
+        List<string> map;
+        List<List<int>> mapIDs;
+        (map, mapIDs) = GenerateMap(tiles, tileIDs);
 
-        Console.WriteLine($"Part 1: {Part1(tiles, tileIDs)}");
-        Console.WriteLine($"Part 2: {Part2(tiles, tileIDs)}");
+        Console.WriteLine($"Part 1: {Part1(mapIDs)}");
     }
 }
