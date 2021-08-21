@@ -36,7 +36,7 @@ class Day21
         {
             List<string> ingredients;
             List<string> allergens;
-            string[] foodSplit = Regex.Split(food, "[(]contains |[)]");
+            string[] foodSplit = Regex.Split(food, " [(]contains |[)]");
             ingredients = foodSplit[0].Split(' ').ToList();
             allergens = Regex.Split(foodSplit[1], ", ").ToList();
 
@@ -65,5 +65,21 @@ class Day21
         }
 
         Console.WriteLine($"Part 1: {Part1(foods, allIngredients, possibleAllergens)}");
+
+        SortedDictionary<string, string> dangerousIngredients = new SortedDictionary<string, string>();
+        while (possibleAllergens.Count() > 0)
+        {
+            foreach (KeyValuePair<string, List<string>> allergen in new Dictionary<string, List<string>>(possibleAllergens))
+            {
+                allergen.Value.RemoveAll(i => dangerousIngredients.Values.Contains(i));
+                if (allergen.Value.Count() == 1)
+                {
+                    dangerousIngredients.Add(allergen.Key, allergen.Value[0]);
+                    possibleAllergens.Remove(allergen.Key);
+                }
+            }
+        }
+
+        Console.WriteLine("Part 2: " + String.Join(",", dangerousIngredients.Values));
     }
 }
