@@ -83,7 +83,8 @@ class Day22
                 player2.RemoveAt(0);
             }
 
-            //Console.WriteLine($"Player " + (player1Win ? 1 : 2) + " win!\n");
+            //Console.WriteLine($"Player " + (player1Win ? 1 : 2) + " win!");
+            //Console.ReadLine();
         }
 
         bool win = player1.Count() > 0;
