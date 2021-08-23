@@ -1,13 +1,21 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 class Day23
 {
-    public static List<int> Play(List<int> cups, int moves)
+    static Stopwatch stopwatch = new Stopwatch();
+
+    static List<int> Play(List<int> cups, int moves)
     {
+        stopwatch.Restart();
+        stopwatch.Start();
+
+        List<List<int>> previousOrders = new List<List<int>>();
+
         int currentIndex = 0;
         for (int i = 0; i < moves; i++)
         {
@@ -15,6 +23,8 @@ class Day23
             //for (int j = 0; j < currentIndex * 3; j++)
             //    Console.Write(" ");
             //Console.WriteLine("^");
+
+            previousOrders.Add(new List<int>(cups));
 
             int currentCup = cups[currentIndex];
             List<int> pickup = new List<int>();
@@ -30,7 +40,7 @@ class Day23
 
             for (int j = 1; j < cupsTemp.Count(); j++)
             {
-                int cup = (currentCup + cupsTemp.Count() - j - 1) % cupsTemp.Count() + 1;
+                int cup = ((currentCup + cupsTemp.Count() - j - 1) % cupsTemp.Count()) + 1;
                 if (cups.Contains(cup))
                 {
                     //Console.WriteLine($"Destination: {cup}");
@@ -38,6 +48,11 @@ class Day23
                     cups.InsertRange(index + 1, pickup);
                     break;
                 }
+            }
+
+            if (i % 10_000 == 0)
+            {
+                Console.WriteLine($"{i} in {stopwatch.ElapsedMilliseconds / 1000f} seconds");
             }
 
             currentIndex = (cups.IndexOf(currentCup) + 1) % cups.Count();
@@ -82,7 +97,12 @@ class Day23
 
     public static void Main(string[] args)
     {
-        char[] input = "459672813".ToCharArray();
+        // example:
+        char[] input = "389125467".ToCharArray();
+
+        // puzzle input:
+        //char[] input = "459672813".ToCharArray();
+
         List<int> cups = input.Select(x => int.Parse(x.ToString())).ToList();
 
         Console.WriteLine($"Part 1: {Part1(new List<int>(cups))}");
