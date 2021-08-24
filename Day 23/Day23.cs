@@ -19,7 +19,6 @@ class Day23
         int currentIndex = 0;
         for (int i = 0; i < moves; i++)
         {
-            Console.WriteLine();
             //Console.WriteLine(String.Join(", ", cups));
             //for (int j = 0; j < currentIndex * 3; j++)
             //    Console.Write(" ");
@@ -39,29 +38,10 @@ class Day23
             }
             //Console.WriteLine("Pick up: " + String.Join(", ", pickup));
 
-            int x;
-            if (index >= 2)
-                x = 3;
-            else if (index >= 1)
-                x = 2;
-            else
-                x = 1;
-
-
-            foreach (KeyValuePair<int, int> k in indexes)
+            for (int j = 0; j < cups.Count(); j++)
             {
-                Console.WriteLine($"{k.Key}, {k.Value}");
+                indexes[cups[j]] = j;
             }
-            for (int j = currentIndex + 1; j < cups.Count(); j++)
-            {
-                indexes[cups[j]] -= x;
-            }
-            Console.WriteLine("=>");
-            foreach (KeyValuePair<int, int> k in indexes)
-            {
-                Console.WriteLine($"{k.Key}, {k.Value}");
-            }
-            Console.ReadLine();
 
             for (int j = 1; j < cupsTemp.Count(); j++)
             {
@@ -94,7 +74,7 @@ class Day23
                 }
             }
 
-            if (i != 0 && i % 100_000 == 0)
+            if (i != 0 && i % 1_000 == 0)
             {
                 Console.WriteLine($"{i} in {stopwatch.ElapsedMilliseconds / 1000f} seconds");
             }
@@ -102,6 +82,7 @@ class Day23
             currentIndex = (cups.IndexOf(currentCup) + 1) % cups.Count();
         }
 
+        Console.WriteLine($"{moves} in {stopwatch.ElapsedMilliseconds / 1000f} seconds");
         return cups;
     }
 
