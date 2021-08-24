@@ -7,50 +7,94 @@ using System.Text.RegularExpressions;
 
 class Day23
 {
-    static Stopwatch stopwatch = new Stopwatch();
-
     static List<int> Play(List<int> cups, int moves)
     {
-        stopwatch.Restart();
+        Stopwatch stopwatch = new Stopwatch();
         stopwatch.Start();
 
-        List<List<int>> previousOrders = new List<List<int>>();
+        Dictionary<int, int> indexes = new Dictionary<int, int>();
+        for (int i = 0; i < cups.Count(); i++)
+            indexes.Add(cups[i], i);
 
         int currentIndex = 0;
         for (int i = 0; i < moves; i++)
         {
+            Console.WriteLine();
             //Console.WriteLine(String.Join(", ", cups));
             //for (int j = 0; j < currentIndex * 3; j++)
             //    Console.Write(" ");
             //Console.WriteLine("^");
 
-            previousOrders.Add(new List<int>(cups));
-
             int currentCup = cups[currentIndex];
             List<int> pickup = new List<int>();
             List<int> cupsTemp = new List<int>(cups);
+            int index = 1;
             for (int j = 1; j <= 3; j++)
             {
-                int index = (currentIndex + j) % cupsTemp.Count();
+                index = (currentIndex + j) % cupsTemp.Count();
                 int cup = cupsTemp[index];
                 pickup.Add(cup);
                 cups.Remove(cup);
+                indexes[cup] = -1;
             }
             //Console.WriteLine("Pick up: " + String.Join(", ", pickup));
+
+            int x;
+            if (index >= 2)
+                x = 3;
+            else if (index >= 1)
+                x = 2;
+            else
+                x = 1;
+
+
+            foreach (KeyValuePair<int, int> k in indexes)
+            {
+                Console.WriteLine($"{k.Key}, {k.Value}");
+            }
+            for (int j = currentIndex + 1; j < cups.Count(); j++)
+            {
+                indexes[cups[j]] -= x;
+            }
+            Console.WriteLine("=>");
+            foreach (KeyValuePair<int, int> k in indexes)
+            {
+                Console.WriteLine($"{k.Key}, {k.Value}");
+            }
+            Console.ReadLine();
 
             for (int j = 1; j < cupsTemp.Count(); j++)
             {
                 int cup = ((currentCup + cupsTemp.Count() - j - 1) % cupsTemp.Count()) + 1;
-                if (cups.Contains(cup))
+                if (indexes[cup] != -1)
                 {
                     //Console.WriteLine($"Destination: {cup}");
-                    int index = cups.IndexOf(cup);
-                    cups.InsertRange(index + 1, pickup);
+                    foreach (int k in cups.Skip(indexes[cup] + 1))
+                    {
+                        indexes[k] += 3;
+                    }
+
+                    // Console.WriteLine(cup);
+                    // Console.WriteLine(String.Join(", ", cups));
+                    // Console.WriteLine(String.Join(", ", pickup));
+
+                    // foreach (KeyValuePair<int, int> k in indexes)
+                    // {
+                    //     Console.WriteLine($"{k.Key}, {k.Value}");
+                    // }
+                    // Console.WriteLine($"{indexes[cup]+1} / {cups.Count()}");
+                    cups.InsertRange(indexes[cup] + 1, pickup);
+
+                    for (int k = indexes[cup] + 1; k <= indexes[cup] + 3; k++)
+                    {
+                        indexes[cups[k]] = k;
+                    }
+
                     break;
                 }
             }
 
-            if (i % 10_000 == 0)
+            if (i != 0 && i % 100_000 == 0)
             {
                 Console.WriteLine($"{i} in {stopwatch.ElapsedMilliseconds / 1000f} seconds");
             }
@@ -86,7 +130,7 @@ class Day23
 
         int index = cups.IndexOf(1);
         long product = 1;
-        for (int i = 1; i <= 2; i++)
+        for (int i = 0; i < 2; i++)
         {
             index = (index + 1) % cups.Count();
             product *= cups[index];
