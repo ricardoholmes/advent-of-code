@@ -52,29 +52,27 @@ void PartOne(int input[])
 {
     int length = 9;
 
-    Node** cups = new Node*[length];
+    Node* cups[length];
     Node* startNode = new Node(input[0]);
     Node* previousNode = startNode;
-    cups[input[0]] = startNode;
+    cups[input[0]-1] = startNode;
     for (int i = 1; i < length; i++)
     {
         Node* node = new Node(input[i]);
-        cups[input[i]] = node;
+        cups[input[i]-1] = node;
         previousNode->next = node;
     }
     previousNode->next = startNode;
 
-    // Play(startNode, cups, 100, length);
+    Play(startNode, cups, 100, length);
 
-    // Node* cup = cups[0];
-    // char output[length-1];
-    // for (int i = 0; i < length-1; i++)
-    // {
-    //     cup = cup->next;
-    //     output[i] = '0' + cup->val;
-    // }
-
-    // cout << "Part 1: " << output;
+    Node* cup = cups[0];
+    cout << "Part 1: ";
+    for (int i = 0; i < length-1; i++)
+    {
+        cup = cup->next;
+        cout << cup->val;
+    }
 }
 
 int main()
@@ -86,7 +84,7 @@ int main()
     //char puzzleInput[] = "459672813";
 
     int length = 9;
-    int input[length];
+    int input[length] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
     for (int i = 0; i < length; i++)
     {
         input[i] = puzzleInput[i] - '0';
