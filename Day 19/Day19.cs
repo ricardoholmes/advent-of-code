@@ -4,42 +4,84 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-class Day18
+class Day19
 {
-    static int Part1(List<string> rulesList)
+    static int Part1(Dictionary<int,string> rules, List<string> messages)
     {
-        string pattern = ": ";
-        Dictionary<string, string> rules = new Dictionary<string, string>();
-        foreach (string rule in rulesList)
+        string rule = rules[0];
+        int count = 0;
+        while (rule.Any(char.IsDigit) && count < 20)
         {
-            string[] ruleSplit = Regex.Split(rule, pattern);
-            rules[ruleSplit[0]] = ruleSplit[1];
+            string[] ruleTemp = rule.Split(' ');
+            for (int i = 0; i < ruleTemp.Length; i++)
+            {
+                if (int.TryParse(ruleTemp[i], out _))
+                {
+                    int ruleNum = int.Parse(ruleTemp[i]);
+                    ruleTemp[i] = rules[ruleNum];
+                }
+            }
+            rule = string.Join(' ', ruleTemp);
+            // Console.WriteLine(rule);
+
+            count++;
+        }
+        // Console.WriteLine(rule);
+
+        rule = rule.Replace(" ", "");
+        rule = $"^{rule}$";
+        // Console.WriteLine(rule);
+
+        int matchCount = 0;
+        foreach (string msg in messages)
+        {
+            Match m = Regex.Match(msg, rule);
+            if (m.Value != "")
+                matchCount++;
         }
 
-        foreach (KeyValuePair<string, string> kv in rules)
-        {
-            Console.WriteLine($"'{kv.Key}': '{kv.Value}'");
-        }
-        return 0;
+        return matchCount;
     }
 
-    static void Main(string[] args)
+    static int Part2(Dictionary<int,string> rules, List<string> messages)
     {
-        List<string> puzzleInput = File.ReadLines("example.txt").ToList();
+        rules[8] = "( 42 | 42 8 )";
+        rules[11] = "( 42 31 | 42 11 31 )";
+        return Part1(rules, messages);
+    }
 
-        List<List<string>> sections = new List<List<string>>();
-        sections.Add(new List<string>());
+    public static void Main(string[] args)
+    {
+        List<string> puzzleInput = File.ReadLines("input.txt").ToList();
+
+        Dictionary<int,string> rules = new Dictionary<int,string>();
+        List<string> messages = new List<string>();
+        int i = 0;
         foreach (string line in puzzleInput)
         {
             if (line == "")
-                sections.Add(new List<string>());
+                i++;
             
+            else if (i == 0)
+            {
+                string[] lineSplit = line.Split(": ");
+                string currentRule = "";
+
+                if (lineSplit[1].Contains('\"'))
+                    currentRule = lineSplit[1].Replace("\"", "");
+                else
+                    currentRule = $"( {lineSplit[1]} )";
+
+                rules.Add(int.Parse(lineSplit[0]), currentRule);
+            }
+
             else
             {
-                sections[sections.Count()-1].Add(line);
+                messages.Add(line);
             }
         }
 
-        Console.WriteLine($"Part 1: {Part1(sections[0])}");
+        Console.WriteLine($"Part 1: {Part1(rules, messages)}");
+        Console.WriteLine($"Part 2: {Part2(rules, messages)}");
     }
 }
