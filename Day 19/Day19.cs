@@ -21,7 +21,7 @@ class Day19
                     ruleTemp[i] = rules[ruleNum];
                 }
             }
-            rule = string.Join(' ', ruleTemp);
+            rule = string.Join(" ", ruleTemp);
             // Console.WriteLine(rule);
 
             count++;
@@ -64,7 +64,7 @@ class Day19
             
             else if (i == 0)
             {
-                string[] lineSplit = line.Split(": ");
+                string[] lineSplit = Regex.Split(line, ": ");
                 string currentRule = "";
 
                 if (lineSplit[1].Contains('\"'))
