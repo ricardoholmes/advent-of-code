@@ -12,74 +12,63 @@ class Day23
         Stopwatch stopwatch = new Stopwatch();
         stopwatch.Start();
 
-        Dictionary<int, int> indexes = new Dictionary<int, int>();
+        bool[] isAlive = new bool[cups.Count()];
         for (int i = 0; i < cups.Count(); i++)
-            indexes.Add(cups[i], i);
+            isAlive[cups[i]-1] = true;
 
         int currentIndex = 0;
         for (int i = 0; i < moves; i++)
         {
-            //Console.WriteLine(String.Join(", ", cups));
-            //for (int j = 0; j < currentIndex * 3; j++)
+            // for (int j = 0; j < currentIndex * 3; j++)
             //    Console.Write(" ");
-            //Console.WriteLine("^");
+            // Console.WriteLine("▼");
+            // Console.WriteLine(String.Join(", ", cups));
 
             int currentCup = cups[currentIndex];
-            List<int> pickup = new List<int>();
-            List<int> cupsTemp = new List<int>(cups);
-            int index = 1;
-            for (int j = 1; j <= 3; j++)
+            int[] pickup = new int[3];
+            int[] pickupIndexes = new int[3];
+            int index = currentIndex;
+            int tempCurrentCup = currentIndex;
+            for (int j = 0; j < 3; j++)
             {
-                index = (currentIndex + j) % cupsTemp.Count();
-                int cup = cupsTemp[index];
-                pickup.Add(cup);
-                cups.Remove(cup);
-                indexes[cup] = -1;
+                index = (index + 1) % cups.Count();
+                int cupTemp = cups[index];
+                pickup[j] = cupTemp;
+                pickupIndexes[j] = index;
+                isAlive[cupTemp-1] = false;
+                if (index < currentIndex)
+                    tempCurrentCup++;
             }
-            //Console.WriteLine("Pick up: " + String.Join(", ", pickup));
+            // Console.WriteLine("Pick up: " + String.Join(", ", pickup));
 
-            for (int j = 0; j < cups.Count(); j++)
+            for (int j = 1; j < cups.Count(); j++)
             {
-                indexes[cups[j]] = j;
-            }
-
-            for (int j = 1; j < cupsTemp.Count(); j++)
-            {
-                int cup = ((currentCup + cupsTemp.Count() - j - 1) % cupsTemp.Count()) + 1;
-                if (indexes[cup] != -1)
+                int cup = currentCup - j;
+                if (cup < 1)
+                    cup += cups.Count();
+                if (isAlive[cup-1])
                 {
-                    //Console.WriteLine($"Destination: {cup}");
-                    foreach (int k in cups.Skip(indexes[cup] + 1))
+                    // Console.WriteLine($"Destination: {cup}");
+                    isAlive[cup-1] = true;
+
+                    Array.Sort(pickupIndexes);
+                    Array.Reverse(pickupIndexes);
+                    foreach (int k in pickupIndexes)
                     {
-                        indexes[k] += 3;
+                        cups.RemoveAt(k);
                     }
-
-                    // Console.WriteLine(cup);
-                    // Console.WriteLine(String.Join(", ", cups));
-                    // Console.WriteLine(String.Join(", ", pickup));
-
-                    // foreach (KeyValuePair<int, int> k in indexes)
-                    // {
-                    //     Console.WriteLine($"{k.Key}, {k.Value}");
-                    // }
-                    // Console.WriteLine($"{indexes[cup]+1} / {cups.Count()}");
-                    cups.InsertRange(indexes[cup] + 1, pickup);
-
-                    for (int k = indexes[cup] + 1; k <= indexes[cup] + 3; k++)
-                    {
-                        indexes[cups[k]] = k;
-                    }
-
+                    cups.InsertRange(cups.IndexOf(cup) + 1, pickup);
                     break;
                 }
             }
 
-            if (i != 0 && i % 1_000 == 0)
+            if (i != 0 && i % 10_000 == 0)
             {
                 Console.WriteLine($"{i} in {stopwatch.ElapsedMilliseconds / 1000f} seconds");
             }
 
-            currentIndex = (cups.IndexOf(currentCup) + 1) % cups.Count();
+            currentIndex = (tempCurrentCup + 1) % cups.Count();
+            // Console.WriteLine();
         }
 
         Console.WriteLine($"{moves} in {stopwatch.ElapsedMilliseconds / 1000f} seconds");
