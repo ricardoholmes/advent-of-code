@@ -7,86 +7,69 @@ using System.Text.RegularExpressions;
 
 class Day23
 {
-    static List<int> Play(List<int> cups, int moves)
+    static List<int> Play(List<int> cupsList, int moves)
     {
         Stopwatch stopwatch = new Stopwatch();
         stopwatch.Start();
 
-        bool[] isAlive = new bool[cups.Count()];
-        for (int i = 0; i < cups.Count(); i++)
-            isAlive[cups[i]-1] = true;
+        int _length = cupsList.Count();
+        int[] cups = new int[_length+1];
+        for (int i = 0; i < _length; i++)
+        {
+            cups[cupsList[i]] = cupsList[(i + 1) % _length];
+        }
 
-        int currentIndex = 0;
+        int count = 0;
+        int currentCup = cupsList[0];
         for (int i = 0; i < moves; i++)
         {
-            // for (int j = 0; j < currentIndex * 3; j++)
-            //    Console.Write(" ");
-            // Console.WriteLine("▼");
-            // Console.WriteLine(String.Join(", ", cups));
-
-            int currentCup = cups[currentIndex];
             int[] pickup = new int[3];
-            int[] pickupIndexes = new int[3];
-            int index = currentIndex;
-            int tempCurrentCup = currentIndex;
+            int cupToPickup = cups[currentCup];
             for (int j = 0; j < 3; j++)
             {
-                index = (index + 1) % cups.Count();
-                int cupTemp = cups[index];
-                pickup[j] = cupTemp;
-                pickupIndexes[j] = index;
-                isAlive[cupTemp-1] = false;
-                if (index < currentIndex)
-                    tempCurrentCup++;
+                pickup[j] = cupToPickup;
+                cupToPickup = cups[cupToPickup];
             }
-            // Console.WriteLine("Pick up: " + String.Join(", ", pickup));
 
-            for (int j = 1; j < cups.Count(); j++)
+            // make 'cups' skip picked up cups
+            cups[currentCup] = cupToPickup;
+
+            int destination = currentCup;
+            for (int j = 0; j < _length; j++)
             {
-                int cup = currentCup - j;
-                if (cup < 1)
-                    cup += cups.Count();
-                if (isAlive[cup-1])
+                destination--;
+                if (destination == 0)
+                    destination += _length;
+                
+                if (!Array.Exists(pickup, element => element == destination))
                 {
-                    // Console.WriteLine($"Destination: {cup}");
-                    isAlive[cup-1] = true;
-
-                    Array.Sort(pickupIndexes);
-                    Array.Reverse(pickupIndexes);
-                    foreach (int k in pickupIndexes)
-                    {
-                        cups.RemoveAt(k);
-                    }
-                    cups.InsertRange(cups.IndexOf(cup) + 1, pickup);
+                    int nextCup = cups[destination];
+                    cups[destination] = pickup[0];
+                    cups[pickup[2]] = nextCup;
                     break;
                 }
             }
 
-            if (i.ToString().EndsWith("0000"))
-            {
-                Console.WriteLine($"{i} in {stopwatch.ElapsedMilliseconds / 1000f} seconds");
-            }
+            count++;
 
-            currentIndex = (tempCurrentCup + 1) % cups.Count();
-            // Console.WriteLine();
+            currentCup = cups[currentCup];
         }
 
-        Console.WriteLine($"{moves} in {stopwatch.ElapsedMilliseconds / 1000f} seconds");
-        return cups;
+        Console.WriteLine($"Made {moves} moves in {stopwatch.ElapsedMilliseconds / 1000f}s");
+        List<int> cupsOut = new List<int>();
+        int cupTemp = cups[1];
+        while (cupTemp != 1)
+        {
+            cupsOut.Add(cupTemp);
+            cupTemp = cups[cupTemp];
+        }
+        return cupsOut;
     }
 
     public static string Part1(List<int> cups)
     {
         cups = Play(cups, 100);
-
-        string order = "";
-        for (int i = 1; i < 9; i++)
-        {
-            int index = (cups.IndexOf(1) + i) % cups.Count();
-            order += cups[index].ToString();
-        }
-
-        return order;
+        return String.Join("", cups);
     }
 
     public static long Part2(List<int> cups)
@@ -97,29 +80,26 @@ class Day23
         }
 
         cups = Play(cups, 10_000_000);
-
-        int index = cups.IndexOf(1);
-        long product = 1;
-        for (int i = 0; i < 2; i++)
-        {
-            index = (index + 1) % cups.Count();
-            product *= cups[index];
-        }
-
+        long product = cups[0];
+        product *= cups[1];
         return product;
     }
 
     public static void Main(string[] args)
     {
+        Stopwatch stopwatch = new Stopwatch();
+        stopwatch.Start();
+
         // example:
-        char[] input = "389125467".ToCharArray();
+        // char[] input = "389125467".ToCharArray();
 
         // puzzle input:
-        //char[] input = "459672813".ToCharArray();
+        char[] input = "459672813".ToCharArray();
 
         List<int> cups = input.Select(x => int.Parse(x.ToString())).ToList();
 
-        Console.WriteLine($"Part 1: {Part1(new List<int>(cups))}");
-        Console.WriteLine($"Part 2: {Part2(new List<int>(cups))}");
+        Console.WriteLine($"Part 1: {Part1(new List<int>(cups))}\n");
+        Console.WriteLine($"Part 2: {Part2(new List<int>(cups))}\n");
+        Console.WriteLine($"Completed in {stopwatch.ElapsedMilliseconds / 1000f}s");
     }
 }
