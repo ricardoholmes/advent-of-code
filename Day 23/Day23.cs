@@ -62,7 +62,7 @@ class Day23
                 }
             }
 
-            if (i != 0 && i % 10_000 == 0)
+            if (i.ToString().EndsWith("0000"))
             {
                 Console.WriteLine($"{i} in {stopwatch.ElapsedMilliseconds / 1000f} seconds");
             }
