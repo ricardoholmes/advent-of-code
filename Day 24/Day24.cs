@@ -12,7 +12,7 @@ class Day24
         List<string> puzzleInput = File.ReadLines("input.txt").ToList();
 
         Regex directionsRegex = new Regex(@"ne|se|nw|sw|e|w", RegexOptions.Compiled);
-        Dictionary<(float, float), bool> tiles = new Dictionary<(float, float), bool>();
+        List<(float, float)> blackTiles = new List<(float, float)>();
         foreach (string line in puzzleInput)
         {
             float x = 0;
@@ -55,26 +55,79 @@ class Day24
                         break;
                 }
             }
+
             (float, float) coord = (x, y);
-            if (tiles.ContainsKey(coord))
+            if (blackTiles.Contains(coord))
             {
-                tiles[coord] = !tiles[coord];
+                blackTiles.Remove(coord);
             }
 
             else
             {
-                tiles.Add(coord, true);
+                blackTiles.Add(coord);
             }
             //Console.WriteLine($"({x}, {y})");
         }
 
-        int count = 0;
-        foreach (KeyValuePair<(float, float), bool> tile in tiles)
+        Console.WriteLine($"Part 1: {blackTiles.Count()}");
+
+        List<(float, float)> offsets = new List<(float, float)>()
         {
-            if (tile.Value)
-                count++;
+            (0.5f, 1),
+            (-0.5f, 1),
+            (0.5f, -1),
+            (-0.5f, -1),
+            (1, 0),
+            (-1, 0)
+        };
+
+        for (int day = 0; day < 100; day++)
+        {
+            Dictionary<(float, float), int> adjacentBlacksCount = new Dictionary<(float, float), int>();
+            foreach ((float, float) coord in blackTiles)
+            {
+                if (!adjacentBlacksCount.ContainsKey(coord))
+                {
+                    adjacentBlacksCount.Add(coord, 0);
+                }
+
+                foreach ((float, float) offset in offsets)
+                {
+                    (float, float) neighbor = coord;
+                    neighbor.Item1 += offset.Item1;
+                    neighbor.Item2 += offset.Item2;
+
+                    if (adjacentBlacksCount.ContainsKey(neighbor))
+                    {
+                        adjacentBlacksCount[neighbor]++;
+                    }
+
+                    else
+                    {
+                        adjacentBlacksCount.Add(neighbor, 1);
+                    }
+                }
+            }
+
+            foreach (KeyValuePair<(float, float), int> tile in adjacentBlacksCount)
+            {
+                (float, float) coord = tile.Key;
+                int count = tile.Value;
+
+                // if currently black and should flip
+                if (blackTiles.Contains(coord) && (count == 0 || count > 2))
+                {
+                    blackTiles.Remove(coord);
+                }
+
+                // if currently white and should flip
+                else if (!blackTiles.Contains(coord) && count == 2)
+                {
+                    blackTiles.Add(coord);
+                }
+            }
         }
 
-        Console.WriteLine($"Part 1: {count}");
+        Console.WriteLine($"Part 2: {blackTiles.Count()}");
     }
 }
