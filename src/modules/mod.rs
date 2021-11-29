@@ -1,5 +1,8 @@
-mod day_one;
+mod day_1;
 
-pub fn day_one() {
-    day_one::run();
+pub fn run(day: u16) {
+    match day {
+        1 => day_1::run(),
+        _ => println!("Invalid day number"),
+    }
 }
