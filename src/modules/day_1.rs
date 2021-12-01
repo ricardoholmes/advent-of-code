@@ -18,6 +18,16 @@ pub fn run() {
 
         previous = *i;
     }
-
     println!("Part 1: {}", increasing_count);
+
+    previous = input[..3].iter().sum();
+    increasing_count = 0;
+    for i in 1..(input.len()-2) {
+        let sum = &input[i..(i+3)].iter().sum();
+        if *sum > previous {
+            increasing_count += 1;
+        }
+        previous = *sum;
+    }
+    println!("Part 2: {}", increasing_count);
 }
