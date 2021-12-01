@@ -5,12 +5,12 @@ pub fn run() {
         .expect("Failed to read file");
 
     // if input is a list of strings
-    let input = input_str
+    let input: Vec<&str> = input_str
         .split(",")
         .collect();
 
     // if input is a list of integers
-    let input = input_str
+    let input: Vec<i32> = input_str
         .split(",")
         .map(|s| s.parse().expect("parse error"))
         .collect();

@@ -21,6 +21,7 @@ fn main() {
 
     }
     
+    // otherwise
     else {
         day_num = (*sysargs[1]).to_string();
     }
