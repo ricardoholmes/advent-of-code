@@ -1,7 +1,7 @@
 use std::io;
 use std::env;
 
-mod modules;
+mod solutions;
 
 fn main() {
     // get sysargs for day num
@@ -31,5 +31,5 @@ fn main() {
         .parse()
         .expect("Please enter a number");
     
-    modules::run(day_num);
+    solutions::run(day_num);
 }
