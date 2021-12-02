@@ -4,17 +4,18 @@ pub fn run() {
     let input_str = fs::read_to_string("inputs/input_2.txt")
         .expect("Failed to read file");
 
-    part1((*input_str).to_string());
-    part2((*input_str).to_string());
-}
-
-fn part1(input_str: String) {
     let input: Vec<&str> = input_str
         .split("\n")
         .collect();
+    
+    part1(&input);
+    part2(&input);
+}
 
+fn part1(input: &Vec<&str>) {
     let mut horizontal_pos = 0;
     let mut vertical_pos = 0;
+
     for command in input {
         let command_split: Vec<&str> = command
             .split(" ")
@@ -36,14 +37,11 @@ fn part1(input_str: String) {
     println!("{}", (horizontal_pos * vertical_pos))
 }
 
-fn part2(input_str: String) {
-    let input: Vec<&str> = input_str
-        .split("\n")
-        .collect();
-
+fn part2(input: &Vec<&str>) {
     let mut aim = 0;
     let mut horizontal_pos = 0;
     let mut vertical_pos = 0;
+
     for command in input {
         let command_split: Vec<&str> = command
             .split(" ")
