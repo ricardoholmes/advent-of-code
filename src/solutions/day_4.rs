@@ -33,6 +33,7 @@ pub fn run() {
     }
 
     part_one(&numbers, &boards, &boards_strings);
+    part_two(&numbers, &boards, &boards_strings);
 
 }
 
@@ -84,6 +85,76 @@ fn part_one(numbers: &Vec<&str>, boards: &Vec<Vec<Vec<&str>>>, boards_strings: &
                     let score = score_of_board(&boards[j], &numbers_picked) * i.parse::<i32>().expect("Error parsing");
                     println!("Part 1: {}", score);
                     return ();
+
+                }
+
+            }
+
+        }
+
+    }
+
+}
+
+fn part_two(numbers: &Vec<&str>, boards: &Vec<Vec<Vec<&str>>>, boards_strings: &Vec<&str>) {
+
+    let mut boards_won: Vec<usize> = vec!();
+    let mut numbers_picked: Vec<&str> = vec!();
+    for i in numbers {
+
+        numbers_picked.push(i);
+
+        for j in 0..boards.len() {
+
+            if boards_strings[j].contains(i) {
+
+                let (y, x) = position_of(&boards[j], &i);
+
+                // check row
+                let mut bingo: bool = true;
+                for value in &boards[j][y] {
+
+                    if !numbers_picked.contains(value) {
+
+                        bingo = false;
+                        break;
+
+                    }
+
+                }
+
+                if !bingo {
+
+                    // check column
+                    bingo = true;
+                    for row in &boards[j] {
+
+                        if !numbers_picked.contains(&row[x]) {
+
+                            bingo = false;
+                            break;
+
+                        }
+
+                    }
+
+                }
+
+                if bingo && !boards_won.contains(&j) {
+
+                    if boards.len() - 1 > boards_won.len() {
+
+                        boards_won.push(j);
+
+                    }
+
+                    else {
+
+                        let score = score_of_board(&boards[j], &numbers_picked) * i.parse::<i32>().expect("Error parsing");
+                        println!("Part 2: {}", score);
+                        return ();
+
+                    }
 
                 }
 
