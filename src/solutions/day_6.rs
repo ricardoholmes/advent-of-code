@@ -10,33 +10,35 @@ pub fn run() {
         .collect();
 
     part_one(&input);
+    part_two(&input);
 }
 
 fn part_one(input: &Vec<i32>) {
-    let mut fish_spawns: [i32; 8] = [0; 8];
-
-    for i in 0..8 {
-        let mut fish: Vec<i32> = vec!(i);
-        for _j in 0..80 {
-            let mut fish_temp: Vec<i32> = vec!();
-            for k in fish {
-                if k == 0 {
-                    fish_temp.push(6);
-                    fish_temp.push(8);
-                }
-                else {
-                    fish_temp.push(k-1);
-                }
-            }
-            fish = fish_temp;
-        }
-        fish_spawns[i as usize] = fish.len() as i32;
-    }
-
-    let mut count = 0;
-    for i in input {
-        count += fish_spawns[*i as usize];
-    }
-
+    let count = amount_after_days(&input, 80);
     println!("Part 1: {}", count);
+}
+
+fn part_two(input: &Vec<i32>) {
+    let count = amount_after_days(&input, 256);
+    println!("Part 2: {}", count);
+}
+
+fn amount_after_days(input: &Vec<i32>, days: i32) -> u64 {
+    let mut fish: [u64; 9] = [0; 9];
+
+    for i in input {
+        fish[*i as usize] += 1;
+    }
+
+    for _i in 0..days {
+        let mut fish_temp: [u64; 9] = [0; 9];
+        fish_temp[8] += fish[0];
+        fish_temp[6] += fish[0];
+        for j in 1..9 {
+            fish_temp[j-1] += fish[j];
+        }
+        fish = fish_temp;
+    }
+
+    fish.iter().sum()
 }
