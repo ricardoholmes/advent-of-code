@@ -10,6 +10,7 @@ pub fn run() {
         .collect();
     
     part_one(&input);
+    part_two(&input);
 }
 
 fn part_one(positions: &Vec<i32>) {
@@ -26,6 +27,25 @@ fn part_one(positions: &Vec<i32>) {
             return ();
         }
         previous_fuel = fuel;
+        new_position += 1;
+    }
+}
+
+fn part_two(positions: &Vec<i32>) {
+    let mut new_position = 0;
+    let mut previous_fuel = -1;
+    loop {
+        let mut total_fuel = 0;
+        for i in positions {
+            let pos_difference = (i - new_position).abs();
+            total_fuel += ((pos_difference + 1) * pos_difference) / 2;
+        }
+
+        if previous_fuel >= 0 && total_fuel > previous_fuel {
+            println!("Part 2: {}", previous_fuel);
+            return ();
+        }
+        previous_fuel = total_fuel;
         new_position += 1;
     }
 }
