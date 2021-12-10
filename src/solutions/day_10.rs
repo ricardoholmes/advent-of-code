@@ -11,6 +11,7 @@ pub fn run() {
         .collect();
 
     part_one(&input);
+    part_two(&input);
 }
 
 fn part_one(lines: &Vec<&str>) {
@@ -57,4 +58,53 @@ fn part_one(lines: &Vec<&str>) {
 
     // output total syntax error score
     println!("Part 1: {}", syntax_error_score);
+}
+
+fn part_two(lines: &Vec<&str>) {
+    let open_brackets = ['(', '[', '{', '<'];
+    let close_brackets = [')', ']', '}', '>'];
+    let mut all_scores: Vec<u64> = vec!();
+    for line in lines {
+        let mut brackets_needed: Vec<char> = vec!();
+        let mut is_corrupt = false;
+        for i in line.chars() {
+            // if it's an open bracket
+            if open_brackets.contains(&i) {
+                let bracket_index: usize = open_brackets.iter().position(|&r| r == i).unwrap();
+                brackets_needed.insert(0, close_brackets[bracket_index]);
+            }
+
+            // if it's a close bracket
+            else {
+                if brackets_needed.len() > 0 && i == brackets_needed[0] {
+                    brackets_needed.remove(0);
+                }
+
+                else {
+                    is_corrupt = true;
+                    break;
+                }
+            }
+        }
+
+        if !is_corrupt {
+            let mut score: u64 = 0;
+            for i in brackets_needed {
+                score *= 5;
+                score += match i {
+                    ')' => 1,
+                    ']' => 2,
+                    '}' => 3,
+                    '>' => 4,
+                    _ => 0,
+                };
+            }
+            all_scores.push(score);
+        }
+    }
+
+    // sort the vector
+    all_scores.sort();
+    // ouput the median
+    println!("Part 2: {}", all_scores[all_scores.len() / 2]);
 }
