@@ -10,8 +10,8 @@ pub fn run() {
         .split("\n")
         .collect();
 
-    part_one(&input);
-    part_two(&input);
+    part_one(&input); // 392097
+    part_two(&input); // 4263222782
 }
 
 fn part_one(lines: &Vec<&str>) {

@@ -10,8 +10,8 @@ pub fn run() {
         .map(|s| s.chars().map(|x| x.to_digit(10).unwrap()).collect::<Vec<u32>>())
         .collect();
 
-    part_one(input.clone());
-    part_two(input.clone());
+    part_one(input.clone()); // 1723
+    part_two(input.clone()); // 327
 }
 
 fn part_one(mut grid: Vec<Vec<u32>>) {

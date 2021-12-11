@@ -9,8 +9,8 @@ pub fn run() {
         .map(|s| s.parse().expect("parse error"))
         .collect();
     
-    part_one(&input);
-    part_two(&input);
+    part_one(&input); // 341558
+    part_two(&input); // 93214037
 }
 
 fn part_one(positions: &Vec<i32>) {

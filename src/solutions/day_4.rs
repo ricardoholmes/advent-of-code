@@ -28,8 +28,8 @@ pub fn run() {
         boards.push(board);
     }
 
-    part_one(&numbers, &boards, &boards_strings);
-    part_two(&numbers, &boards, &boards_strings);
+    part_one(&numbers, &boards, &boards_strings); // 65325
+    part_two(&numbers, &boards, &boards_strings); // 4624
 }
 
 fn part_one(numbers: &Vec<&str>, boards: &Vec<Vec<Vec<&str>>>, boards_strings: &Vec<&str>) {

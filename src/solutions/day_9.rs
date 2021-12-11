@@ -18,8 +18,8 @@ pub fn run() {
         );
     }
 
-    part_one(&height_map);
-    part_two(&height_map);
+    part_one(&height_map); // 594
+    part_two(&height_map); // 858494
 }
 
 fn part_one(height_map: &Vec<Vec<i32>>) {

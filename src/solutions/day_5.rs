@@ -28,8 +28,8 @@ pub fn run() {
         lines.push([[start_point[0], start_point[1]], [end_point[0], end_point[1]]]);
     }
 
-    let (remaining_lines, points_crossed, count) = part_one(&lines);
-    part_two(&remaining_lines, points_crossed, count);
+    let (remaining_lines, points_crossed, count) = part_one(&lines); // 5294
+    part_two(&remaining_lines, points_crossed, count); // 21698
 }
 
 fn part_one(lines: &Vec<[[i32; 2]; 2]>) -> (Vec<[[i32; 2]; 2]>, HashMap<[i32; 2], i32>, i32) {
