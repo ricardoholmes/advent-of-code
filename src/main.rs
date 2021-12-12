@@ -26,10 +26,19 @@ fn main() {
         day_num = (*sysargs[1]).to_string();
     }
     
-    let day_num: u16 = day_num
-        .trim()
-        .parse()
-        .expect("Please enter a number");
-    
-    solutions::run(day_num);
+    if day_num.trim() == "all" {
+        for day_num in 1..26 {
+            println!("\nDay {}", day_num);
+            solutions::run(day_num);
+        }
+    }
+
+    else {
+        let day_num: u16 = day_num
+            .trim()
+            .parse()
+            .expect("Please enter a number or 'all'");
+        
+        solutions::run(day_num);
+    }
 }
