@@ -14,4 +14,10 @@ pub fn run() {
         .split(",")
         .map(|s| s.parse().expect("parse error"))
         .collect();
+
+    // if input is a list of lists of integers
+    let input: Vec<Vec<u32>> = input_str
+        .split("\n")
+        .map(|s| s.split(",").map(|x| x.parse().unwrap()).collect::<Vec<u32>>())
+        .collect();
 }
