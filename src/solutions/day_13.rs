@@ -66,7 +66,6 @@ fn part_two(mut grid: HashSet<(i32, i32)>, folds: &Vec<(&str, i32)>) {
         }
         print!("\n");
     }
-    print!("\n");
 }
 
 fn fold_grid(grid: &HashSet<(i32, i32)>, fold: (&str, i32)) -> HashSet<(i32, i32)> {
