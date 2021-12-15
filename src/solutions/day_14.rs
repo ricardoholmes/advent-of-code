@@ -9,49 +9,21 @@ pub fn run() {
         .split("\n\n")
         .collect();
 
-    part_one(&input);
-    part_two(&input);
+    part_one(&input); // 2874
+    part_two(&input); // 5208377027195
 }
 
 fn part_one(input: &Vec<&str>) {
-    let mut pair_insertion_rules: HashMap<&str, &str> = HashMap::new();
-    for line in input[1].split("\n") {
-        let line_split: Vec<&str> = line
-            .split(" -> ")
-            .collect();
-
-        pair_insertion_rules.insert(line_split[0], line_split[1]);
-    }
-
-    let mut polymer: String = input[0].to_string();
-    for _step in 0..10 {
-        let mut polymer_temp: String = String::new();
-        for i in 0..polymer.len()-1 {
-            polymer_temp += &polymer.chars().nth(i).unwrap().to_string();
-            let pair = &polymer[i..i+2];
-            polymer_temp += pair_insertion_rules.get(pair).unwrap();
-        }
-        polymer_temp += &polymer.chars().nth(polymer.len()-1).unwrap().to_string();
-        polymer = polymer_temp;
-    }
-
-    let mut min_count = 0;
-    let mut max_count = 0;
-    for i in polymer.chars() {
-        let count = polymer.matches(i).count();
-        if count > max_count {
-            max_count = count;
-        }
-
-        if min_count == 0 || count < min_count {
-            min_count = count;
-        }
-    }
-
-    println!("Part 1: {}", max_count - min_count);
+    let answer = polymerize(input, 10);
+    println!("Part 1: {}", answer);
 }
 
 fn part_two(input: &Vec<&str>) {
+    let answer = polymerize(input, 40);
+    println!("Part 2: {}", answer);
+}
+
+fn polymerize(input: &Vec<&str>, steps: usize) -> u64 {
     let mut pair_insertion_rules: HashMap<&str, &str> = HashMap::new();
     let mut pair_counts: HashMap<&str, u64> = HashMap::new();
     for line in input[1].split("\n") {
@@ -73,7 +45,7 @@ fn part_two(input: &Vec<&str>) {
         *element_count += 1;
     }
 
-    for _step in 0..40 {
+    for _step in 0..steps {
         let mut pair_counts_temp: HashMap<&str, u64> = pair_counts.clone();
         for i in pair_counts.keys() {
             let new_element = pair_insertion_rules.get(i).unwrap();
@@ -103,5 +75,5 @@ fn part_two(input: &Vec<&str>) {
         }
     }
 
-    println!("Part 2: {}", max_count - min_count);
+    max_count - min_count
 }
