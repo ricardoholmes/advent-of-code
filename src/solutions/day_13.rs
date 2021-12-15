@@ -29,8 +29,8 @@ pub fn run() {
         folds.push((line_split[0], line_split[1].parse().unwrap()));
     }
 
-    part_one(&grid, &folds);
-    part_two(grid, &folds);
+    part_one(&grid, &folds); // 706
+    part_two(grid, &folds); // LRFJBJEH
 }
 
 fn part_one(grid: &HashSet<(i32, i32)>, folds: &Vec<(&str, i32)>) {
