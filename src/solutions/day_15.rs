@@ -1,10 +1,10 @@
 use std::fs;
+use std::collections::HashSet;
 
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, PartialEq, Hash, Eq)]
 struct Node {
     weight: u32, // individual
     total_weight: u32, // total needed to get this node
-    combined_heuristic: u32, // total weight + distance to end
     coord: (usize, usize), // (X, y)
 }
 
@@ -20,6 +20,7 @@ pub fn run() {
         .collect();
 
     part_one(&input);
+    part_two(&input);
 }
 
 fn part_one(input: &Vec<Vec<u32>>) {
@@ -30,28 +31,81 @@ fn part_one(input: &Vec<Vec<u32>>) {
             map[i].push(Node {
                 weight: input[i][j],
                 total_weight: u32::MAX,
-                combined_heuristic: 0,
                 coord: (j, i),
             });
         }
+    };
+
+    println!("Part 1: {}", shortest_path(map));
+}
+
+fn part_two(input: &Vec<Vec<u32>>) {
+    let mut start_tile: Vec<Vec<Node>> = vec!();
+    let mut map: Vec<Vec<Node>> = vec!();
+    for i in 0..input.len() {
+        start_tile.push(vec!());
+        map.push(vec!());
+        for j in 0..input[0].len() {
+            start_tile[i].push(Node {
+                weight: input[i][j],
+                total_weight: u32::MAX,
+                coord: (j, i),
+            });
+            map[i].push(start_tile[i][j]);
+        }
     }
+
+    // complete rest of map
+    for i in 1..5usize {
+        // fill next tile to first row of tiles
+        for row in 0..start_tile.len() {
+            for col in 0..start_tile[row].len() {
+                let mut cell = start_tile[row][col];
+                cell.weight = if cell.weight + i as u32 <= 9 { cell.weight + i as u32 } else { (cell.weight + i as u32) - 9 };
+                cell.coord = (cell.coord.0 + (i * start_tile[0].len()), cell.coord.1);
+                map[row].push(cell);
+            }
+        }
+
+        for _row in 0..start_tile.len() {
+            map.push(vec!());
+        }
+
+        // fill ith row 
+        for j in 0..5usize {
+            for row in 0..start_tile.len() {
+                for col in 0..start_tile[row].len() {
+                    let mut cell = start_tile[row][col];
+                    cell.weight = if cell.weight + (i + j) as u32 <= 9 { cell.weight + (i + j) as u32 } else { (cell.weight + (i + j) as u32) - 9 };
+                    cell.coord = (cell.coord.0 + (j * start_tile[0].len()), cell.coord.1 + ((i as usize) * start_tile[0].len()));
+                    map[row + ((i as usize) * start_tile.len())].push(cell);
+                }
+            }
+        }
+    }
+
+    println!("Part 2: {}", shortest_path(map));
+}
+
+fn shortest_path(mut map: Vec<Vec<Node>>) -> u32 {
     map[0][0].weight = 0;
     map[0][0].total_weight = 0;
 
-    let end_coord = (input[0].len()-1, input.len()-1);
+    let end_coord = map[map.len()-1][map[0].len()-1].coord;
 
-    let mut finished_nodes: Vec<Node> = vec!();
+    let mut finished_nodes: HashSet<Node> = HashSet::new();
     let mut queue: Vec<Node> = vec!(map[0][0]);
 
+    // let mut nodes_examined = 0;
     loop {
         let node: Node = queue[0];
-        finished_nodes.push(node);
+        finished_nodes.insert(node);
         queue.remove(0);
-        
-        // println!("{:?}, {}, {}", node.coord, node.total_weight, node.combined_heuristic);
+        // nodes_examined += 1;
 
         if node.coord == end_coord {
-            break;
+            // println!("{} nodes examined", nodes_examined);
+            return node.total_weight;
         }
 
         let (x, y) = node.coord;
@@ -66,8 +120,6 @@ fn part_one(input: &Vec<Vec<u32>>) {
 
                 map[y][x-1].total_weight = new_weight;
 
-                let dist_from_end = (end_coord.0 - (x - 1)) + (end_coord.1 - y);
-                map[y][x-1].combined_heuristic = new_weight + dist_from_end as u32;
                 queue = insert(queue, map[y][x-1]);
             }
         }
@@ -81,8 +133,7 @@ fn part_one(input: &Vec<Vec<u32>>) {
                 }
 
                 map[y][x+1].total_weight = new_weight;
-                let dist_from_end = (end_coord.0 - (x + 1)) + (end_coord.1 - y);
-                map[y][x+1].combined_heuristic = new_weight + dist_from_end as u32;
+
                 queue = insert(queue, map[y][x+1]);
             }
         }
@@ -96,8 +147,7 @@ fn part_one(input: &Vec<Vec<u32>>) {
                 }
 
                 map[y-1][x].total_weight = new_weight;
-                let dist_from_end = (end_coord.0 - x) + (end_coord.1 - (y - 1));
-                map[y-1][x].combined_heuristic = new_weight + dist_from_end as u32;
+
                 queue = insert(queue, map[y-1][x]);
             }
         }
@@ -111,14 +161,11 @@ fn part_one(input: &Vec<Vec<u32>>) {
                 }
 
                 map[y+1][x].total_weight = new_weight;
-                let dist_from_end = (end_coord.0 - x) + (end_coord.1 - (y + 1));
-                map[y+1][x].combined_heuristic = new_weight + dist_from_end as u32;
+
                 queue = insert(queue, map[y+1][x]);
             }
         }
     }
-
-    println!("Part 1: {}", finished_nodes[finished_nodes.len()-1].total_weight)
 }
 
 // insert so that it remains sorted
@@ -126,11 +173,11 @@ fn insert(mut queue: Vec<Node>, value: Node) -> Vec<Node> {
     let mut inserted = false;
     let mut previous = 0;
     for i in 0..queue.len() {
-        if previous < value.combined_heuristic && queue[i].combined_heuristic >= value.combined_heuristic {
+        if previous < value.total_weight && queue[i].total_weight >= value.total_weight {
             queue.insert(i, value);
             inserted = true;
         }
-        previous = queue[i].combined_heuristic;
+        previous = queue[i].total_weight;
     }
 
     if !inserted {
