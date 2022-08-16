@@ -10,7 +10,9 @@ pub fn run() {
         input += hex_to_bin(i);
     }
 
-    part_one(input);
+    let packet_info: (u32, u64, usize) = resolve_packet(&input, &0);
+    println!("Part one: {}", packet_info.0);
+    println!("Part two: {}", packet_info.1);
 }
 
 fn hex_to_bin(hex: char) -> &'static str {
@@ -35,7 +37,7 @@ fn hex_to_bin(hex: char) -> &'static str {
     }
 }
 
-fn get_version_sum(input: &String, pointer: &usize) -> (u32, usize) {
+fn resolve_packet(input: &String, pointer: &usize) -> (u32, u64, usize) {
     let mut version_sum: u32 = 0;
     
     let mut pointer: usize = pointer.clone();
@@ -47,26 +49,36 @@ fn get_version_sum(input: &String, pointer: &usize) -> (u32, usize) {
     let packet_type: u8 = u8::from_str_radix(&input[pointer..pointer+3], 2).unwrap();
     pointer += 3;
 
+    let packet_value: u64;
+
     if packet_type == 4 {
-        while input.chars().nth(pointer).unwrap() == '1' {
-            // getting value of subpacket is unnecessary for part 1 so no need doing it (for now)
-            pointer += 5;
+        let mut temp_packet_val: String = String::new();
+        loop {
+            pointer += 1;
+            temp_packet_val += &input[pointer..pointer+4];
+            pointer += 4;
+            if input.chars().nth(pointer - 5).unwrap() == '0' {
+                break;
+            }
         }
-        pointer += 5;
+        packet_value = u64::from_str_radix(&temp_packet_val, 2).unwrap();
     }
 
     else {
         let length_type_id: char = input.chars().nth(pointer).unwrap();
         pointer += 1;
 
+        let mut packet_values: Vec<u64> = vec!();
         if length_type_id == '0' {
             let num_of_bits: usize = usize::from_str_radix(&input[pointer..pointer+15], 2).unwrap();
             pointer += 15;
+
             let mut temp_pointer: usize = pointer;
-            while temp_pointer - pointer < num_of_bits - 1 {
-                let packet_info: (u32, usize) = get_version_sum(input, &temp_pointer);
+            while temp_pointer - pointer < num_of_bits {
+                let packet_info: (u32, u64, usize) = resolve_packet(input, &temp_pointer);
                 version_sum += packet_info.0;
-                temp_pointer = packet_info.1;
+                packet_values.push(packet_info.1);
+                temp_pointer = packet_info.2;
             }
             pointer = temp_pointer;
         }
@@ -74,18 +86,26 @@ fn get_version_sum(input: &String, pointer: &usize) -> (u32, usize) {
         else {
             let subpacket_count: usize = usize::from_str_radix(&input[pointer..pointer+11], 2).unwrap();
             pointer += 11;
+
             for _ in 0..subpacket_count {
-                let packet_info: (u32, usize) = get_version_sum(input, &pointer);
+                let packet_info: (u32, u64, usize) = resolve_packet(input, &pointer);
                 version_sum += packet_info.0;
-                pointer = packet_info.1;
+                packet_values.push(packet_info.1);
+                pointer = packet_info.2;
             }
         }
+
+        packet_value = match packet_type {
+            0 => packet_values.iter().sum(),
+            1 => packet_values.iter().product(),
+            2 => *packet_values.iter().min().unwrap(),
+            3 => *packet_values.iter().max().unwrap(),
+            5 => if packet_values[0] > packet_values[1] { 1 } else { 0 },
+            6 => if packet_values[0] < packet_values[1] { 1 } else { 0 },
+            7 => if packet_values[0] == packet_values[1] { 1 } else { 0 },
+            _ => panic!(), // won't happen
+        };
     }
 
-    (version_sum, pointer)
-}
-
-fn part_one(input: String) {
-    let version_sum: u32 = get_version_sum(&input, &0).0;
-    println!("Part one: {}", version_sum);
+    (version_sum, packet_value, pointer)
 }
