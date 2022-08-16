@@ -13,6 +13,7 @@ mod day_12;
 mod day_13;
 mod day_14;
 mod day_15;
+mod day_16;
 
 pub fn run(day: u16) {
     match day {
@@ -31,6 +32,7 @@ pub fn run(day: u16) {
         13 => day_13::run(),
         14 => day_14::run(),
         15 => day_15::run(),
+        16 => day_16::run(),
         _ => println!("Invalid day number"),
     }
 }
