@@ -1,5 +1,7 @@
-use std::io;
 use std::env;
+use std::io;
+use std::fs;
+use std::io::Write;
 
 mod solutions;
 
@@ -13,15 +15,24 @@ fn main() {
         Some(x) => x.to_string(),
         None => {
             let mut buffer = String::new();
-            println!("Enter the question number:");
+            print!("\nEnter the question number: ");
+            io::stdout().flush().expect("Failed to flush stdout");
             io::stdin().read_line(&mut buffer).expect("Failed to read line");
-            println!("");
             buffer.trim().to_string()
         }
     };
 
     if day_num == "all" {
-        for day_num in 1..26 {
+        let dir = fs::read_dir("./src/solutions").unwrap();
+        let mut latest_solution = 0;
+        for _ in dir {
+            latest_solution += 1;
+        }
+
+        // directory also contains mod.rs and template.rs so must account for them
+        // but for loop has exclusive top, so - 2 + 1 => - 1
+        latest_solution -= 1;
+        for day_num in 1..latest_solution {
             println!("\n--- Day {} ---", day_num);
             solutions::run(day_num);
         }
