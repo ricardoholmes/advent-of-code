@@ -1,4 +1,4 @@
-# AdventOfCode-2022
+# Advent of Code 2022
 
 Run a specific day with `cargo run [day number]` (eg. `cargo run 5`).
 

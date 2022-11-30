@@ -24,28 +24,19 @@ fn main() {
 
     if day_num == "all" {
         let dir = fs::read_dir("./src/solutions").unwrap();
-        let mut latest_solution = 0;
-        for _ in dir {
-            latest_solution += 1;
-        }
+        let latest_solution = dir.fold(0, |sum, _| sum + 1);
 
         // directory also contains mod.rs and template.rs so must account for them
         // but for loop has exclusive top, so - 2 + 1 => - 1
-        latest_solution -= 1;
-        for day_num in 1..latest_solution {
-            println!("\n--- Day {} ---", day_num);
+        for day_num in 1..(latest_solution - 1) {
             solutions::run(day_num);
         }
     }
 
     else {
-        println!("\n--- Day {} ---", day_num);
-        let day_num: u16 = day_num
-            .trim()
-            .to_string()
-            .parse()
-            .unwrap_or(u16::MAX);
-
-        solutions::run(day_num);
+        match day_num.parse() {
+            Ok(day) => solutions::run(day),
+            Err(_) => println!("\nERROR : Failed to parse day number"),
+        }
     }
 }
