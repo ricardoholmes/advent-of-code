@@ -2,7 +2,9 @@ use std::fs;
 
 pub fn run() {
     // read input
-    let input_str = include_str!("../../inputs/input_0.txt");
+    let input_str = include_str!("../../inputs/input_0.txt")
+        .strip_suffix("\n")
+        .unwrap();
 
     // if input is a list of strings
     let input: Vec<&str> = input_str

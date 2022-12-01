@@ -1,5 +1,7 @@
 pub fn run() {
-    let input_str = include_str!("../../inputs/input_1.txt");
+    let input_str = include_str!("../../inputs/input_1.txt")
+        .strip_suffix("\n")
+        .unwrap();
 
     // make input into list of sums of calories
     let mut input: Vec<u32> = input_str
