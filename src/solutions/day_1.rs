@@ -6,15 +6,13 @@ pub fn run() {
         .replace("\r\n", "\n")
         .split("\n\n")
         .map(|s| s.split("\n")
-            .map(|x| x.parse().unwrap())
-            .collect::<Vec<u32>>()
-            .iter()
+            .map(|x| x.parse::<u32>().unwrap())
             .sum()
         )
         .collect();
 
     // sort in decending order
-    input.sort();
+    input.sort_unstable();
     input.reverse();
 
     part_one(&input);
