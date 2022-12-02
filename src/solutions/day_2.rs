@@ -1,10 +1,10 @@
 pub fn run() {
     let input_str = include_str!("../../inputs/input_2.txt");
 
+    // split input into a list of lists (size 2) of &strs
+    // each internal list is a round, eg. ["A", "X"] 
     let input: Vec<Vec<&str>> = input_str
-        .strip_suffix("\n")
-        .unwrap()
-        .split("\n")
+        .lines()
         .map(|i| i
             .split(" ")
             .collect::<Vec<&str>>()
@@ -17,6 +17,7 @@ pub fn run() {
 fn part_one(input: &Vec<Vec<&str>>) {
     let mut score = 0;
     for game in input {
+        // increase score by result points (6 for win, 3 for draw, 0 for loss)
         score += match game[0] {
             "A" => if game[1] == "Y" { 6 } else { if game[1] == "X" { 3 } else { 0 } },
             "B" => if game[1] == "Z" { 6 } else { if game[1] == "Y" { 3 } else { 0 } },
@@ -27,6 +28,7 @@ fn part_one(input: &Vec<Vec<&str>>) {
             },
         };
 
+        // increase score by choice points (1 for X, 2 for Y, 3 for Z)
         score += match game[1] {
             "X" => 1,
             "Y" => 2,
@@ -35,7 +37,7 @@ fn part_one(input: &Vec<Vec<&str>>) {
                 println!("Invalid character '{}'", game[1]);
                 0
             },
-        }
+        };
     }
 
     println!("Part one: {score}");
