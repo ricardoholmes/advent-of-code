@@ -8,17 +8,21 @@ pub fn run() {
 }
 
 fn part_one(input: &Vec<&str>) {
+    // split input in two
     let input: Vec<(Vec<char>, Vec<char>)> = input
         .iter()
         .map(|i| (
             i.chars().take(i.len()/2).collect::<Vec<char>>(),
-            i.chars().skip(i.len()/2).take(i.len()/2).collect::<Vec<char>>()
+            i.chars().skip(i.len()/2).collect::<Vec<char>>()
         ))
         .collect();
 
     let mut total: i32 = 0;
     for i in input {
-        let common_chars: Vec<&char> = i.0.iter().filter(|c| i.1.contains(c)).collect();
+        let common_chars: Vec<&char> = i.0
+            .iter()
+            .filter(|c| i.1.contains(c))
+            .collect();
 
         let common = common_chars[0];
 
