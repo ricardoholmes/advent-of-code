@@ -5,10 +5,6 @@ pub fn run() {
         .split("\n\n")
         .collect();
 
-    part_one(&input);
-}
-
-fn part_one(input: &Vec<&str>) {
     let lines: Vec<Vec<String>> = input[0]
         .replace(&['[', ']'], "")
         .lines()
@@ -56,6 +52,13 @@ fn part_one(input: &Vec<&str>) {
         )
         .collect();
 
+    part_one(&stacks, &commands);
+    part_two(&stacks, &commands);
+}
+
+fn part_one(stacks: &Vec<Vec<String>>, commands: &Vec<Vec<usize>>) {
+    let mut stacks = stacks.clone();
+
     for command in commands {
         for _ in 0..command[0] {
             let value = stacks[command[1]-1].pop().unwrap();
@@ -70,4 +73,25 @@ fn part_one(input: &Vec<&str>) {
     }
 
     println!("Part one: {out}");
+}
+
+fn part_two(stacks: &Vec<Vec<String>>, commands: &Vec<Vec<usize>>) {
+    let mut stacks = stacks.clone();
+
+    for command in commands {
+        let index = stacks[command[1]-1].len() - command[0];
+
+        let mut values: Vec<String> = stacks[command[1]-1]
+            .split_off(index);
+
+        stacks[command[2]-1].append(&mut values);
+    }
+
+    let mut out: String = "".to_owned();
+
+    for stack in stacks {
+        out.push_str(&stack.last().unwrap());
+    }
+
+    println!("Part two: {out}");
 }
