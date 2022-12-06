@@ -9,8 +9,8 @@ pub fn run() {
     part_two(&input, index)
 }
 
-fn part_one(input: &Vec<char>) -> usize {
-    let input = input.clone();
+fn part_one(input: &[char]) -> usize {
+    let input = input.to_owned();
     let mut index: usize = usize::MAX;
     for i in 0..(input.len() - 3) {
         let mut chars_set: HashSet<char> = HashSet::new();
@@ -27,11 +27,11 @@ fn part_one(input: &Vec<char>) -> usize {
         }
     }
 
-    return index;
+    index
 }
 
-fn part_two(input: &Vec<char>, index: usize) {
-    let input = input.clone();
+fn part_two(input: &[char], index: usize) {
+    let input = input.to_owned();
     for i in index..(input.len() - 13) {
         let mut chars_set: HashSet<char> = HashSet::new();
         let section = input.iter().skip(i).take(14);

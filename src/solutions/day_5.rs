@@ -11,7 +11,7 @@ pub fn run() {
         .take(input[0].lines().count()-1)
         .map(|line| line
             .replace("    ", " ")
-            .split(" ")
+            .split(' ')
             .map(|i| i.to_string())
             .collect::<Vec<String>>()
         )
@@ -32,7 +32,7 @@ pub fn run() {
 
     for line in lines {
         for i in 0..stack_count {
-            if line[i] != "" {
+            if !line[i].is_empty() {
                 stacks[i].insert(0, line[i].clone());
             }
         }
@@ -44,7 +44,7 @@ pub fn run() {
         .replace(" to ", " ")
         .lines()
         .map(|line| line
-            .split(" ")
+            .split(' ')
             .map(|num| num
                 .parse::<usize>()
                 .unwrap()
@@ -56,8 +56,8 @@ pub fn run() {
     part_two(&stacks, &commands);
 }
 
-fn part_one(stacks: &Vec<Vec<String>>, commands: &Vec<Vec<usize>>) {
-    let mut stacks = stacks.clone();
+fn part_one(stacks: &[Vec<String>], commands: &Vec<Vec<usize>>) {
+    let mut stacks = stacks.to_owned();
 
     for command in commands {
         for _ in 0..command[0] {
@@ -69,14 +69,14 @@ fn part_one(stacks: &Vec<Vec<String>>, commands: &Vec<Vec<usize>>) {
     let mut out: String = "".to_owned();
 
     for stack in stacks {
-        out.push_str(&stack.last().unwrap());
+        out.push_str(stack.last().unwrap());
     }
 
     println!("Part one: {out}");
 }
 
-fn part_two(stacks: &Vec<Vec<String>>, commands: &Vec<Vec<usize>>) {
-    let mut stacks = stacks.clone();
+fn part_two(stacks: &[Vec<String>], commands: &Vec<Vec<usize>>) {
+    let mut stacks = stacks.to_owned();
 
     for command in commands {
         let index = stacks[command[1]-1].len() - command[0];
@@ -90,7 +90,7 @@ fn part_two(stacks: &Vec<Vec<String>>, commands: &Vec<Vec<usize>>) {
     let mut out: String = "".to_owned();
 
     for stack in stacks {
-        out.push_str(&stack.last().unwrap());
+        out.push_str(stack.last().unwrap());
     }
 
     println!("Part two: {out}");

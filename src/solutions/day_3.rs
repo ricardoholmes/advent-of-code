@@ -7,7 +7,7 @@ pub fn run() {
     part_two(&input);
 }
 
-fn part_one(input: &Vec<&str>) {
+fn part_one(input: &[&str]) {
     // split input in two
     let input: Vec<(Vec<char>, Vec<char>)> = input
         .iter()
@@ -37,7 +37,7 @@ fn part_one(input: &Vec<&str>) {
     println!("Part one: {total}");
 }
 
-fn part_two(input: &Vec<&str>) {
+fn part_two(input: &[&str]) {
     let mut total: i32 = 0;
     for i in (0..input.len()).step_by(3) {
         let common_chars: Vec<char> = input[i]

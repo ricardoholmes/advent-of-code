@@ -9,9 +9,7 @@ fn main() {
     // get sysargs for day num
     let sysargs: Vec<String> = env::args().collect();
 
-    let day_num: String;
-
-    day_num = match sysargs.get(1) {
+    let day_num: String = match sysargs.get(1) {
         Some(x) => x.to_string(),
         None => {
             let mut buffer = String::new();
