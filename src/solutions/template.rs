@@ -1,5 +1,3 @@
-use std::fs;
-
 pub fn run() {
     // read input
     let input_str = include_str!("../../inputs/input_0.txt");
