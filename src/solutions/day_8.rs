@@ -9,7 +9,8 @@ pub fn run() {
             .collect::<Vec<u32>>())
         .collect();
 
-    part_one(&input)
+    part_one(&input);
+    part_two(&input);
 }
 
 fn part_one(input: &Vec<Vec<u32>>) {
@@ -36,4 +37,53 @@ fn part_one(input: &Vec<Vec<u32>>) {
     }
 
     println!("Part one: {count}");
+}
+
+fn part_two(input: &Vec<Vec<u32>>) {
+    let mut highest_scenic_score: u32 = 0;
+
+    for row in 1..input.len()-1 {
+        for column in 1..input[0].len()-1 {
+            let cell = input[row][column];
+
+            let mut viewable_left: u32 = 0;
+            for col in (0..column).rev() {
+                viewable_left += 1;
+                if input[row][col] >= cell {
+                    break;
+                }
+            }
+
+            let mut viewable_right: u32 = 0;
+            for col in column+1..input[0].len() {
+                viewable_right += 1;
+                if input[row][col] >= cell {
+                    break;
+                }
+            }
+
+            let mut viewable_up: u32 = 0;
+            for i in (0..row).rev() {
+                viewable_up += 1;
+                if input[i][column] >= cell {
+                    break;
+                }
+            }
+
+            let mut viewable_down: u32 = 0;
+            for i in row+1..input.len() {
+                viewable_down += 1;
+                if input[i][column] >= cell {
+                    break;
+                }
+            }
+
+            let scenic_score = viewable_left * viewable_right * viewable_up * viewable_down;
+            if scenic_score > highest_scenic_score {
+                highest_scenic_score = scenic_score;
+            }
+        }
+    }
+
+    println!("Part two: {highest_scenic_score}");
 }
