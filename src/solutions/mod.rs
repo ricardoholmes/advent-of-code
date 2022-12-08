@@ -23,5 +23,5 @@ pub fn run(day: u16) {
         _ => println!("Invalid day number"),
     };
 
-    println!("Time taken: {:?}", std::time::Instant::now() - t)
+    println!("Time taken: {:?}", std::time::Instant::now() - t);
 }
