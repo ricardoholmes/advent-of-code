@@ -15,7 +15,7 @@ pub fn run() {
 
     // if input is a list of lists of integers
     let input: Vec<Vec<u32>> = input_str
-        .split("\n")
+        .lines()
         .map(|s| s.split(",").map(|x| x.parse().unwrap()).collect::<Vec<u32>>())
         .collect();
 }
