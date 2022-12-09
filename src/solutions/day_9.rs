@@ -57,7 +57,6 @@ fn part_one(input: &Vec<(&str, u32)>) {
                 tail_coords.1 += if y_diff > 0 { 1 } else { -1 };
             }
 
-            // println!("{direction} => {head_coords:?} {tail_coords:?}");
             coords_visited.insert(tail_coords);
         }
     }
@@ -104,8 +103,6 @@ fn part_two(input: &Vec<(&str, u32)>) {
                     sections[i].0 += if x_diff > 0 { 1 } else { -1 };
                     sections[i].1 += if y_diff > 0 { 1 } else { -1 };
                 }
-
-                // println!("{direction} => {head_coords:?} {tail_coords:?}");
             }
 
             coords_visited.insert(sections[9]);
