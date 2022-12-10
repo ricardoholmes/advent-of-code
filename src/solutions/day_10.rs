@@ -13,6 +13,7 @@ pub fn run() {
         .collect();
 
     part_one(&input);
+    part_two(&input);
 }
 
 fn part_one(input: &Vec<(&str, i32)>) {
@@ -40,4 +41,41 @@ fn part_one(input: &Vec<(&str, i32)>) {
     }
 
     println!("Part one: {signal_strength_sum}");
+}
+
+fn part_two(input: &Vec<(&str, i32)>) {
+    let mut x_register: i32 = 1;
+    let mut cycle: i32 = 0;
+
+    println!("Part two:");
+    for &(command, arg) in input {
+        cycle += 1;
+        if ((cycle - 1) % 40).abs_diff(x_register) <= 1 {
+            print!("█");
+        }
+        else {
+            print!(" ");
+        }
+        if cycle % 40 == 0 {
+            println!("");
+        }
+
+        match command {
+            "noop" => (),
+            "addx" => {
+                cycle += 1;
+                if ((cycle - 1) % 40).abs_diff(x_register) <= 1 {
+                    print!("█");
+                }
+                else {
+                    print!(" ");
+                }
+                if cycle % 40 == 0 {
+                    println!("");
+                }
+                x_register += arg;
+            },
+            _ => println!("Invalid command '{command}'")
+        };
+    }
 }
