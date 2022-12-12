@@ -28,27 +28,15 @@ fn part_one(input: &Vec<Vec<char>>) {
         }
     }
     visited_nodes.insert(start_node);
-
-    for (row_offset, column_offset) in vec!((0, 1), (2, 1), (1, 0), (1, 2)) {
-        if start_node.0 + row_offset == 0 || start_node.0 + row_offset-1 >= input.len()
-            || start_node.1 + column_offset == 0 || start_node.1 + column_offset-1 >= input[0].len()
-        {
-            continue;
-        }
-
-        let coord = (start_node.0 + row_offset-1, start_node.1 + column_offset-1);
-        let cell = input[start_node.0 + row_offset-1][start_node.1 + column_offset-1];
-
-        if cell == 'a' || cell == 'b' {
-            visited_nodes.insert(coord);
-            paths.push_back(vec!(start_node, coord));
-        }
-    }
+    paths.push_back(vec!(start_node));
 
     'outer: loop {
         let path = paths[0].clone();
         let current_node = path.last().unwrap();
-        let current_node_val = input[current_node.0][current_node.1];
+        let current_node_val = match input[current_node.0][current_node.1] {
+            'S' => 'a',
+            x @ _ => x,
+        };
 
         for (row_offset, column_offset) in vec!((0, 1), (2, 1), (1, 0), (1, 2)) {
             if current_node.0 + row_offset == 0 || current_node.0 + row_offset-1 >= input.len() ||
@@ -62,7 +50,7 @@ fn part_one(input: &Vec<Vec<char>>) {
 
             if !visited_nodes.contains(&coord) && (cell == current_node_val ||
                 cell as u32 <= current_node_val as u32 + 1 ||
-                ((current_node_val == 'y' || current_node_val == 'z') && cell == 'E'))
+                (cell == 'E' && current_node_val >= 'y'))
             {
                 visited_nodes.insert(coord);
                 let mut new_path = path.clone();
@@ -93,27 +81,15 @@ fn part_two(input: &Vec<Vec<char>>) {
         }
     }
     visited_nodes.insert(start_node);
-
-    for (row_offset, column_offset) in vec!((0, 1), (2, 1), (1, 0), (1, 2)) {
-        if start_node.0 + row_offset == 0 || start_node.0 + row_offset-1 >= input.len()
-            || start_node.1 + column_offset == 0 || start_node.1 + column_offset-1 >= input[0].len()
-        {
-            continue;
-        }
-
-        let coord = (start_node.0 + row_offset-1, start_node.1 + column_offset-1);
-        let cell = input[start_node.0 + row_offset-1][start_node.1 + column_offset-1];
-
-        if cell == 'z' || cell == 'y' {
-            visited_nodes.insert(coord);
-            paths.push_back(vec!(start_node, coord));
-        }
-    }
+    paths.push_back(vec!(start_node));
 
     'outer: loop {
         let path = paths[0].clone();
         let current_node = path.last().unwrap();
-        let current_node_val = input[current_node.0][current_node.1];
+        let current_node_val = match input[current_node.0][current_node.1] {
+            'E' => 'z',
+            x @ _ => x,
+        };
 
         for (row_offset, column_offset) in vec!((0, 1), (2, 1), (1, 0), (1, 2)) {
             if current_node.0 + row_offset == 0 || current_node.0 + row_offset-1 >= input.len() ||
