@@ -1,4 +1,4 @@
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 enum Element {
     Value(i32),
     Elements(Vec<Element>),
@@ -16,15 +16,13 @@ pub fn run() {
     for section in input {
         let mut pair: Vec<Element> = vec!();
         for line in section {
-            let mut l = line.chars();
-            l.next();
-            l.next_back();
-            pair.push(parse(l.as_str()).0);
+            pair.push(parse(&line[1..line.len()-1]).0);
         }
         pairs.push(pair);
     }
 
     part_one(&pairs);
+    part_two(&pairs);
 }
 
 fn part_one(pairs: &Vec<Vec<Element>>) {
@@ -41,7 +39,41 @@ fn part_one(pairs: &Vec<Vec<Element>>) {
             }
         );
 
-    println!("Part one {count}");
+    println!("Part one: {count}");
+}
+
+fn part_two(pairs: &[Vec<Element>]) {
+    let mut packets: Vec<Element> = pairs.concat();
+    let two_divider = Element::Elements(vec![Element::Elements(vec![Element::Value(2)])]);
+    let six_divider = Element::Elements(vec![Element::Elements(vec![Element::Value(6)])]);
+    packets.push(two_divider.clone());
+    packets.push(six_divider.clone());
+
+    let mut changed_flag = true;
+    let mut amount_sorted = 0;
+    while changed_flag {
+        changed_flag = false;
+        for i in 0..(packets.len()-(amount_sorted+1)) {
+            if compare(packets.get(i).unwrap(), packets.get(i+1).unwrap()) > 0 {
+                packets.swap(i, i+1);
+                changed_flag = true;
+            }
+        }
+        amount_sorted += 1;
+    }
+
+    let mut two_index = 0;
+    let mut six_index = 0;
+    for (i, packet) in packets.iter().enumerate() {
+        if *packet == two_divider {
+            two_index = i + 1;
+        }
+        else if *packet == six_divider {
+            six_index = i + 1;
+        }
+    }
+
+    println!("Part two: {}", two_index * six_index);
 }
 
 fn parse(line: &str) -> (Element, usize) {
