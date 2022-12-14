@@ -102,8 +102,8 @@ fn parse(line: &str) -> (Element, usize) {
         else if c == ',' {
             if !number.is_empty() {
                 packets.push(Element::Value(number.parse().unwrap()));
+                number.clear();
             }
-            number.clear();
         }
         else {
             number.push(c);
