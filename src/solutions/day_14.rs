@@ -68,10 +68,10 @@ fn part_one(points: &HashSet<(u32, u32)>) {
         }
         else {
             unit_count += 1;
-            points.insert(sand_pos);
             if sand_pos == sand_spawn {
                 break;
             }
+            points.insert(sand_pos);
             sand_pos = sand_spawn;
         }
 
@@ -87,7 +87,7 @@ fn part_two(points: &HashSet<(u32, u32)>) {
     let mut points = points.clone();
     let sand_spawn = (500, 0);
     
-    let lowest_y = points.iter().map(|point| point.1).max().unwrap() + 1;
+    let lowest_y = points.iter().map(|point| point.1).max().unwrap();
 
     let mut sand_pos = sand_spawn;
     let mut unit_count = 0;
@@ -105,14 +105,14 @@ fn part_two(points: &HashSet<(u32, u32)>) {
         }
         else {
             unit_count += 1;
-            points.insert(sand_pos);
             if sand_pos == sand_spawn {
                 break;
             }
+            points.insert(sand_pos);
             sand_pos = sand_spawn;
         }
 
-        if sand_pos.1 == lowest_y {
+        if sand_pos.1 > lowest_y {
             unit_count += 1;
             points.insert(sand_pos);
             sand_pos = sand_spawn;
