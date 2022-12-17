@@ -25,28 +25,24 @@ pub fn run() {
             })
         }).collect();
 
-    part_one(&input);
-}
-
-fn part_one(tunnels: &HashMap<String, Tunnel>) {
     // Floyd-Warshall Algorithm
     // generates distances between all nodes
     let mut dist: HashMap<String, HashMap<String, i32>> = HashMap::new();
-    for u in tunnels.keys() {
+    for u in input.keys() {
         let mut connections: HashMap<String, i32> = HashMap::new();
-        for v in tunnels.keys() {
+        for v in input.keys() {
             connections.insert(v.clone(), u16::MAX as i32);
         }
-        for v in &tunnels.get(u).unwrap().connections {
+        for v in &input.get(u).unwrap().connections {
             connections.insert(v.clone(), 1);
         }
         connections.insert(u.to_string(), 0);
         dist.insert(u.clone(), connections);
     }
 
-    for k in tunnels.keys() {
-        for i in tunnels.keys() {
-            for j in tunnels.keys() {
+    for k in input.keys() {
+        for i in input.keys() {
+            for j in input.keys() {
                 if *dist.get(i).unwrap().get(j).unwrap() > dist.get(i).unwrap().get(k).unwrap() + dist.get(k).unwrap().get(j).unwrap() {
                     let new_weight = dist.get(i).unwrap().get(k).unwrap() + dist.get(k).unwrap().get(j).unwrap();
                     let mut connections = dist.get(i).unwrap().clone();
@@ -57,6 +53,11 @@ fn part_one(tunnels: &HashMap<String, Tunnel>) {
         }
     }
 
+    part_one(&input, &dist);
+    part_two(&input, &dist);
+}
+
+fn part_one(tunnels: &HashMap<String, Tunnel>, dist: &HashMap<String, HashMap<String, i32>>) {
     let mut best_paths: HashMap<BTreeSet<String>, i32> = HashMap::new();
     let mut best_score = i32::MIN;
     let mut paths: Vec<(String, i32, i32, BTreeSet<String>)> = vec![("AA".to_owned(), 0, 0, BTreeSet::new())];
@@ -96,5 +97,85 @@ fn part_one(tunnels: &HashMap<String, Tunnel>) {
         }
     }
 
-    println!("Part one: {best_score}")
+    println!("Part one: {best_score}");
+}
+
+fn part_two(tunnels: &HashMap<String, Tunnel>, dist: &HashMap<String, HashMap<String, i32>>) {
+    let mut best_score = i32::MIN;
+    let mut paths: Vec<(String, String, i32, i32, i32, BTreeSet<String>)> = vec![("AA".to_owned(), "AA".to_owned(), 0, 0, 0, BTreeSet::new())];
+
+    while paths.len() > 0 {
+        let (node, elephant_node, minutes, elephant_minutes, total_flow, mut visited) = paths.pop().unwrap();
+        let time = minutes.min(elephant_minutes);
+
+        if time == minutes {
+            visited.insert(node.clone());
+        }
+        if time == elephant_minutes {
+            visited.insert(elephant_node.clone());
+        }
+
+        let total_flow_rate = visited
+            .iter()
+            .fold(0, |total, point| total + tunnels.get(point).unwrap().flow_rate);
+
+        let mut new_paths: Vec<(String, String, i32, i32, i32, BTreeSet<String>)> = vec![];
+        if time == minutes {
+            for (dest, distance) in dist.get(&node).unwrap() {
+                let stop_time = minutes + distance + 1;
+                if tunnels.get(dest).unwrap().flow_rate != 0 && stop_time < 26 && *dest != elephant_node && !visited.contains(dest) {
+                    new_paths.push((
+                        dest.clone(),
+                        elephant_node.clone(),
+                        stop_time,
+                        elephant_minutes,
+                        total_flow + total_flow_rate * (distance + 1).min(elephant_minutes - time),
+                        visited.clone()
+                    ));
+                }
+            }
+        }
+
+        if time == elephant_minutes {
+            for (dest, distance) in dist.get(&elephant_node).unwrap() {
+                let stop_time = elephant_minutes + distance + 1;
+                if tunnels.get(dest).unwrap().flow_rate != 0 && stop_time < 26 && *dest != node && !visited.contains(dest) {
+                    new_paths.push((
+                        node.clone(),
+                        dest.clone(),
+                        minutes,
+                        stop_time,
+                        total_flow + total_flow_rate * (distance + 1).min(minutes - time),
+                        visited.clone()
+                    ));
+                }
+            }
+        }
+
+        if new_paths.len() == 0 {
+            visited.insert(node.clone());
+            visited.insert(elephant_node.clone());
+
+            let total_flow_rate = visited
+                .iter()
+                .fold(0, |total, point| 
+                    total + if *point != node && *point != elephant_node { tunnels.get(point).unwrap().flow_rate } else { 0 }
+                );
+
+            let new_total_flow = total_flow
+                + total_flow_rate * (26 - minutes.min(elephant_minutes))
+                + tunnels.get(&node).unwrap().flow_rate * (26 - minutes)
+                + tunnels.get(&elephant_node).unwrap().flow_rate * (26 - elephant_minutes);
+
+            if new_total_flow > best_score {
+                best_score = new_total_flow;
+                println!("{best_score}");
+            }
+        }
+        else {
+            paths.extend(new_paths);
+        }
+    }
+
+    println!("Part two: {best_score}");
 }
