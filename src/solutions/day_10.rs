@@ -57,7 +57,7 @@ fn part_two(input: &Vec<(&str, i32)>) {
             print!(" ");
         }
         if cycle % 40 == 0 {
-            println!("");
+            println!();
         }
 
         match command {
@@ -71,7 +71,7 @@ fn part_two(input: &Vec<(&str, i32)>) {
                     print!(" ");
                 }
                 if cycle % 40 == 0 {
-                    println!("");
+                    println!();
                 }
                 x_register += arg;
             },

@@ -14,15 +14,15 @@ pub fn run() {
     part_two(&input);
 }
 
-fn part_one(input: &Vec<Vec<char>>) {
+fn part_one(input: &[Vec<char>]) {
     let mut visited_nodes: HashSet<(usize, usize)> = HashSet::new();
     let mut paths: VecDeque<Vec<(usize, usize)>> = VecDeque::new();
 
     let mut start_node: (usize, usize) = (0, 0);
-    'outer: for row in 0..input.len() {
-        for column in 0..input[row].len() {
-            if input[row][column] == 'S' {
-                start_node = (row, column);
+    'outer: for (row_index, row) in input.iter().enumerate() {
+        for (column_index, &column) in row.iter().enumerate() {
+            if column == 'S' {
+                start_node = (row_index, column_index);
                 break 'outer;
             }
         }
@@ -35,12 +35,12 @@ fn part_one(input: &Vec<Vec<char>>) {
         let current_node = path.last().unwrap();
         let current_node_val = match input[current_node.0][current_node.1] {
             'S' => 'a',
-            x @ _ => x,
+            x => x,
         };
 
-        for (row_offset, column_offset) in vec!((0, 1), (2, 1), (1, 0), (1, 2)) {
-            if current_node.0 + row_offset == 0 || current_node.0 + row_offset-1 >= input.len() ||
-                current_node.1 + column_offset == 0 || current_node.1 + column_offset-1 >= input[0].len()
+        for (row_offset, column_offset) in &[(0, 1), (2, 1), (1, 0), (1, 2)] {
+            if current_node.0 + row_offset == 0 || current_node.0 + row_offset > input.len() ||
+                current_node.1 + column_offset == 0 || current_node.1 + column_offset > input[0].len()
             {
                 continue;
             }
@@ -67,15 +67,15 @@ fn part_one(input: &Vec<Vec<char>>) {
     println!("Part one: {}", paths.pop_back().unwrap().len() - 1);
 }
 
-fn part_two(input: &Vec<Vec<char>>) {
+fn part_two(input: &[Vec<char>]) {
     let mut visited_nodes: HashSet<(usize, usize)> = HashSet::new();
     let mut paths: VecDeque<Vec<(usize, usize)>> = VecDeque::new();
 
     let mut start_node: (usize, usize) = (0, 0);
-    'outer: for row in 0..input.len() {
-        for column in 0..input[row].len() {
-            if input[row][column] == 'E' {
-                start_node = (row, column);
+    'outer: for (row_index, row) in input.iter().enumerate() {
+        for (column_index, &column) in row.iter().enumerate() {
+            if column == 'E' {
+                start_node = (row_index, column_index);
                 break 'outer;
             }
         }
@@ -88,12 +88,12 @@ fn part_two(input: &Vec<Vec<char>>) {
         let current_node = path.last().unwrap();
         let current_node_val = match input[current_node.0][current_node.1] {
             'E' => 'z',
-            x @ _ => x,
+            x => x,
         };
 
-        for (row_offset, column_offset) in vec!((0, 1), (2, 1), (1, 0), (1, 2)) {
-            if current_node.0 + row_offset == 0 || current_node.0 + row_offset-1 >= input.len() ||
-                current_node.1 + column_offset == 0 || current_node.1 + column_offset-1 >= input[0].len()
+        for (row_offset, column_offset) in &[(0, 1), (2, 1), (1, 0), (1, 2)] {
+            if current_node.0 + row_offset == 0 || current_node.0 + row_offset > input.len() ||
+                current_node.1 + column_offset == 0 || current_node.1 + column_offset > input[0].len()
             {
                 continue;
             }

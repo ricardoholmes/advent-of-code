@@ -12,7 +12,7 @@ pub fn run() {
     part_two(&input);
 }
 
-fn part_one(input: &Vec<Vec<i32>>) {
+fn part_one(input: &[Vec<i32>]) {
     let mut count = 0;
 
     for cube in input {
@@ -30,7 +30,7 @@ fn part_one(input: &Vec<Vec<i32>>) {
     println!("Part one: {count}");
 }
 
-fn part_two(input: &Vec<Vec<i32>>) {
+fn part_two(input: &[Vec<i32>]) {
     let mut count = 0;
 
     for cube in input {
@@ -38,7 +38,7 @@ fn part_two(input: &Vec<Vec<i32>>) {
             for j in &[-1, 1] {
                 let mut adjacent_cube = cube.clone();
                 adjacent_cube[i] += j;
-                if !input.contains(&adjacent_cube) && !is_encased(&adjacent_cube, &input) {
+                if !input.contains(&adjacent_cube) && !is_encased(&adjacent_cube, input) {
                     count += 1;
                 }
             }
@@ -48,13 +48,13 @@ fn part_two(input: &Vec<Vec<i32>>) {
     println!("Part two: {count}");
 }
 
-fn is_encased(cube: &Vec<i32>, map: &Vec<Vec<i32>>) -> bool {
+fn is_encased(cube: &[i32], map: &[Vec<i32>]) -> bool {
     let mut cubes: Vec<Vec<i32>> = vec![];
-    cubes.push(cube.clone());
+    cubes.push(cube.to_vec());
 
     let mut checked_cubes: HashSet<Vec<i32>> = HashSet::new();
 
-    while cubes.len() > 0 {
+    while !cubes.is_empty() {
         let cube = cubes.pop().unwrap();
         if !raycast(&cube, map) {
             return false;
@@ -75,7 +75,7 @@ fn is_encased(cube: &Vec<i32>, map: &Vec<Vec<i32>>) -> bool {
     true
 }
 
-fn raycast(cube: &Vec<i32>, map: &Vec<Vec<i32>>) -> bool {
+fn raycast(cube: &[i32], map: &[Vec<i32>]) -> bool {
     for i in 0..3 {
         if map.iter().filter(|lava|
             lava[i] > cube[i] && lava[(i+1) % 3] == cube[(i+1) % 3] && lava[(i+2) % 3] == cube[(i+2) % 3]

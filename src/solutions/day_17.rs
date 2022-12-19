@@ -15,7 +15,7 @@ impl Rock {
         positions
     }
 
-    fn move_left(&self, positions: &Vec<(i64, i64)>, map: &HashSet<(i64, i64)>) -> Vec<(i64, i64)> {
+    fn move_left(&self, positions: &[(i64, i64)], map: &HashSet<(i64, i64)>) -> Vec<(i64, i64)> {
         let mut new_positions = vec![];
         for i in positions {
             let pos = (i.0 - 1, i.1);
@@ -27,7 +27,7 @@ impl Rock {
         new_positions
     }
 
-    fn move_right(&self, positions: &Vec<(i64, i64)>, map: &HashSet<(i64, i64)>) -> Vec<(i64, i64)>  {
+    fn move_right(&self, positions: &[(i64, i64)], map: &HashSet<(i64, i64)>) -> Vec<(i64, i64)>  {
         let mut new_positions = vec![];
         for i in positions {
             let pos = (i.0 + 1, i.1);
@@ -39,7 +39,7 @@ impl Rock {
         new_positions
     }
 
-    fn move_down(&self, positions: &Vec<(i64, i64)>, map: &HashSet<(i64, i64)>) -> Vec<(i64, i64)>  {
+    fn move_down(&self, positions: &[(i64, i64)], map: &HashSet<(i64, i64)>) -> Vec<(i64, i64)>  {
         let mut new_positions = vec![];
         for i in positions {
             let pos = (i.0, i.1 - 1);
@@ -68,7 +68,7 @@ pub fn run() {
     part_two(&input, &rocks);
 }
 
-fn part_one(jet_pattern: &Vec<char>, rocks: &[Rock; 5]) {
+fn part_one(jet_pattern: &[char], rocks: &[Rock; 5]) {
     let mut amount_landed = 0;
     let mut jet_pattern_index = 0;
     let mut rock_index = 0;
@@ -107,7 +107,7 @@ fn part_one(jet_pattern: &Vec<char>, rocks: &[Rock; 5]) {
     println!("Part one: {highest_y}");
 }
 
-fn part_two(jet_pattern: &Vec<char>, rocks: &[Rock; 5]) {
+fn part_two(jet_pattern: &[char], rocks: &[Rock; 5]) {
     let mut amount_landed: i64 = 0;
     let mut jet_pattern_index = 0;
     let mut rock_index = 0;

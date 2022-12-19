@@ -10,16 +10,10 @@ struct Blueprint {
 
 impl Blueprint {
     fn can_buy(&self, materials: &Materials, robot: u32) -> bool {
-        if robot == 0 && materials.ore >= self.ore_ore {
-            return true;
-        }
-        else if robot == 1 && materials.ore >= self.clay_ore {
-            return true;
-        }
-        else if robot == 2 && materials.ore >= self.obsidian_ore && materials.clay >= self.obsidian_clay {
-            return true;
-        }
-        else if robot == 3 && materials.ore >= self.geode_ore && materials.obsidian >= self.geode_obsidian {
+        if robot == 0 && materials.ore >= self.ore_ore ||
+            robot == 1 && materials.ore >= self.clay_ore ||
+            robot == 2 && materials.ore >= self.obsidian_ore && materials.clay >= self.obsidian_clay ||
+            robot == 3 && materials.ore >= self.geode_ore && materials.obsidian >= self.geode_obsidian {
             return true;
         }
         false
@@ -122,19 +116,19 @@ pub fn run() {
             let mut line: Vec<char> = line.chars().skip_while(|&c| c != ':').skip_while(|c| !c.is_ascii_digit()).collect();
             let ore_ore: u32 = line.iter().take_while(|c| c.is_ascii_digit()).collect::<String>().parse().unwrap();
 
-            line = line.iter().skip_while(|c| c.is_ascii_digit()).skip_while(|c| !c.is_ascii_digit()).map(|&c| c).collect();
+            line = line.iter().skip_while(|c| c.is_ascii_digit()).skip_while(|c| !c.is_ascii_digit()).copied().collect();
             let clay_ore: u32 = line.iter().take_while(|c| c.is_ascii_digit()).collect::<String>().parse().unwrap();
 
-            line = line.iter().skip_while(|c| c.is_ascii_digit()).skip_while(|c| !c.is_ascii_digit()).map(|&c| c).collect();
+            line = line.iter().skip_while(|c| c.is_ascii_digit()).skip_while(|c| !c.is_ascii_digit()).copied().collect();
             let obsidian_ore: u32 = line.iter().take_while(|c| c.is_ascii_digit()).collect::<String>().parse().unwrap();
 
-            line = line.iter().skip_while(|c| c.is_ascii_digit()).skip_while(|c| !c.is_ascii_digit()).map(|&c| c).collect();
+            line = line.iter().skip_while(|c| c.is_ascii_digit()).skip_while(|c| !c.is_ascii_digit()).copied().collect();
             let obsidian_clay: u32 = line.iter().take_while(|c| c.is_ascii_digit()).collect::<String>().parse().unwrap();
 
-            line = line.iter().skip_while(|c| c.is_ascii_digit()).skip_while(|c| !c.is_ascii_digit()).map(|&c| c).collect();
+            line = line.iter().skip_while(|c| c.is_ascii_digit()).skip_while(|c| !c.is_ascii_digit()).copied().collect();
             let geode_ore: u32 = line.iter().take_while(|c| c.is_ascii_digit()).collect::<String>().parse().unwrap();
 
-            line = line.iter().skip_while(|c| c.is_ascii_digit()).skip_while(|c| !c.is_ascii_digit()).map(|&c| c).collect();
+            line = line.iter().skip_while(|c| c.is_ascii_digit()).skip_while(|c| !c.is_ascii_digit()).copied().collect();
             let geode_obsidian: u32 = line.iter().take_while(|c| c.is_ascii_digit()).collect::<String>().parse().unwrap();
 
             Blueprint {
@@ -193,7 +187,7 @@ fn get_most_geodes(blueprint: &Blueprint, end_time: u32) -> u32 {
         if time == end_time {
             continue;
         }
-        
+
         if geode_at_end + (((end_time - time + 1) * (end_time - time)) / 2) < most_geodes {
             continue;
         }
@@ -203,8 +197,7 @@ fn get_most_geodes(blueprint: &Blueprint, end_time: u32) -> u32 {
                 goal == 1 && robots.clay >= blueprint.obsidian_clay ||
                 goal == 2 && robots.obsidian >= blueprint.geode_obsidian ||
                 goal == 2 && robots.clay == 0 ||
-                goal == 3 && robots.obsidian == 0
-            {
+                goal == 3 && robots.obsidian == 0 {
                 continue;
             }
 

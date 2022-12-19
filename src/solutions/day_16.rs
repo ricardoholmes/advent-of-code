@@ -63,7 +63,7 @@ fn part_one(tunnels: &HashMap<String, Tunnel>, dist: &HashMap<String, HashMap<St
     let mut paths: Vec<(String, i32, i32, BTreeSet<String>)> = vec![("AA".to_owned(), 0, 0, BTreeSet::new())];
     // paths is Vec<(valve, minutes, total_flow, visited)>
 
-    while paths.len() > 0 {
+    while !paths.is_empty() {
         let (node, minutes, total_flow, mut visited) = paths.pop().unwrap();
         visited.insert(node.clone());
         let total_flow_rate = visited
@@ -83,7 +83,7 @@ fn part_one(tunnels: &HashMap<String, Tunnel>, dist: &HashMap<String, HashMap<St
             }
         }
 
-        if new_paths.len() == 0 {
+        if new_paths.is_empty() {
             let total_flow = total_flow + total_flow_rate * (30 - minutes);
             if !best_paths.contains_key(&visited) || best_paths.get(&visited).unwrap() < &total_flow {
                 best_paths.insert(visited, total_flow);
@@ -104,7 +104,7 @@ fn part_two(tunnels: &HashMap<String, Tunnel>, dist: &HashMap<String, HashMap<St
     let mut best_score = i32::MIN;
     let mut paths: Vec<(String, String, i32, i32, i32, BTreeSet<String>)> = vec![("AA".to_owned(), "AA".to_owned(), 0, 0, 0, BTreeSet::new())];
 
-    while paths.len() > 0 {
+    while !paths.is_empty() {
         let (node, elephant_node, minutes, elephant_minutes, total_flow, mut visited) = paths.pop().unwrap();
         let time = minutes.min(elephant_minutes);
 
@@ -152,7 +152,7 @@ fn part_two(tunnels: &HashMap<String, Tunnel>, dist: &HashMap<String, HashMap<St
             }
         }
 
-        if new_paths.len() == 0 {
+        if new_paths.is_empty() {
             visited.insert(node.clone());
             visited.insert(elephant_node.clone());
 

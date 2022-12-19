@@ -25,7 +25,7 @@ pub fn run() {
     part_two(&pairs);
 }
 
-fn part_one(pairs: &Vec<Vec<Element>>) {
+fn part_one(pairs: &[Vec<Element>]) {
     let mut i = 0;
     let count = pairs
         .iter()
@@ -130,17 +130,17 @@ fn compare(left: &Element, right: &Element) -> i32 {
     };
 
     if left_num != -1 && right_num != -1 {
-        return left_num - right_num;
+        left_num - right_num
     }
 
     else if left_num == -1 && right_num != -1 {
         let r: Element = Element::Elements(vec!(right.clone()));
-        return compare(left, &r);
+        compare(left, &r)
     }
 
     else if left_num != -1 && right_num == -1 {
         let l: Element = Element::Elements(vec!(left.clone()));
-        return compare(&l, right);
+        compare(&l, right)
     }
 
     else {
@@ -154,14 +154,14 @@ fn compare(left: &Element, right: &Element) -> i32 {
             _ => panic!(),
         };
 
-        if l.len() == 0 && r.len() == 0 {
-            return 0;
+        if l.is_empty() && r.is_empty() {
+            0
         }
-        else if l.len() == 0 {
-            return -1;
+        else if l.is_empty() {
+            -1
         }
-        else if r.len() == 0 {
-            return 1;
+        else if r.is_empty() {
+            1
         }
         else {
             let comp = compare(l.get(0).unwrap(), r.get(0).unwrap());
@@ -172,7 +172,7 @@ fn compare(left: &Element, right: &Element) -> i32 {
 
             let left = Element::Elements(l[1..].to_owned());
             let right = Element::Elements(r[1..].to_owned());
-            return compare(&left, &right);
+            compare(&left, &right)
         }
     }
 }
