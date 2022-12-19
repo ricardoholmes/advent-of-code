@@ -151,7 +151,7 @@ pub fn run() {
     part_two(&blueprints);
 }
 
-fn part_one(blueprints: &Vec<Blueprint>) {
+fn part_one(blueprints: &[Blueprint]) {
     let mut total_quality_level = 0;
     let mut id = 1;
 
@@ -163,12 +163,14 @@ fn part_one(blueprints: &Vec<Blueprint>) {
     println!("Part one: {total_quality_level}");
 }
 
-fn part_two(blueprints: &Vec<Blueprint>) {
+fn part_two(blueprints: &[Blueprint]) {
     let mut multiple = 1;
+
     for blueprint in &blueprints[..3] {
         let geodes = get_most_geodes(blueprint, 32);
         multiple *= geodes;
     }
+
     println!("Part two: {multiple}");
 }
 
@@ -181,7 +183,7 @@ fn get_most_geodes(blueprint: &Blueprint, end_time: u32) -> u32 {
     )];
     // robots_owned, materials, time
 
-    while strategies.len() > 0 {
+    while !strategies.is_empty() {
         let (robots, materials, time) = strategies.pop().unwrap();
 
         let geode_at_end = materials.geode + (robots.geode * (end_time - time));
@@ -197,20 +199,12 @@ fn get_most_geodes(blueprint: &Blueprint, end_time: u32) -> u32 {
         }
 
         for goal in 0..=3 {
-            if goal == 0 && [blueprint.ore_ore, blueprint.clay_ore, blueprint.obsidian_ore, blueprint.geode_ore].iter().all(|&req| req == robots.ore) {
-                continue;
-            }
-            else if goal == 1 && robots.clay == blueprint.obsidian_clay {
-                continue;
-            }
-            else if goal == 2 && robots.obsidian == blueprint.geode_obsidian {
-                continue;
-            }
-            
-            if goal == 2 && robots.clay == 0 {
-                continue;
-            }
-            else if goal == 3 && robots.obsidian == 0 {
+            if goal == 0 && [blueprint.ore_ore, blueprint.clay_ore, blueprint.obsidian_ore, blueprint.geode_ore].iter().all(|&req| req <= robots.ore) ||
+                goal == 1 && robots.clay >= blueprint.obsidian_clay ||
+                goal == 2 && robots.obsidian >= blueprint.geode_obsidian ||
+                goal == 2 && robots.clay == 0 ||
+                goal == 3 && robots.obsidian == 0
+            {
                 continue;
             }
 
