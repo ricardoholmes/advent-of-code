@@ -148,6 +148,7 @@ pub fn run() {
         }).collect();
 
     part_one(&blueprints);
+    part_two(&blueprints);
 }
 
 fn part_one(blueprints: &Vec<Blueprint>) {
@@ -155,75 +156,88 @@ fn part_one(blueprints: &Vec<Blueprint>) {
     let mut id = 1;
 
     for blueprint in blueprints {
-        let mut most_geodes = 0;
-        let mut strategies: Vec<(Robots, Materials, u32)> = vec![(
-            Robots { ore: 1, clay: 0, obsidian: 0, geode: 0 },
-            Materials { ore: 0, clay: 0, obsidian: 0, geode: 0 },
-            0,
-        )];
-        // robots_owned, materials, time
-
-        while strategies.len() > 0 {
-            let (robots, materials, time) = strategies.pop().unwrap();
-
-            let geode_at_end = materials.geode + (robots.geode * (24 - time));
-            if geode_at_end > most_geodes {
-                most_geodes = materials.geode;
-            }
-            if time == 24 {
-                continue;
-            }
-            
-            if geode_at_end + (((24 - time + 1) * (24 - time)) / 2) < most_geodes {
-                continue;
-            }
-
-            for goal in 0..=3 {
-                if goal == 0 && [blueprint.ore_ore, blueprint.clay_ore, blueprint.obsidian_ore, blueprint.geode_ore].iter().all(|&req| req == robots.ore) {
-                    continue;
-                }
-                else if goal == 1 && robots.clay == blueprint.obsidian_clay {
-                    continue;
-                }
-                else if goal == 2 && robots.obsidian == blueprint.geode_obsidian {
-                    continue;
-                }
-                
-                if goal == 2 && robots.clay == 0 {
-                    continue;
-                }
-                else if goal == 3 && robots.obsidian == 0 {
-                    continue;
-                }
-
-                let mut time = time;
-                let mut robots = robots.clone();
-                let mut materials = materials.clone();
-                let mut done = false;
-                while time < 24 && !done {
-                    if let Some((m, r)) = blueprint.buy(&materials, &robots, goal) {
-                        materials = Materials {
-                            ore: robots.ore + m.ore,
-                            clay: robots.clay + m.clay,
-                            obsidian: robots.obsidian + m.obsidian,
-                            geode: robots.geode + m.geode,
-                        };
-                        robots = r;
-                        done = true;
-                    }
-                    else {
-                        robots.generate(&mut materials);
-                    }
-                    time += 1;
-                }
-
-                strategies.push((robots, materials, time));
-            }
-        }
-
-        total_quality_level += id * most_geodes;
+        total_quality_level += id * get_most_geodes(blueprint, 24);
         id += 1;
     }
 
     println!("Part one: {total_quality_level}");
+}
+
+fn part_two(blueprints: &Vec<Blueprint>) {
+    let mut multiple = 1;
+    for blueprint in &blueprints[..3] {
+        let geodes = get_most_geodes(blueprint, 32);
+        multiple *= geodes;
+    }
+    println!("Part two: {multiple}");
+}
+
+fn get_most_geodes(blueprint: &Blueprint, end_time: u32) -> u32 {
+    let mut most_geodes = 0;
+    let mut strategies: Vec<(Robots, Materials, u32)> = vec![(
+        Robots { ore: 1, clay: 0, obsidian: 0, geode: 0 },
+        Materials { ore: 0, clay: 0, obsidian: 0, geode: 0 },
+        0,
+    )];
+    // robots_owned, materials, time
+
+    while strategies.len() > 0 {
+        let (robots, materials, time) = strategies.pop().unwrap();
+
+        let geode_at_end = materials.geode + (robots.geode * (end_time - time));
+        if geode_at_end > most_geodes {
+            most_geodes = materials.geode;
+        }
+        if time == end_time {
+            continue;
+        }
+        
+        if geode_at_end + (((end_time - time + 1) * (end_time - time)) / 2) < most_geodes {
+            continue;
+        }
+
+        for goal in 0..=3 {
+            if goal == 0 && [blueprint.ore_ore, blueprint.clay_ore, blueprint.obsidian_ore, blueprint.geode_ore].iter().all(|&req| req == robots.ore) {
+                continue;
+            }
+            else if goal == 1 && robots.clay == blueprint.obsidian_clay {
+                continue;
+            }
+            else if goal == 2 && robots.obsidian == blueprint.geode_obsidian {
+                continue;
+            }
+            
+            if goal == 2 && robots.clay == 0 {
+                continue;
+            }
+            else if goal == 3 && robots.obsidian == 0 {
+                continue;
+            }
+
+            let mut time = time;
+            let mut robots = robots.clone();
+            let mut materials = materials.clone();
+            let mut done = false;
+            while time < end_time && !done {
+                if let Some((m, r)) = blueprint.buy(&materials, &robots, goal) {
+                    materials = Materials {
+                        ore: robots.ore + m.ore,
+                        clay: robots.clay + m.clay,
+                        obsidian: robots.obsidian + m.obsidian,
+                        geode: robots.geode + m.geode,
+                    };
+                    robots = r;
+                    done = true;
+                }
+                else {
+                    robots.generate(&mut materials);
+                }
+                time += 1;
+            }
+
+            strategies.push((robots, materials, time));
+        }
+    }
+
+    most_geodes
 }
