@@ -19,6 +19,7 @@ mod day_18;
 mod day_19;
 mod day_20;
 mod day_21;
+mod day_22;
 
 pub fn run(day: u16) {
     println!("\n--- Day {day} ---");
@@ -46,6 +47,7 @@ pub fn run(day: u16) {
         19 => day_19::run(),
         20 => day_20::run(),
         21 => day_21::run(),
+        22 => day_22::run(),
         _ => println!("Invalid day number"),
     };
 
