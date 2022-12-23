@@ -78,63 +78,7 @@ fn part_one(map: &HashSet<Cell>) {
     let mut map = map.clone();
 
     for round in 0..10 {
-        let mut proposed_cells: HashMap<Cell, Cell> = HashMap::new();
-        for i in &map {
-            if i.check_surrounding(&map) {
-                match round % 4 {
-                    0 => if i.check_up(&map) {
-                            proposed_cells.insert(*i, Cell { x: i.x, y: i.y - 1 });
-                        } else if i.check_down(&map) {
-                            proposed_cells.insert(*i, Cell { x: i.x, y: i.y + 1 });
-                        } else if i.check_left(&map) {
-                            proposed_cells.insert(*i, Cell { x: i.x - 1, y: i.y });
-                        } else if i.check_right(&map) {
-                            proposed_cells.insert(*i, Cell { x: i.x + 1, y: i.y });
-                        },
-
-                    1 => if i.check_down(&map) {
-                            proposed_cells.insert(*i, Cell { x: i.x, y: i.y + 1 });
-                        }
-                        else if i.check_left(&map) {
-                            proposed_cells.insert(*i, Cell { x: i.x - 1, y: i.y });
-                        }
-                        else if i.check_right(&map) {
-                            proposed_cells.insert(*i, Cell { x: i.x + 1, y: i.y });
-                        }
-                        else if i.check_up(&map) {
-                            proposed_cells.insert(*i, Cell { x: i.x, y: i.y - 1 });
-                        },
-
-                    2 => if i.check_left(&map) {
-                            proposed_cells.insert(*i, Cell { x: i.x - 1, y: i.y });
-                        }
-                        else if i.check_right(&map) {
-                            proposed_cells.insert(*i, Cell { x: i.x + 1, y: i.y });
-                        }
-                        else if i.check_up(&map) {
-                            proposed_cells.insert(*i, Cell { x: i.x, y: i.y - 1 });
-                        }
-                        else if i.check_down(&map) {
-                            proposed_cells.insert(*i, Cell { x: i.x, y: i.y + 1 });
-                        },
-
-                    3 => if i.check_right(&map) {
-                            proposed_cells.insert(*i, Cell { x: i.x + 1, y: i.y });
-                        }
-                        else if i.check_up(&map) {
-                            proposed_cells.insert(*i, Cell { x: i.x, y: i.y - 1 });
-                        }
-                        else if i.check_down(&map) {
-                            proposed_cells.insert(*i, Cell { x: i.x, y: i.y + 1 });
-                        }
-                        else if i.check_left(&map) {
-                            proposed_cells.insert(*i, Cell { x: i.x - 1, y: i.y });
-                        },
-
-                    _ => panic!("maths broke oopsie"),
-                }
-            }
-        }
+        let proposed_cells = get_proposed_cells(&map, round);
         for proposition in &proposed_cells {
             if proposed_cells.values().filter(|&cell| cell == proposition.1).count() == 1 {
                 map.remove(proposition.0);
@@ -165,63 +109,7 @@ fn part_two(map: &HashSet<Cell>) {
     let mut round = 0;
     let mut has_moved = true;
     while has_moved {
-        let mut proposed_cells: HashMap<Cell, Cell> = HashMap::new();
-        for i in &map {
-            if i.check_surrounding(&map) {
-                match round % 4 {
-                    0 => if i.check_up(&map) {
-                            proposed_cells.insert(*i, Cell { x: i.x, y: i.y - 1 });
-                        } else if i.check_down(&map) {
-                            proposed_cells.insert(*i, Cell { x: i.x, y: i.y + 1 });
-                        } else if i.check_left(&map) {
-                            proposed_cells.insert(*i, Cell { x: i.x - 1, y: i.y });
-                        } else if i.check_right(&map) {
-                            proposed_cells.insert(*i, Cell { x: i.x + 1, y: i.y });
-                        },
-
-                    1 => if i.check_down(&map) {
-                            proposed_cells.insert(*i, Cell { x: i.x, y: i.y + 1 });
-                        }
-                        else if i.check_left(&map) {
-                            proposed_cells.insert(*i, Cell { x: i.x - 1, y: i.y });
-                        }
-                        else if i.check_right(&map) {
-                            proposed_cells.insert(*i, Cell { x: i.x + 1, y: i.y });
-                        }
-                        else if i.check_up(&map) {
-                            proposed_cells.insert(*i, Cell { x: i.x, y: i.y - 1 });
-                        },
-
-                    2 => if i.check_left(&map) {
-                            proposed_cells.insert(*i, Cell { x: i.x - 1, y: i.y });
-                        }
-                        else if i.check_right(&map) {
-                            proposed_cells.insert(*i, Cell { x: i.x + 1, y: i.y });
-                        }
-                        else if i.check_up(&map) {
-                            proposed_cells.insert(*i, Cell { x: i.x, y: i.y - 1 });
-                        }
-                        else if i.check_down(&map) {
-                            proposed_cells.insert(*i, Cell { x: i.x, y: i.y + 1 });
-                        },
-
-                    3 => if i.check_right(&map) {
-                            proposed_cells.insert(*i, Cell { x: i.x + 1, y: i.y });
-                        }
-                        else if i.check_up(&map) {
-                            proposed_cells.insert(*i, Cell { x: i.x, y: i.y - 1 });
-                        }
-                        else if i.check_down(&map) {
-                            proposed_cells.insert(*i, Cell { x: i.x, y: i.y + 1 });
-                        }
-                        else if i.check_left(&map) {
-                            proposed_cells.insert(*i, Cell { x: i.x - 1, y: i.y });
-                        },
-
-                    _ => panic!("maths broke oopsie"),
-                }
-            }
-        }
+        let proposed_cells = get_proposed_cells(&map, round);
         has_moved = false;
         for proposition in &proposed_cells {
             if proposed_cells.values().filter(|&cell| cell == proposition.1).count() == 1 {
@@ -234,4 +122,31 @@ fn part_two(map: &HashSet<Cell>) {
     }
 
     println!("Part two: {}", round);
+}
+
+fn get_proposed_cells(map: &HashSet<Cell>, round: i32) -> HashMap<Cell, Cell> {
+    let mut proposed_cells: HashMap<Cell, Cell> = HashMap::new();
+    for i in map {
+        if i.check_surrounding(map) {
+            for r in round..round+4 {
+                if r % 4 == 0 && i.check_up(map) {
+                    proposed_cells.insert(*i, Cell { x: i.x, y: i.y - 1 });
+                    break;
+                }
+                else if r % 4 == 1 && i.check_down(map) {
+                    proposed_cells.insert(*i, Cell { x: i.x, y: i.y + 1 });
+                    break;
+                }
+                else if r % 4 == 2 && i.check_left(map) {
+                    proposed_cells.insert(*i, Cell { x: i.x - 1, y: i.y });
+                    break;
+                }
+                else if r % 4 == 3 && i.check_right(map) {
+                    proposed_cells.insert(*i, Cell { x: i.x + 1, y: i.y });
+                    break;
+                }
+            }
+        }
+    }
+    proposed_cells
 }
