@@ -71,6 +71,7 @@ pub fn run() {
     }
 
     part_one(&map);
+    part_two(&map);
 }
 
 fn part_one(map: &HashSet<Cell>) {
@@ -156,4 +157,81 @@ fn part_one(map: &HashSet<Cell>) {
     highest_y += 1;
 
     println!("Part one: {}", ((highest_x - lowest_x) * (highest_y - lowest_y)) - map.len() as i32);
+}
+
+fn part_two(map: &HashSet<Cell>) {
+    let mut map = map.clone();
+
+    let mut round = 0;
+    let mut has_moved = true;
+    while has_moved {
+        let mut proposed_cells: HashMap<Cell, Cell> = HashMap::new();
+        for i in &map {
+            if i.check_surrounding(&map) {
+                match round % 4 {
+                    0 => if i.check_up(&map) {
+                            proposed_cells.insert(*i, Cell { x: i.x, y: i.y - 1 });
+                        } else if i.check_down(&map) {
+                            proposed_cells.insert(*i, Cell { x: i.x, y: i.y + 1 });
+                        } else if i.check_left(&map) {
+                            proposed_cells.insert(*i, Cell { x: i.x - 1, y: i.y });
+                        } else if i.check_right(&map) {
+                            proposed_cells.insert(*i, Cell { x: i.x + 1, y: i.y });
+                        },
+
+                    1 => if i.check_down(&map) {
+                            proposed_cells.insert(*i, Cell { x: i.x, y: i.y + 1 });
+                        }
+                        else if i.check_left(&map) {
+                            proposed_cells.insert(*i, Cell { x: i.x - 1, y: i.y });
+                        }
+                        else if i.check_right(&map) {
+                            proposed_cells.insert(*i, Cell { x: i.x + 1, y: i.y });
+                        }
+                        else if i.check_up(&map) {
+                            proposed_cells.insert(*i, Cell { x: i.x, y: i.y - 1 });
+                        },
+
+                    2 => if i.check_left(&map) {
+                            proposed_cells.insert(*i, Cell { x: i.x - 1, y: i.y });
+                        }
+                        else if i.check_right(&map) {
+                            proposed_cells.insert(*i, Cell { x: i.x + 1, y: i.y });
+                        }
+                        else if i.check_up(&map) {
+                            proposed_cells.insert(*i, Cell { x: i.x, y: i.y - 1 });
+                        }
+                        else if i.check_down(&map) {
+                            proposed_cells.insert(*i, Cell { x: i.x, y: i.y + 1 });
+                        },
+
+                    3 => if i.check_right(&map) {
+                            proposed_cells.insert(*i, Cell { x: i.x + 1, y: i.y });
+                        }
+                        else if i.check_up(&map) {
+                            proposed_cells.insert(*i, Cell { x: i.x, y: i.y - 1 });
+                        }
+                        else if i.check_down(&map) {
+                            proposed_cells.insert(*i, Cell { x: i.x, y: i.y + 1 });
+                        }
+                        else if i.check_left(&map) {
+                            proposed_cells.insert(*i, Cell { x: i.x - 1, y: i.y });
+                        },
+
+                    _ => panic!("maths broke oopsie"),
+                }
+            }
+        }
+        has_moved = false;
+        for proposition in &proposed_cells {
+            if proposed_cells.values().filter(|&cell| cell == proposition.1).count() == 1 {
+                map.remove(proposition.0);
+                map.insert(*proposition.1);
+                has_moved = true;
+            }
+        }
+        round += 1;
+    }
+
+    println!("Part two: {}", round);
 }
