@@ -22,13 +22,21 @@ fn main() {
 
     if day_num == "all" {
         let dir = fs::read_dir("./src/solutions").unwrap();
-        let latest_solution = dir.fold(0, |sum, _| sum + 1);
+        let latest_solution = dir.filter(|file| 
+            file.as_ref().unwrap().file_name().to_str().unwrap().starts_with("day")
+        ).fold(0, |sum, _| sum + 1);
 
-        // directory also contains mod.rs and template.rs so must account for them
-        // but for loop has exclusive top, so - 2 + 1 => - 1
-        for day_num in 1..(latest_solution - 1) {
+        println!("======================================");
+        println!("  A D V E N T  O F  C O D E  2 0 2 2  ");
+        println!("======================================");
+        let start_time = std::time::Instant::now();
+        for day_num in 1..=latest_solution {
             solutions::run(day_num);
         }
+        println!("\n=================");
+        println!(" F I N I S H E D ");
+        println!("=================");
+        println!("Done in {:?}", std::time::Instant::now() - start_time);
     }
 
     else {
