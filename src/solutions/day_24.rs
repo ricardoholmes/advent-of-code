@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::{HashSet, HashMap};
 
 #[derive(Clone)]
 struct Blizzard {
@@ -81,55 +81,70 @@ pub fn run() {
     }
 
     part_one(&map, &blizzards_positions);
+    part_two(&map, &blizzards_positions);
 }
 
 fn part_one(map: &Vec<Vec<char>>, blizzards: &Vec<HashSet<(usize, usize)>>) {
     let start: (usize, usize) = (map[0].iter().position(|&c| c == '.').unwrap(), 0);
-    let destination: (usize, usize) = (map[map.len()-1].iter().position(|&c| c == '.').unwrap(), map.len()-1);
+    let end: (usize, usize) = (map[map.len()-1].iter().position(|&c| c == '.').unwrap(), map.len()-1);
+    let least_steps = find_path(map, blizzards, start, end, 0);
+    println!("Part one: {least_steps}");
+}
 
-    let mut queue: Vec<((usize, usize), usize, usize)> = vec![(start, 0, 0)];
-    let mut visited: HashSet<((usize, usize), usize)> = HashSet::new();
+fn part_two(map: &Vec<Vec<char>>, blizzards: &Vec<HashSet<(usize, usize)>>) {
+    let start: (usize, usize) = (map[0].iter().position(|&c| c == '.').unwrap(), 0);
+    let end: (usize, usize) = (map[map.len()-1].iter().position(|&c| c == '.').unwrap(), map.len()-1);
+
+    let mut least_steps = find_path(map, blizzards, start, end, 0);
+    least_steps = find_path(map, blizzards, end, start, least_steps);
+    least_steps = find_path(map, blizzards, start, end, least_steps);
+
+    println!("Part two: {least_steps}");
+}
+
+fn find_path(map: &Vec<Vec<char>>, blizzards: &Vec<HashSet<(usize, usize)>>, start: (usize, usize), end: (usize, usize), start_step: usize) -> usize {
+    let mut queue: Vec<((usize, usize), usize)> = vec![(start, start_step)];
+    let mut visited: HashMap<((usize, usize), usize), usize> = HashMap::new();
     let mut least_steps = usize::MAX;
     while queue.len() > 0 {
-        let (pos, steps,  waiting_time) = queue.pop().unwrap();
+        let (pos, steps) = queue.pop().unwrap();
 
-        let min_steps_at_end = ((destination.0 - pos.0) + (destination.1 - pos.1)) + steps;
+        let min_steps_at_end = end.0.abs_diff(pos.0) + end.1.abs_diff(pos.1) + steps;
         if min_steps_at_end >= least_steps {
             continue;
         }
-        if pos == destination {
+        if pos == end {
             least_steps = steps;
             continue;
         }
 
         let blizzards_set = blizzards[steps as usize % blizzards.len()].clone();
 
-        if pos.1 > 1 {
-            let new_pos = (pos.0, pos.1 - 1);
-            if map[new_pos.1][new_pos.0] == '.' && !blizzards_set.contains(&new_pos) && !visited.contains(&(new_pos, steps+1)) {
-                queue.push((new_pos, steps+1, 0));
-                visited.insert((new_pos, steps+1));
-            }
+        let steps = steps + 1;
+        let mut new_positions: Vec<(usize, usize)> = vec![];
+        if pos.1 > 0 {
+            new_positions.push((pos.0, pos.1 - 1));
+        }
+        if pos.1 + 1 < map.len() {
+            new_positions.push((pos.0, pos.1 + 1));
         }
         if min_steps_at_end < least_steps {
-            let new_pos = (pos.0 - 1, pos.1);
-            if map[new_pos.1][new_pos.0] == '.' && !blizzards_set.contains(&new_pos) && !visited.contains(&(new_pos, steps+1)) {
-                queue.push((new_pos, steps+1, 0));
-                visited.insert((new_pos, steps+1));
-            }
+            new_positions.push((if end.0 > start.0 { pos.0 - 1 } else { pos.0 + 1 }, pos.1));
 
-            if waiting_time + 1 < blizzards.len() && !blizzards_set.contains(&pos) && !visited.contains(&(pos, steps+1)) {
-                queue.push((pos, steps+1, waiting_time + 1));
-                visited.insert((pos, steps+1));
+            if !blizzards_set.contains(&pos) && (!visited.contains_key(&(pos, steps % blizzards.len())) || visited.get(&(pos, steps % blizzards.len())).unwrap() > &steps) {
+                queue.push((pos, steps));
+                visited.insert((pos, steps % blizzards.len()), steps);
             }
         }
-        for new_pos in [(pos.0 + 1, pos.1), (pos.0, pos.1 + 1)] {
-            if new_pos != start && map[new_pos.1][new_pos.0] == '.' && !blizzards_set.contains(&new_pos) && !visited.contains(&(new_pos, steps+1)) {
-                queue.push((new_pos, steps+1, 0));
-                visited.insert((new_pos, steps+1));
+        new_positions.push((if end.0 > start.0 { pos.0 + 1 } else { pos.0 - 1 }, pos.1));
+
+        for new_pos in new_positions {
+            if new_pos != start && map[new_pos.1][new_pos.0] == '.' && !blizzards_set.contains(&new_pos) && (!visited.contains_key(&(new_pos, steps % blizzards.len())) || visited.get(&(new_pos, steps % blizzards.len())).unwrap() > &steps) {
+                queue.push((new_pos, steps));
+                visited.insert((new_pos, steps % blizzards.len()), steps);
             }
         }
     }
 
-    println!("Part one: {least_steps}");
+    least_steps
 }
