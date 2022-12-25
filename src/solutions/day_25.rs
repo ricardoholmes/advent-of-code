@@ -28,11 +28,13 @@ pub fn run() {
 
     for i in (0..base_five.len()).rev() {
         if base_five[i] >= 3 {
+            base_five[i] -= 5;
             if i == 0 {
                 base_five.insert(0, 1);
             }
-            base_five[i-1] += 1;
-            base_five[i] = base_five[i] - 5;
+            else {
+                base_five[i-1] += 1;
+            }
         }
     }
 

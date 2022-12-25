@@ -44,9 +44,9 @@ pub fn run() {
         .collect();
 
     let mut path: Vec<Movement> = vec![];
-    let mut path_iter = input[1].lines().next().unwrap().chars();
+    let path_iter = input[1].lines().next().unwrap().chars();
     let mut num = String::new();
-    while let Some(next_char) = path_iter.next() {
+    for next_char in path_iter {
         if next_char.is_ascii_digit() {
             num.push(next_char);
         }
@@ -67,7 +67,7 @@ pub fn run() {
     part_two(&map, &path);
 }
 
-fn part_one(map: &Vec<Vec<char>>, path: &Vec<Movement>) {
+fn part_one(map: &[Vec<char>], path: &[Movement]) {
     let (mut x, mut y) = (map[0].iter().position(|&c| c == '.').unwrap(), 0);
 
     let mut facing = Facing::Right;
@@ -122,7 +122,7 @@ fn part_one(map: &Vec<Vec<char>>, path: &Vec<Movement>) {
     println!("Part one: {}", 1000*(y + 1) + 4*(x + 1) + facing.value());
 }
 
-fn part_two(map: &Vec<Vec<char>>, path: &Vec<Movement>) {
+fn part_two(map: &[Vec<char>], path: &[Movement]) {
     let (mut x, mut y) = (map[0].iter().position(|&c| c == '.').unwrap()+1, 1);
 
     let mut facing = Facing::Right;

@@ -31,6 +31,10 @@ fn main() {
         println!("======================================");
         let start_time = std::time::Instant::now();
         for day_num in 1..=latest_solution {
+            if day_num == 16 || day_num == 18 {
+                // too slow to run for now
+                continue;
+            }
             solutions::run(day_num);
         }
         println!("\n=================");

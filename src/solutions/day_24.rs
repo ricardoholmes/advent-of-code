@@ -23,12 +23,12 @@ pub fn run() {
         .collect();
 
     let mut blizzards: Vec<Blizzard> = vec![];
-    for row in 0..map.len() {
-        for column in 0..map[row].len() {
-            if ['<', '>', '^', 'v'].contains(&map[row][column]) {
+    for (row_index, row) in map.clone().iter().enumerate() {
+        for (col_index, column) in row.iter().enumerate() {
+            if ['<', '>', '^', 'v'].contains(column) {
                 blizzards.push(Blizzard {
-                    pos: (column, row),
-                    direction: match map[row][column] {
+                    pos: (col_index, row_index),
+                    direction: match column {
                         '^' => Direction::Up,
                         'v' => Direction::Down,
                         '<' => Direction::Left,
@@ -36,7 +36,7 @@ pub fn run() {
                         _ => panic!() // unreachable
                     }
                 });
-                map[row][column] = '.';
+                map[row_index][col_index] = '.';
             }
         }
     }
@@ -106,7 +106,7 @@ fn find_path(map: &Vec<Vec<char>>, blizzards: &Vec<HashSet<(usize, usize)>>, sta
     let mut queue: Vec<((usize, usize), usize)> = vec![(start, start_step)];
     let mut visited: HashMap<((usize, usize), usize), usize> = HashMap::new();
     let mut least_steps = usize::MAX;
-    while queue.len() > 0 {
+    while !queue.is_empty() {
         let (pos, steps) = queue.pop().unwrap();
 
         let min_steps_at_end = end.0.abs_diff(pos.0) + end.1.abs_diff(pos.1) + steps;

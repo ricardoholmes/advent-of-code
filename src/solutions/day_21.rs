@@ -54,14 +54,14 @@ struct Operation {
 }
 
 impl Operation {
-    fn find_humn(&self, path: &Vec<u8>, monkeys: &HashMap<String, Calculation>) -> Option<Vec<u8>> {
-        if self.lhs == "humn".to_string() {
-            let mut path = path.clone();
+    fn find_humn(&self, path: &[u8], monkeys: &HashMap<String, Calculation>) -> Option<Vec<u8>> {
+        if self.lhs == *"humn" {
+            let mut path = path.to_owned();
             path.push(0);
             return Some(path);
         }
-        else if self.rhs == "humn".to_string() {
-            let mut path = path.clone();
+        else if self.rhs == *"humn" {
+            let mut path = path.to_owned();
             path.push(1);
             return Some(path);
         }
@@ -72,13 +72,13 @@ impl Operation {
             let val = match monkey {
                 Calculation::Value(_) => None,
                 Calculation::Op(operation) => {
-                    let mut path = path.clone();
+                    let mut path = path.to_owned();
                     path.push(direction as u8);
                     operation.find_humn(&path, monkeys)
                 }
             };
 
-            if let Some(_) = val {
+            if val.is_some() {
                 return val;
             }
         }
@@ -129,7 +129,7 @@ fn part_two(monkeys: &HashMap<String, Calculation>) {
     let monkey = monkeys.get(&"root".to_string()).unwrap();
     let path = match monkey {
         Calculation::Value(_) => panic!(),
-        Calculation::Op(x) => x.find_humn(&vec![], monkeys).unwrap()
+        Calculation::Op(x) => x.find_humn(&[], monkeys).unwrap()
     };
 
     let (mut monkey, mut ans) = if path[0] == 0 {
