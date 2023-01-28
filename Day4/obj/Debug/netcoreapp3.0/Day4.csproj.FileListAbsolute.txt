@@ -1,0 +1,11 @@
+X:\GitHub\AdventOfCode\Day4\bin\Debug\netcoreapp3.0\Day4.exe
+X:\GitHub\AdventOfCode\Day4\bin\Debug\netcoreapp3.0\Day4.deps.json
+X:\GitHub\AdventOfCode\Day4\bin\Debug\netcoreapp3.0\Day4.runtimeconfig.json
+X:\GitHub\AdventOfCode\Day4\bin\Debug\netcoreapp3.0\Day4.runtimeconfig.dev.json
+X:\GitHub\AdventOfCode\Day4\bin\Debug\netcoreapp3.0\Day4.dll
+X:\GitHub\AdventOfCode\Day4\bin\Debug\netcoreapp3.0\Day4.pdb
+X:\GitHub\AdventOfCode\Day4\obj\Debug\netcoreapp3.0\Day4.csprojAssemblyReference.cache
+X:\GitHub\AdventOfCode\Day4\obj\Debug\netcoreapp3.0\Day4.AssemblyInfoInputs.cache
+X:\GitHub\AdventOfCode\Day4\obj\Debug\netcoreapp3.0\Day4.AssemblyInfo.cs
+X:\GitHub\AdventOfCode\Day4\obj\Debug\netcoreapp3.0\Day4.dll
+X:\GitHub\AdventOfCode\Day4\obj\Debug\netcoreapp3.0\Day4.pdb
