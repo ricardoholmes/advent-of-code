@@ -1,0 +1,11 @@
+X:\GitHub\AdventOfCode\Day7\obj\Debug\netcoreapp3.0\Day7.csprojAssemblyReference.cache
+X:\GitHub\AdventOfCode\Day7\obj\Debug\netcoreapp3.0\Day7.AssemblyInfoInputs.cache
+X:\GitHub\AdventOfCode\Day7\obj\Debug\netcoreapp3.0\Day7.AssemblyInfo.cs
+X:\GitHub\AdventOfCode\Day7\bin\Debug\netcoreapp3.0\Day7.exe
+X:\GitHub\AdventOfCode\Day7\bin\Debug\netcoreapp3.0\Day7.deps.json
+X:\GitHub\AdventOfCode\Day7\bin\Debug\netcoreapp3.0\Day7.runtimeconfig.json
+X:\GitHub\AdventOfCode\Day7\bin\Debug\netcoreapp3.0\Day7.runtimeconfig.dev.json
+X:\GitHub\AdventOfCode\Day7\bin\Debug\netcoreapp3.0\Day7.dll
+X:\GitHub\AdventOfCode\Day7\bin\Debug\netcoreapp3.0\Day7.pdb
+X:\GitHub\AdventOfCode\Day7\obj\Debug\netcoreapp3.0\Day7.dll
+X:\GitHub\AdventOfCode\Day7\obj\Debug\netcoreapp3.0\Day7.pdb
