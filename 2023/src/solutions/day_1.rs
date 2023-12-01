@@ -16,20 +16,16 @@ pub fn run() -> Result<(), String> {
 
 fn part_one(input_str: &&str) -> Result<u32, String> {
     match parse_input(input_str, false) {
-        Ok(input) => Ok(sum(input)),
+        Ok(input) => Ok(input.iter().sum()),
         Err(e) => Err(e),
     }
 }
 
 fn part_two(input_str: &&str) -> Result<u32, String> {
     match parse_input(input_str, true) {
-        Ok(input) => Ok(sum(input)),
+        Ok(input) => Ok(input.iter().sum()),
         Err(e) => Err(e),
     }
-}
-
-fn sum(list: Vec<u32>) -> u32 {
-    list.iter().fold(0, |total, x| total + x)
 }
 
 fn parse_input(input_str: &&str, only_digits: bool) -> Result<Vec<u32>, String> {
