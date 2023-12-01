@@ -1,22 +1,29 @@
-pub fn run() {
-    let input_str = include_str!("../../inputs/input_1.txt")
+pub fn run() -> Result<(), String> {
+    let input_str = include_str!("../../inputs/input_1.txt");
+
+    let input_str = input_str
         .strip_suffix('\n')
-        .unwrap();
+        .unwrap_or(input_str)
+        .to_string();
 
     let input: Vec<u32> = input_str
         .split(",")
         .map(|s| s.parse().expect("parse error"))
         .collect();
 
-    part_one(&input);
-    // part_two(&input);
+    match part_one(&input) {
+        Ok(_) => (),
+        Err(e) => return Err(e),
+    };
+    part_two(&input)
 }
 
-fn part_one(input: &[u32]) {
-    // get the biggest sum
+fn part_one(input: &[u32]) -> Result<(), String> {
     println!("Part one: HELLO");
+    Ok(())
 }
 
-fn part_two(input: &[u32]) {
+fn part_two(input: &[u32]) -> Result<(), String> {
     println!("Part two: HELLO");
+    Ok(())
 }
