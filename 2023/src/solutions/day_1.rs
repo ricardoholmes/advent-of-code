@@ -7,7 +7,7 @@ pub fn run() -> Result<(), String> {
     };
 
     match part_two(&input_str) {
-        Ok(n) => println!("Part one: {n}"),
+        Ok(n) => println!("Part two: {n}"),
         Err(e) => return Err(e),
     };
 
