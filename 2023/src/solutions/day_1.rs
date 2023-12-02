@@ -15,14 +15,14 @@ pub fn run() -> Result<(), String> {
 }
 
 fn part_one(input_str: &&str) -> Result<u32, String> {
-    match parse_input(input_str, false) {
+    match parse_input(input_str, true) {
         Ok(input) => Ok(input.iter().sum()),
         Err(e) => Err(e),
     }
 }
 
 fn part_two(input_str: &&str) -> Result<u32, String> {
-    match parse_input(input_str, true) {
+    match parse_input(input_str, false) {
         Ok(input) => Ok(input.iter().sum()),
         Err(e) => Err(e),
     }
@@ -33,7 +33,7 @@ fn parse_input(input_str: &&str, only_digits: bool) -> Result<Vec<u32>, String> 
         "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
     ];
 
-    Ok(input_str
+    let parsed: Vec<u32> = input_str
         .lines()
         .map(|s| {
             let digits =
@@ -65,5 +65,43 @@ fn parse_input(input_str: &&str, only_digits: bool) -> Result<Vec<u32>, String> 
 
             (10 * digits.clone().next().unwrap()) + digits.last().unwrap()
         })
-        .collect())
+        .collect();
+
+    Ok(parsed)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_part1() {
+        let example: &str = "
+            1abc2
+            pqr3stu8vwx
+            a1b2c3d4e5f
+            treb7uchet
+        "
+        .trim();
+
+        let result = part_one(&example);
+        assert_eq!(result, Ok(142));
+    }
+
+    #[test]
+    fn test_part2() {
+        let example: &str = "
+            two1nine
+            eightwothree
+            abcone2threexyz
+            xtwone3four
+            4nineeightseven2
+            zoneight234
+            7pqrstsixteen
+        "
+        .trim();
+
+        let result = part_two(&example);
+        assert_eq!(result, Ok(281));
+    }
 }
