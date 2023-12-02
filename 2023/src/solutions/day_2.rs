@@ -4,13 +4,11 @@ struct Game {
     id: u32,
     red: u32,
     green: u32,
-    blue: u32
+    blue: u32,
 }
 
 pub fn run() -> Result<(), String> {
-    let input: Vec<&str> = include_str!("../../inputs/input_2.txt")
-        .lines()
-        .collect();
+    let input: Vec<&str> = include_str!("../../inputs/input_2.txt").lines().collect();
 
     // each element is: (id, [max_red_count, max_green_count, max_blue_count])
     let mut games: Vec<Game> = vec![];
@@ -64,25 +62,19 @@ pub fn run() -> Result<(), String> {
 }
 
 fn part_one(games: &[Game]) -> Result<u32, String> {
-    Ok(games
-        .iter()
-        .fold(0, |total, game|
-            total + if game.red > 12 || 
-                        game.green > 13 ||
-                        game.blue > 14 {
+    Ok(games.iter().fold(0, |total, game| {
+        total
+            + if game.red > 12 || game.green > 13 || game.blue > 14 {
                 0
             } else {
                 game.id
             }
-        )
-    )
+    }))
 }
 
 fn part_two(games: &[Game]) -> Result<u32, String> {
     Ok(games
         .iter()
-        .map(|game|
-            game.red * game.green * game.blue
-        ).sum()
-    )
+        .map(|game| game.red * game.green * game.blue)
+        .sum())
 }

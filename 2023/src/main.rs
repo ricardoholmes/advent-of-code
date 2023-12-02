@@ -1,20 +1,18 @@
 use std::env;
-use std::io;
 use std::fs;
+use std::io;
 use std::io::Write;
 
-mod solutions;
 mod common;
+mod solutions;
 
 fn main() -> Result<(), String> {
     match get_day_num() {
-        Ok(day_num) => {
-            match day_num {
-                Some(day) => run_day(day),
-                None => run_all(),
-            }
+        Ok(day_num) => match day_num {
+            Some(day) => run_day(day),
+            None => run_all(),
         },
-        Err(e) => Err(e)
+        Err(e) => Err(e),
     }
 }
 
@@ -37,19 +35,20 @@ fn run_all() -> Result<(), String> {
         Err(e) => return Err(e.to_string()),
     };
 
-    let latest_solution = dir.filter(|file| 
-        {
+    let latest_solution = dir
+        .filter(|file| {
             let filename = match file {
-                    Ok(f) => f,
-                    Err(_) => return false,
-            }.file_name();
+                Ok(f) => f,
+                Err(_) => return false,
+            }
+            .file_name();
 
             match filename.to_str() {
                 Some(filename) => filename.starts_with("day"),
                 None => false,
             }
-        }
-    ).fold(0, |sum, _| sum + 1);
+        })
+        .fold(0, |sum, _| sum + 1);
 
     println!("======================================");
     println!("  A D V E N T  O F  C O D E  2 0 2 3  ");
@@ -94,10 +93,12 @@ fn get_day_num() -> Result<Option<u16>, String> {
 
     match day_num.parse() {
         Ok(n) => Ok(Some(n)),
-        Err(e) => if day_num == "all" {
-            Ok(None)
-        } else {
-            Err(e.to_string())
+        Err(e) => {
+            if day_num == "all" {
+                Ok(None)
+            } else {
+                Err(e.to_string())
+            }
         }
     }
 }
