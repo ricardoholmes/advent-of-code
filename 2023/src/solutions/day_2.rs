@@ -1,3 +1,5 @@
+use crate::safe_unpack;
+
 struct Game {
     id: u32,
     red: u32,
@@ -14,27 +16,25 @@ pub fn run() -> Result<(), String> {
     let mut games: Vec<Game> = vec![];
 
     for line in &input {
-        let line_split: Vec<&str> = line.split(": ").collect();
-        
+        safe_unpack!(line.split(": "), id, game_str);
+
         let mut game = Game {
-            id: line_split[0].split_ascii_whitespace().last().unwrap().parse().unwrap(),
+            id: id.split_ascii_whitespace().last().unwrap().parse().unwrap(),
             red: 0,
             green: 0,
             blue: 0,
         };
 
-        let game_str = line_split[1].replace("; ", ", ");
+        let game_str = game_str.replace("; ", ", ");
         let game_properties = game_str.split(", ");
 
         for property in game_properties {
-            let split: Vec<&str> = property.split_ascii_whitespace().collect();
+            safe_unpack!(property.split_ascii_whitespace(), count, color);
 
-            let count: u32 = match split[0].parse() {
+            let count: u32 = match count.parse() {
                 Ok(c) => c,
                 Err(e) => return Err(e.to_string()),
             };
-
-            let color = split[1];
 
             if color == "red" && count > game.red {
                 game.red = count;

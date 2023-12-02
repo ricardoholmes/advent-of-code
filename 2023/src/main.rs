@@ -4,6 +4,7 @@ use std::fs;
 use std::io::Write;
 
 mod solutions;
+mod common;
 
 fn main() -> Result<(), String> {
     match get_day_num() {
