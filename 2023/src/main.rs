@@ -1,12 +1,15 @@
 extern crate colored;
 
-use std::env;
-use std::fs;
-use std::io;
-use std::io::Write;
+use crate::common::day_info::*;
 
 mod common;
 mod solutions;
+
+use std::{
+    env,
+    io,
+    io::Write,
+};
 
 fn main() -> Result<(), String> {
     match get_day_num() {
@@ -18,7 +21,7 @@ fn main() -> Result<(), String> {
     }
 }
 
-fn run_day(day: u16) -> Result<(), String> {
+fn run_day(day: u8) -> Result<(), String> {
     println!("\n--- Day {day} ---");
 
     let t = std::time::Instant::now();
@@ -32,31 +35,17 @@ fn run_day(day: u16) -> Result<(), String> {
 }
 
 fn run_all() -> Result<(), String> {
-    let dir = match fs::read_dir("src/solutions") {
-        Ok(d) => d,
-        Err(e) => return Err(e.to_string()),
+
+    let day_nums = match get_all_day_nums() {
+        Ok(days) => days,
+        Err(e) => return Err(e),
     };
-
-    let latest_solution = dir
-        .filter(|file| {
-            let filename = match file {
-                Ok(f) => f,
-                Err(_) => return false,
-            }
-            .file_name();
-
-            match filename.to_str() {
-                Some(filename) => filename.starts_with("day"),
-                None => false,
-            }
-        })
-        .fold(0, |sum, _| sum + 1);
 
     println!("======================================");
     println!("  A D V E N T  O F  C O D E  2 0 2 3  ");
     println!("======================================");
     let start_time = std::time::Instant::now();
-    for day_num in 1..=latest_solution {
+    for day_num in day_nums {
         match run_day(day_num) {
             Ok(_) => (),
             Err(e) => return Err(e),
@@ -72,7 +61,7 @@ fn run_all() -> Result<(), String> {
     Ok(())
 }
 
-fn get_day_num() -> Result<Option<u16>, String> {
+fn get_day_num() -> Result<Option<u8>, String> {
     // check sys_args for day num
     let sys_args: Vec<String> = env::args().collect();
 
@@ -80,7 +69,7 @@ fn get_day_num() -> Result<Option<u16>, String> {
         Some(x) => x.to_owned(),
         None => {
             let mut buffer = String::new();
-            print!("\nEnter the question number: ");
+            print!("\nEnter the day number: ");
             match io::stdout().flush() {
                 Ok(_) => (),
                 Err(e) => return Err(e.to_string()),

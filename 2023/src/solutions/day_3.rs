@@ -1,8 +1,8 @@
 use colored::Colorize;
 use std::collections::HashSet;
 
-pub fn run() -> Result<(), String> {
-    let input: Vec<Vec<char>> = include_str!("../../inputs/input_3.txt")
+pub fn run(input_raw: &str) -> Result<(), String> {
+    let input: Vec<Vec<char>> = input_raw
         .lines()
         .map(|line| line.chars().collect())
         .collect();

@@ -1,12 +1,14 @@
+use crate::run_day;
+
 mod day_1;
 mod day_2;
 mod day_3;
 
-pub fn run(day: u16) -> Result<(), String> {
+pub fn run(day: u8) -> Result<(), String> {
     match day {
-        1 => day_1::run(),
-        2 => day_2::run(),
-        3 => day_3::run(),
+        1 => run_day!(day_1, 1),
+        2 => run_day!(day_2, 2),
+        3 => run_day!(day_3, 3),
         _ => Err(String::from("Invalid day number")),
     }
 }

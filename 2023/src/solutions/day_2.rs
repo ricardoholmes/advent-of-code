@@ -8,8 +8,8 @@ struct Game {
     blue: u32,
 }
 
-pub fn run() -> Result<(), String> {
-    let input: Vec<&str> = include_str!("../../inputs/input_2.txt").lines().collect();
+pub fn run(input_raw: &str) -> Result<(), String> {
+    let input: Vec<&str> = input_raw.lines().collect();
 
     let games = match parse_input(&input) {
         Ok(games) => games,

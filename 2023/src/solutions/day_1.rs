@@ -1,12 +1,10 @@
-pub fn run() -> Result<(), String> {
-    let input_str = include_str!("../../inputs/input_1.txt");
-
-    match part_one(&input_str) {
+pub fn run(input_raw: &str) -> Result<(), String> {
+    match part_one(&input_raw) {
         Ok(n) => println!("Part one: {n}"),
         Err(e) => return Err(e),
     };
 
-    match part_two(&input_str) {
+    match part_two(&input_raw) {
         Ok(n) => println!("Part two: {n}"),
         Err(e) => return Err(e),
     };
@@ -76,14 +74,14 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        let example: &str = include_str!("../../examples/day_1_1.txt").trim();
+        let example: &str = include_str!("../../examples/day_1_1.txt");
         let result = part_one(&example);
         assert_eq!(result, Ok(142));
     }
 
     #[test]
     fn test_part2() {
-        let example: &str = include_str!("../../examples/day_1_2.txt").trim();
+        let example: &str = include_str!("../../examples/day_1_2.txt");
         let result = part_two(&example);
         assert_eq!(result, Ok(281));
     }
