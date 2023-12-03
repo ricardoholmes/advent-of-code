@@ -16,15 +16,11 @@ pub fn run(input_raw: &str) -> Result<(), String> {
         Err(e) => return Err(e),
     };
 
-    match part_one(&games) {
-        Ok(n) => println!("Part one: {n}"),
-        Err(e) => return Err(e),
-    };
+    let answer_part_one = part_one(&games)?;
+    println!("Part one: {}", answer_part_one);
 
-    match part_two(&games) {
-        Ok(n) => println!("Part two: {n}"),
-        Err(e) => return Err(e),
-    };
+    let answer_part_two = part_two(&games)?;
+    println!("Part two: {}", answer_part_two);
 
     Ok(())
 }

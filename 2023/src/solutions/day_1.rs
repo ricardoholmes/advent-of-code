@@ -1,13 +1,9 @@
 pub fn run(input_raw: &str) -> Result<(), String> {
-    match part_one(&input_raw) {
-        Ok(n) => println!("Part one: {n}"),
-        Err(e) => return Err(e),
-    };
+    let answer_part_one = part_one(&input_raw)?;
+    println!("Part one: {}", answer_part_one);
 
-    match part_two(&input_raw) {
-        Ok(n) => println!("Part two: {n}"),
-        Err(e) => return Err(e),
-    };
+    let answer_part_two = part_two(&input_raw)?;
+    println!("Part two: {}", answer_part_two);
 
     Ok(())
 }
@@ -54,8 +50,7 @@ fn parse_input(input_str: &&str, only_digits: bool) -> Result<Vec<u32>, String> 
                                 Some(&"seven") => Some(7),
                                 Some(&"eight") => Some(8),
                                 Some(&"nine") => Some(9),
-                                Some(_) => None,
-                                None => None,
+                                _ => None,
                             }
                         }
                     }

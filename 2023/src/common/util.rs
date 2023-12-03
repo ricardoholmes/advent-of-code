@@ -3,7 +3,7 @@ use std::fs;
 pub fn get_all_day_nums() -> Result<Vec<u8>, String> {
     let dir = match fs::read_dir("src/solutions") {
         Ok(d) => d,
-        Err(e) => return Err(String::from("Input file could not be found")),
+        _ => return Err(String::from("Input file could not be found")),
     };
 
     let mut days: Vec<u8> = dir

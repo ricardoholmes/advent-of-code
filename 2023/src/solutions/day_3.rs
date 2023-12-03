@@ -1,4 +1,3 @@
-use colored::Colorize;
 use std::collections::HashSet;
 
 pub fn run(input_raw: &str) -> Result<(), String> {
@@ -7,15 +6,11 @@ pub fn run(input_raw: &str) -> Result<(), String> {
         .map(|line| line.chars().collect())
         .collect();
 
-    match part_one(&input) {
-        Ok(n) => println!("Part one: {n}"),
-        Err(e) => return Err(e),
-    };
+    let answer_part_one = part_one(&input)?;
+    println!("Part one: {}", answer_part_one);
 
-    match part_two(&input) {
-        Ok(n) => println!("Part two: {n}"),
-        Err(e) => return Err(e),
-    };
+    let answer_part_two = part_two(&input)?;
+    println!("Part two: {}", answer_part_two);
 
     Ok(())
 }
@@ -144,28 +139,6 @@ fn get_num(num_coords: &mut HashSet<(usize, usize)>, line: &Vec<char>, x: usize,
     }
 
     num_str.parse().unwrap()
-}
-
-fn visualise(input: &Vec<Vec<char>>, num_coords: &HashSet<(usize, usize)>, symbol_coords: &HashSet<(usize, usize)>) {
-    for line_index in 0..input.len() {
-        let line = input.get(line_index).unwrap();
-        for char_index in 0..line.len() {
-            let c = line.get(char_index).unwrap().to_owned();
-            if num_coords.contains(&(line_index, char_index)) {
-                print!("{}", c.to_string().cyan());
-            }
-            else if c.is_numeric() {
-                print!("{}", c.to_string().red());
-            }
-            else if symbol_coords.contains(&(line_index, char_index)) {
-                print!("{}", c.to_string().yellow());
-            }
-            else {
-                print!("{c}");
-            }
-        }
-        println!();
-    }
 }
 
 #[cfg(test)]

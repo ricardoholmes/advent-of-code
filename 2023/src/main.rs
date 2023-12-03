@@ -1,63 +1,57 @@
 extern crate colored;
+extern crate scanf;
 
-use crate::common::day_info::*;
+use crate::common::util::*;
 
 mod common;
 mod solutions;
+mod visualisations;
 
 use std::{
     env,
-    io,
-    io::Write,
+    time::Instant,
 };
+use scanf::scanf;
 
 fn main() -> Result<(), String> {
-    match get_day_num() {
-        Ok(day_num) => match day_num {
-            Some(day) => run_day(day),
-            None => run_all(),
-        },
-        Err(e) => Err(e),
+    match get_day_num()? {
+        Some(day) => run_day(day),
+        None => run_all(),
     }
 }
 
 fn run_day(day: u8) -> Result<(), String> {
     println!("\n--- Day {day} ---");
 
-    let t = std::time::Instant::now();
-    match solutions::run(day) {
-        Ok(_) => (),
-        Err(e) => return Err(e),
-    };
+    let start_time = Instant::now();
 
-    println!("Time taken: {:?}", std::time::Instant::now() - t);
+    solutions::run(day)?;
+
+    println!("Time taken: {:?}", Instant::now() - start_time);
     Ok(())
 }
 
 fn run_all() -> Result<(), String> {
+    let day_nums = get_all_day_nums()?;
 
-    let day_nums = match get_all_day_nums() {
-        Ok(days) => days,
-        Err(e) => return Err(e),
-    };
+    let start_time = Instant::now();
 
     println!("======================================");
     println!("  A D V E N T  O F  C O D E  2 0 2 3  ");
     println!("======================================");
-    let start_time = std::time::Instant::now();
-    for day_num in day_nums {
-        match run_day(day_num) {
-            Ok(_) => (),
-            Err(e) => return Err(e),
-        }
-    }
-    println!();
 
+    for day_num in day_nums {
+        run_day(day_num)?;
+    }
+
+    println!();
     println!("=================");
     println!(" F I N I S H E D ");
     println!("=================");
 
-    println!("Done in {:?}", std::time::Instant::now() - start_time);
+    println!();
+    println!("Done in {:?}", Instant::now() - start_time);
+
     Ok(())
 }
 
@@ -68,17 +62,10 @@ fn get_day_num() -> Result<Option<u8>, String> {
     let day_num: String = match sys_args.get(1) {
         Some(x) => x.to_owned(),
         None => {
-            let mut buffer = String::new();
+            let mut user_input = String::new();
             print!("\nEnter the day number: ");
-            match io::stdout().flush() {
-                Ok(_) => (),
-                Err(e) => return Err(e.to_string()),
-            };
-            match io::stdin().read_line(&mut buffer) {
-                Ok(_) => (),
-                Err(e) => return Err(e.to_string()),
-            };
-            buffer.trim().to_string()
+            try_get_ok!(scanf!("{}", user_input));
+            user_input
         }
     };
 

@@ -1,2 +1,2 @@
-pub mod day_info;
+pub mod util;
 mod macros;
