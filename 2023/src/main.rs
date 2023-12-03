@@ -4,12 +4,10 @@ extern crate scanf;
 mod common;
 mod solutions;
 
-use std::{
-    env,
-    time::Instant,
-};
-use scanf::scanf;
+use std::{env, time::Instant};
+
 use common::util::*;
+use scanf::scanf;
 
 fn main() -> Result<(), String> {
     match get_day_num()? {
@@ -25,7 +23,8 @@ fn run_day(day: u8) -> Result<(), String> {
 
     solutions::run(day)?;
 
-    println!("Time taken: {:?}", Instant::now() - start_time);
+    let time_taken = Instant::now() - start_time;
+    println!("Time taken: {}", color_time_taken(time_taken));
     Ok(())
 }
 

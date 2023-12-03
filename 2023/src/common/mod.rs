@@ -1,2 +1,2 @@
-pub mod util;
 mod macros;
+pub mod util;

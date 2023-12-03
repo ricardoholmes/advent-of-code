@@ -94,9 +94,7 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        let example: Vec<&str> = include_str!("../../examples/day_2_1.txt")
-            .lines()
-            .collect();
+        let example: Vec<&str> = include_str!("../../examples/day_2_1.txt").lines().collect();
 
         let parsed = parse_input(&example).unwrap();
         let result = part_one(&parsed);
@@ -105,9 +103,7 @@ mod tests {
 
     #[test]
     fn test_part2() {
-        let example: Vec<&str> = include_str!("../../examples/day_2_1.txt")
-            .lines()
-            .collect();
+        let example: Vec<&str> = include_str!("../../examples/day_2_1.txt").lines().collect();
 
         let parsed = parse_input(&example).unwrap();
         let result = part_two(&parsed);

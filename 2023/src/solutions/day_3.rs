@@ -47,10 +47,11 @@ fn parse(input_raw: &str) -> Result<Vec<Symbol>, String> {
             let mut nums: Vec<Num> = vec![];
             let mut num_coords_adjacent: HashSet<(usize, usize)> = HashSet::new();
 
-            let lines_range = (line_index.max(1)-1)..=(line_index+1).min(input.len()-1);
+            let lines_range = (line_index.max(1) - 1)..=(line_index + 1).min(input.len() - 1);
             for y in lines_range {
                 let adj_line = input.get(y).unwrap();
-                let chars_range = (char_index.max(1)-1)..=(char_index+1).min(adj_line.len()-1);
+                let chars_range =
+                    (char_index.max(1) - 1)..=(char_index + 1).min(adj_line.len() - 1);
                 for x in chars_range {
                     if num_coords_adjacent.contains(&(y, x)) {
                         continue;
@@ -67,7 +68,7 @@ fn parse(input_raw: &str) -> Result<Vec<Symbol>, String> {
             if nums.len() > 0 {
                 symbols.push(Symbol {
                     ch,
-                    nums_adjacent: nums
+                    nums_adjacent: nums,
                 });
 
                 num_coords.extend(&num_coords_adjacent);
