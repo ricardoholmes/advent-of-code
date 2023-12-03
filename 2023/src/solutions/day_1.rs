@@ -76,31 +76,14 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        let example: &str = "
-            1abc2
-            pqr3stu8vwx
-            a1b2c3d4e5f
-            treb7uchet
-        "
-        .trim();
-
+        let example: &str = include_str!("../../examples/day_1_1.txt").trim();
         let result = part_one(&example);
         assert_eq!(result, Ok(142));
     }
 
     #[test]
     fn test_part2() {
-        let example: &str = "
-            two1nine
-            eightwothree
-            abcone2threexyz
-            xtwone3four
-            4nineeightseven2
-            zoneight234
-            7pqrstsixteen
-        "
-        .trim();
-
+        let example: &str = include_str!("../../examples/day_1_2.txt").trim();
         let result = part_two(&example);
         assert_eq!(result, Ok(281));
     }

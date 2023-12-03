@@ -174,8 +174,7 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        let example: Vec<Vec<char>> = include_str!("../../examples/day3_1.txt")
-            .trim()
+        let example: Vec<Vec<char>> = include_str!("../../examples/day_3_1.txt")
             .lines()
             .map(|line| line.chars().collect())
             .collect();
@@ -186,8 +185,7 @@ mod tests {
 
     #[test]
     fn test_part2() {
-        let example: Vec<Vec<char>> = include_str!("../../examples/day3_1.txt")
-            .trim()
+        let example: Vec<Vec<char>> = include_str!("../../examples/day_3_1.txt")
             .lines()
             .map(|line| line.chars().collect())
             .collect();
