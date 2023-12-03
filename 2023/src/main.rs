@@ -1,17 +1,15 @@
 extern crate colored;
 extern crate scanf;
 
-use crate::common::util::*;
-
 mod common;
 mod solutions;
-mod visualisations;
 
 use std::{
     env,
     time::Instant,
 };
 use scanf::scanf;
+use common::util::*;
 
 fn main() -> Result<(), String> {
     match get_day_num()? {
