@@ -12,10 +12,10 @@ pub fn run(input_raw: &str) -> Result<(), String> {
     Ok(())
 }
 
-fn parse(input_raw: &str) -> Result<(Vec<u32>, Vec<Vec<[u32; 3]>>), String> {
+fn parse(input_raw: &str) -> Result<(Vec<u64>, Vec<Vec<[u64; 3]>>), String> {
     let mut input = input_raw.lines();
 
-    let seeds: Vec<u32> = input
+    let seeds: Vec<u64> = input
         .next()
         .unwrap()
         .split(": ")
@@ -28,7 +28,7 @@ fn parse(input_raw: &str) -> Result<(Vec<u32>, Vec<Vec<[u32; 3]>>), String> {
     input.next();
 
     let mut i = 0;
-    let mut maps: Vec<Vec<[u32; 3]>> = vec![vec![]];
+    let mut maps: Vec<Vec<[u64; 3]>> = vec![vec![]];
     for line in input {
         if line == "" {
             i += 1;
@@ -40,18 +40,18 @@ fn parse(input_raw: &str) -> Result<(Vec<u32>, Vec<Vec<[u32; 3]>>), String> {
             continue;
         }
 
-        safe_unpack!(line.split_ascii_whitespace().map(|n| n.parse::<u32>().unwrap()), a, b, c);
+        safe_unpack!(line.split_ascii_whitespace().map(|n| n.parse::<u64>().unwrap()), a, b, c);
         maps[i].push([a, b, c]);
     }
 
     Ok((seeds, maps))
 }
 
-fn part_one(solutions: &(Vec<u32>, Vec<Vec<[u32; 3]>>)) -> Result<u32, String> {
+fn part_one(solutions: &(Vec<u64>, Vec<Vec<[u64; 3]>>)) -> Result<u64, String> {
     let (mut seeds, maps) = solutions.clone();
 
     for map in maps {
-        let mut out: Vec<u32> = vec![];
+        let mut out: Vec<u64> = vec![];
         for seed in &seeds {
             let out_len_start = out.len();
             for mapping in &map {
@@ -74,19 +74,19 @@ fn part_one(solutions: &(Vec<u32>, Vec<Vec<[u32; 3]>>)) -> Result<u32, String> {
     Ok(*seeds.iter().min().unwrap())
 }
 
-fn part_two(solutions: &(Vec<u32>, Vec<Vec<[u32; 3]>>)) -> Result<u32, String> {
+fn part_two(solutions: &(Vec<u64>, Vec<Vec<[u64; 3]>>)) -> Result<u64, String> {
     let (seeds, maps) = solutions.clone();
 
     // each tuple represents (start_of_range, end_of_range)
-    let mut seed_ranges: Vec<(u32, u32)> = seeds
+    let mut seed_ranges: Vec<(u64, u64)> = seeds
         .chunks(2)
         .map(|range| (range[0], range[0] + range[1] - 1))
         .collect();
 
     for map in maps {
-        let mut out: Vec<(u32, u32)> = vec![];
+        let mut out: Vec<(u64, u64)> = vec![];
         for seed_range in seed_ranges {
-            let mut remaining_ranges: Vec<(u32, u32)> = vec![seed_range];
+            let mut remaining_ranges: Vec<(u64, u64)> = vec![seed_range];
             for mapping in &map {
                 safe_unpack!(mapping.iter(), dest_start, source_start, search_range);
                 let (dest_start, source_start, search_range) = (*dest_start, *source_start, *search_range);
