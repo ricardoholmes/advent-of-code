@@ -13,45 +13,21 @@ pub fn run(input_raw: &str) -> Result<(), String> {
 }
 
 fn parse(input_raw: &str) -> Result<(Vec<(u64, u64)>, (u64, u64)), String> {
-    let mut lines = input_raw.lines();
+    let mut lines_parsed = input_raw
+        .lines()
+        .map(|line| line
+            .split_ascii_whitespace()
+            .filter(|s| !s.is_empty())
+            .skip(1)
+        );
 
-    let mut times_raw: Vec<char> = lines
-        .next()
-        .unwrap()
-        .chars()
-        .collect();
+    let times_line = lines_parsed.next().unwrap();
+    let times = times_line.clone().map(|n| n.parse::<u64>().unwrap());
+    let time_part2: String = times_line.collect();
 
-    let mut times: Vec<u64> = vec![];
-    let mut time_part2: String = String::new();
-    loop {
-        times_raw = times_raw.iter().skip_while(|c| c.is_numeric()).skip_while(|c| !c.is_numeric()).map(|c| c.to_owned()).collect();
-        if times_raw.len() == 0 {
-            break;
-        }
-        let time_string: String = times_raw.iter().take_while(|c| c.is_numeric()).map(|c| *c).collect();
-        time_part2 = format!("{time_part2}{}", time_string);
-        let time: u64 = time_string.parse().unwrap();
-        times.push(time);
-    }
-
-    let mut distances_raw: Vec<char> = lines
-        .next()
-        .unwrap()
-        .chars()
-        .collect();
-
-    let mut distances: Vec<u64> = vec![];
-    let mut distance_part2: String = String::new();
-    loop {
-        distances_raw = distances_raw.iter().skip_while(|c| c.is_numeric()).skip_while(|c| !c.is_numeric()).map(|c| c.to_owned()).collect();
-        if distances_raw.len() == 0 {
-            break;
-        }
-        let distance_string: String = distances_raw.iter().take_while(|c| c.is_numeric()).map(|c| *c).collect();
-        distance_part2 = format!("{distance_part2}{}", distance_string);
-        let distance: u64 = distance_string.parse().unwrap();
-        distances.push(distance);
-    }
+    let distances_line = lines_parsed.next().unwrap();
+    let distances = distances_line.clone().map(|n| n.parse::<u64>().unwrap());
+    let distance_part2: String = distances_line.collect();
 
     Ok((zip(times, distances).collect(), (time_part2.parse().unwrap(), distance_part2.parse().unwrap())))
 }
