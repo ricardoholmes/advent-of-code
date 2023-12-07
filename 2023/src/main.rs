@@ -11,6 +11,7 @@ use scanf::scanf;
 
 use crate::common::times_taken::TimesTaken;
 
+#[derive(PartialEq)]
 enum Mode {
     Day(u8),
     All,
@@ -118,7 +119,7 @@ fn benchmark(mode: Mode) -> Result<(), String> {
                     let (_, _, times) = solutions::run(*day)?;
                     total_times += times;
                 }
-                (0, 0, TimesTaken::divide(&total_times, day_nums.len() as u32))
+                (0, 0, total_times)
             },
             _ => return Err(String::from("Invalid mode.")),
         };
@@ -130,7 +131,11 @@ fn benchmark(mode: Mode) -> Result<(), String> {
     }
     println!("[{}]\n", "#".repeat(PROGRESS_BAR_LENGTH));
 
-    let average_times = TimesTaken::divide(&total_times, BENCHMARK_REPETITIONS as u32);
+    let mut average_times = TimesTaken::divide(&total_times, BENCHMARK_REPETITIONS as u32);
+
+    if mode == Mode::BenchmarkAll {
+        average_times = TimesTaken::divide(&average_times, day_nums.len() as u32);
+    }
 
     println!("Total times taken:");
     print_times_nicely(total_times);
