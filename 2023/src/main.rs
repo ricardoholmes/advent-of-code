@@ -21,10 +21,21 @@ fn run_day(day: u8) -> Result<(), String> {
 
     let start_time = Instant::now();
 
-    solutions::run(day)?;
+    let (parse_time, part_one_time, part_two_time) = solutions::run(day)?;
 
     let time_taken = Instant::now() - start_time;
-    println!("Time taken: {}", color_time_taken(time_taken));
+    if env::args().find(|arg| arg == "-v").is_some() {
+        println!();
+        println!("Time taken   \t{}", color_time_taken(time_taken));
+        println!("Parsing time \t{}", color_time_taken(parse_time));
+        println!("Part one time\t{}", color_time_taken(part_one_time));
+        println!("Part two time\t{}", color_time_taken(part_two_time));
+        println!();
+    }
+    else {
+        println!("Time taken: {}", color_time_taken(time_taken));
+    }
+
     Ok(())
 }
 
