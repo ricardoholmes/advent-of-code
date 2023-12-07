@@ -30,20 +30,29 @@ macro_rules! run_day {
         let raw_input = crate::try_get_ok!(fs::read_to_string(input_path));
 
         let start_time = Instant::now();
+
+        // parse the input file
         let parsed = $day_mod::parse(raw_input.as_str())?;
         let parse_time = Instant::now() - start_time;
 
+        // run part one
         let part_one_start_time = Instant::now();
         let answer_part_one = $day_mod::part_one(&parsed)?;
         let part_one_time = Instant::now() - part_one_start_time;
-        println!("Part one: {}", answer_part_one);
 
+        // run part two
         let part_two_start_time = Instant::now();
         let answer_part_two = $day_mod::part_two(&parsed)?;
         let part_two_time = Instant::now() - part_two_start_time;
-        println!("Part two: {}", answer_part_two);
 
-        Ok((parse_time, part_one_time, part_two_time))
+        let total_time = Instant::now() - start_time;
+
+        Ok((answer_part_one as u64, answer_part_two as u64, TimesTaken {
+            total: total_time,
+            parsing: parse_time,
+            part_one: part_one_time,
+            part_two: part_two_time,
+        }))
     }};
 }
 

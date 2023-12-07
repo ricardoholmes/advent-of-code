@@ -58,3 +58,10 @@ pub fn color_time_taken(time_taken: Duration) -> ColoredString {
 
     format!("{time_taken:?}").color(color_order[color_order.len() - 1])
 }
+
+pub fn print_times_nicely(times: crate::TimesTaken) {
+    println!("Time taken   \t{}", color_time_taken(times.total));
+    println!("Parsing time \t{}", color_time_taken(times.parsing));
+    println!("Part one time\t{}", color_time_taken(times.part_one));
+    println!("Part two time\t{}", color_time_taken(times.part_two));
+}
