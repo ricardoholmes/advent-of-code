@@ -25,7 +25,7 @@ struct Settings {
     verbose: bool,
 }
 
-const BENCHMARK_REPETITIONS: usize = 1000;
+const BENCHMARK_REPETITIONS: usize = 5000;
 const PROGRESS_BAR_LENGTH: usize = 50;
 
 fn main() -> Result<(), String> {
