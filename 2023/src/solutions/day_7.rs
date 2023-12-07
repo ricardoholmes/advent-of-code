@@ -166,7 +166,6 @@ fn get_hand_type_with_joker(hand: &str) -> HandType {
 
     duplicates.sort_unstable_by_key(|i| i.1);
     let better_hand = hand.replace('J', duplicates.last().unwrap_or(&('A', 0)).0.to_string().as_str());
-    println!("{hand} -> {better_hand}");
     get_hand_type(&better_hand)
 }
 
