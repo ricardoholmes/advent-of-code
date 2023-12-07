@@ -1,21 +1,15 @@
-pub fn run(input_raw: &str) -> Result<(), String> {
-    let answer_part_one = part_one(&input_raw)?;
-    println!("Part one: {}", answer_part_one);
-
-    let answer_part_two = part_two(&input_raw)?;
-    println!("Part two: {}", answer_part_two);
-
-    Ok(())
+pub fn parse(input_raw: &str) -> Result<&str, String> {
+    Ok(input_raw)
 }
 
-fn part_one(input_str: &&str) -> Result<u32, String> {
+pub fn part_one(input_str: &&str) -> Result<u32, String> {
     match parse_input(input_str, true) {
         Ok(input) => Ok(input.iter().sum()),
         Err(e) => Err(e),
     }
 }
 
-fn part_two(input_str: &&str) -> Result<u32, String> {
+pub fn part_two(input_str: &&str) -> Result<u32, String> {
     match parse_input(input_str, false) {
         Ok(input) => Ok(input.iter().sum()),
         Err(e) => Err(e),

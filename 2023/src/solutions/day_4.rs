@@ -1,18 +1,6 @@
 use crate::safe_unpack;
 
-pub fn run(input_raw: &str) -> Result<(), String> {
-    let solutions = parse(input_raw)?;
-
-    let answer_part_one = part_one(&solutions)?;
-    println!("Part one: {}", answer_part_one);
-
-    let answer_part_two = part_two(&solutions)?;
-    println!("Part two: {}", answer_part_two);
-
-    Ok(())
-}
-
-fn parse(input_raw: &str) -> Result<(u32, u32), String> {
+pub fn parse(input_raw: &str) -> Result<(u32, u32), String> {
     let lines: Vec<&str> = input_raw.lines().collect();
 
     // variable needed for part 1
@@ -45,11 +33,11 @@ fn parse(input_raw: &str) -> Result<(u32, u32), String> {
     Ok((total, card_count))
 }
 
-fn part_one(solutions: &(u32, u32)) -> Result<u32, String> {
+pub fn part_one(solutions: &(u32, u32)) -> Result<u32, String> {
     Ok(solutions.0)
 }
 
-fn part_two(solutions: &(u32, u32)) -> Result<u32, String> {
+pub fn part_two(solutions: &(u32, u32)) -> Result<u32, String> {
     Ok(solutions.1)
 }
 

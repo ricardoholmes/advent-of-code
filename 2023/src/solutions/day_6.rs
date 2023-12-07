@@ -1,18 +1,6 @@
 use std::iter::zip;
 
-pub fn run(input_raw: &str) -> Result<(), String> {
-    let solutions = parse(input_raw)?;
-
-    let answer_part_one = part_one(&solutions)?;
-    println!("Part one: {}", answer_part_one);
-
-    let answer_part_two = part_two(&solutions)?;
-    println!("Part two: {}", answer_part_two);
-
-    Ok(())
-}
-
-fn parse(input_raw: &str) -> Result<(Vec<(u64, u64)>, (u64, u64)), String> {
+pub fn parse(input_raw: &str) -> Result<(Vec<(u64, u64)>, (u64, u64)), String> {
     let mut lines_parsed = input_raw
         .lines()
         .map(|line| line
@@ -32,7 +20,7 @@ fn parse(input_raw: &str) -> Result<(Vec<(u64, u64)>, (u64, u64)), String> {
     Ok((zip(times, distances).collect(), (time_part2.parse().unwrap(), distance_part2.parse().unwrap())))
 }
 
-fn part_one(solutions: &(Vec<(u64, u64)>, (u64, u64))) -> Result<u64, String> {
+pub fn part_one(solutions: &(Vec<(u64, u64)>, (u64, u64))) -> Result<u64, String> {
     let mut total = 1;
     for (time, distance) in solutions.0.clone() {
         total *= get_num_ways(time, distance);
@@ -41,7 +29,7 @@ fn part_one(solutions: &(Vec<(u64, u64)>, (u64, u64))) -> Result<u64, String> {
     Ok(total)
 }
 
-fn part_two(solutions: &(Vec<(u64, u64)>, (u64, u64))) -> Result<u64, String> {
+pub fn part_two(solutions: &(Vec<(u64, u64)>, (u64, u64))) -> Result<u64, String> {
     let (time, distance) = solutions.1;
 
     Ok(get_num_ways(time, distance))

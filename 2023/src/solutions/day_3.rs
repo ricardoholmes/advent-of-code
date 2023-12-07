@@ -1,30 +1,18 @@
 use std::collections::HashSet;
 
 #[derive(Clone, Copy)]
-struct Num {
+pub struct Num {
     value: u32,
     start_pos: (usize, usize),
 }
 
 #[derive(Clone)]
-struct Symbol {
+pub struct Symbol {
     ch: char,
     nums_adjacent: Vec<Num>,
 }
 
-pub fn run(input_raw: &str) -> Result<(), String> {
-    let symbols = parse(input_raw)?;
-
-    let answer_part_one = part_one(&symbols)?;
-    println!("Part one: {}", answer_part_one);
-
-    let answer_part_two = part_two(&symbols)?;
-    println!("Part two: {}", answer_part_two);
-
-    Ok(())
-}
-
-fn parse(input_raw: &str) -> Result<Vec<Symbol>, String> {
+pub fn parse(input_raw: &str) -> Result<Vec<Symbol>, String> {
     let input: Vec<Vec<char>> = input_raw
         .lines()
         .map(|line| line.chars().collect())
@@ -111,7 +99,7 @@ fn get_num(num_coords: &mut HashSet<(usize, usize)>, line: &Vec<char>, x: usize,
     }
 }
 
-fn part_one(symbols: &[Symbol]) -> Result<u32, String> {
+pub fn part_one(symbols: &[Symbol]) -> Result<u32, String> {
     let mut total = 0;
     let mut start_coords: HashSet<(usize, usize)> = HashSet::new();
     for symbol in symbols {
@@ -126,7 +114,7 @@ fn part_one(symbols: &[Symbol]) -> Result<u32, String> {
     Ok(total)
 }
 
-fn part_two(symbols: &[Symbol]) -> Result<u32, String> {
+pub fn part_two(symbols: &[Symbol]) -> Result<u32, String> {
     let mut total = 0;
     for symbol in symbols {
         let nums = symbol.nums_adjacent.clone();

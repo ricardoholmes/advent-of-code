@@ -11,19 +11,8 @@ enum HandType {
     FiveOfAKind,
 }
 
-pub fn run(input_raw: &str) -> Result<(), String> {
-    let solutions = parse(input_raw)?;
 
-    let answer_part_one = part_one(&solutions)?;
-    println!("Part one: {}", answer_part_one);
-
-    let answer_part_two = part_two(&solutions)?;
-    println!("Part two: {}", answer_part_two);
-
-    Ok(())
-}
-
-fn parse(input_raw: &str) -> Result<Vec<(&str, u32)>, String> {
+pub fn parse(input_raw: &str) -> Result<Vec<(&str, u32)>, String> {
     let lines_parsed: Vec<(&str, u32)> = input_raw
         .lines()
         .map(|line| {
@@ -39,7 +28,7 @@ fn parse(input_raw: &str) -> Result<Vec<(&str, u32)>, String> {
     Ok(lines_parsed)
 }
 
-fn part_one(input: &[(&str, u32)]) -> Result<u32, String> {
+pub fn part_one(input: &[(&str, u32)]) -> Result<u32, String> {
     let mut scored: Vec<(HandType, Vec<u32>, u32)> = vec![];
 
     for (hand, bid) in input {
@@ -74,7 +63,7 @@ fn part_one(input: &[(&str, u32)]) -> Result<u32, String> {
     Ok(total_winnings)
 }
 
-fn part_two(input: &[(&str, u32)]) -> Result<u32, String> {
+pub fn part_two(input: &[(&str, u32)]) -> Result<u32, String> {
     let mut scored: Vec<(HandType, Vec<u32>, u32)> = vec![];
 
     for (hand, bid) in input {

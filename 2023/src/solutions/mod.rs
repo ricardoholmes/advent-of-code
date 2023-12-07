@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use crate::run_day;
 
 mod day_1;
@@ -8,7 +10,7 @@ mod day_5;
 mod day_6;
 mod day_7;
 
-pub fn run(day: u8) -> Result<(), String> {
+pub fn run(day: u8) -> Result<(Duration, Duration, Duration), String> {
     match day {
         1 => run_day!(day_1, 1),
         2 => run_day!(day_2, 2),

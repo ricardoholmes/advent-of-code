@@ -1,18 +1,6 @@
 use crate::safe_unpack;
 
-pub fn run(input_raw: &str) -> Result<(), String> {
-    let solutions = parse(input_raw)?;
-
-    let answer_part_one = part_one(&solutions)?;
-    println!("Part one: {}", answer_part_one);
-
-    let answer_part_two = part_two(&solutions)?;
-    println!("Part two: {}", answer_part_two);
-
-    Ok(())
-}
-
-fn parse(input_raw: &str) -> Result<(Vec<u64>, Vec<Vec<[u64; 3]>>), String> {
+pub fn parse(input_raw: &str) -> Result<(Vec<u64>, Vec<Vec<[u64; 3]>>), String> {
     let mut input = input_raw.lines();
 
     let seeds: Vec<u64> = input
@@ -47,7 +35,7 @@ fn parse(input_raw: &str) -> Result<(Vec<u64>, Vec<Vec<[u64; 3]>>), String> {
     Ok((seeds, maps))
 }
 
-fn part_one(solutions: &(Vec<u64>, Vec<Vec<[u64; 3]>>)) -> Result<u64, String> {
+pub fn part_one(solutions: &(Vec<u64>, Vec<Vec<[u64; 3]>>)) -> Result<u64, String> {
     let (mut seeds, maps) = solutions.clone();
 
     for map in maps {
@@ -74,7 +62,7 @@ fn part_one(solutions: &(Vec<u64>, Vec<Vec<[u64; 3]>>)) -> Result<u64, String> {
     Ok(*seeds.iter().min().unwrap())
 }
 
-fn part_two(solutions: &(Vec<u64>, Vec<Vec<[u64; 3]>>)) -> Result<u64, String> {
+pub fn part_two(solutions: &(Vec<u64>, Vec<Vec<[u64; 3]>>)) -> Result<u64, String> {
     let (seeds, maps) = solutions.clone();
 
     // each tuple represents (start_of_range, end_of_range)
