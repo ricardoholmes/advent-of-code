@@ -47,57 +47,33 @@ pub fn part_one(input: &(Vec<char>, HashMap<&str, (&str, &str)>)) -> Result<u64,
 pub fn part_two(input: &(Vec<char>, HashMap<&str, (&str, &str)>)) -> Result<u64, String> {
     let (instructions, network) = input.clone();
     
-    let mut nodes: Vec<(&str, HashMap<(&str, usize), u64>)> = network
+    let mut nodes: Vec<&str> = network
         .keys()
         .filter(|key| key.ends_with("A"))
-        .map(|node| (*node, HashMap::new()))
+        .map(|key| *key)
         .collect();
 
-    let mut loops = vec![];
-    let mut instruction_index;
+    let mut completion_times = vec![];
     for node in nodes.iter_mut() {
-        instruction_index = 0;
-        let mut steps = 0;
-
-        node.1.insert((node.0, instruction_index), steps);
-
-        // (start_step_of_loop, length_of_loop, distance_to_ends)
-        let mut node_loop: (u64, u64, u64) = (0, 0, 0);
-        loop {
-            steps += 1;
-
+        let mut instruction_index = 0;
+        let mut steps: u64 = 0;
+        while !node.ends_with("Z") {
             let instruction = instructions[instruction_index];
-            node.0 = match instruction {
-                'L' => network.get(node.0).unwrap().0,
-                'R' => network.get(node.0).unwrap().1,
+            *node = match instruction {
+                'L' => network.get(node).unwrap().0,
+                'R' => network.get(node).unwrap().1,
                 _ => return Err(format!("Invalid character '{instruction}' in instructions")),
             };
-
-            if node_loop.1 == 0 {
-                if let Some(start_of_loop) = node.1.get(&(node.0, instruction_index)) {
-                    node_loop = (*start_of_loop, steps - start_of_loop, 0);
-                }
-                else {
-                    node.1.insert((node.0, instruction_index), steps);
-                }
-            }
-            else if node.0.ends_with("Z") {
-                node_loop.2 = steps - node_loop.1;
-            }
-
+            steps += 1;
             instruction_index = (instruction_index + 1) % instructions.len();
-
-            if node_loop.1 > 0 && steps - node_loop.0 > 2 * node_loop.1 {
-                break;
-            }
         }
 
-        loops.push(node_loop);
+        completion_times.push(steps);
     }
 
     let mut complete_time = 1;
-    for i in loops {
-        complete_time = lcm(complete_time, i.2);
+    for steps in completion_times {
+        complete_time = lcm(complete_time, steps);
     }
 
     Ok(complete_time)
