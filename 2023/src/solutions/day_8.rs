@@ -80,14 +80,16 @@ pub fn part_two(input: &(Vec<char>, HashMap<&str, (&str, &str)>)) -> Result<u64,
 }
 
 fn lcm(a: u64, b: u64) -> u64 {
-    let mut gcd = 1;
-    for i in 1..=a.min(b) {
-        if a % i == 0 && b % i == 0 {
-            gcd = i;
-        }
-    }
+    a * b / gcd(a, b)
+}
 
-    a * b / gcd
+fn gcd(a: u64, b: u64) -> u64 {
+    if b == 0 {
+        a
+    }
+    else {
+        gcd(b, a % b)
+    }
 }
 
 #[cfg(test)]
