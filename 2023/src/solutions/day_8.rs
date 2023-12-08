@@ -44,10 +44,10 @@ pub fn part_one(input: &(Vec<char>, HashMap<&str, (&str, &str)>)) -> Result<u64,
     Ok(steps)
 }
 
-pub fn part_two(input: &(Vec<char>, HashMap<&str, (&str, &str)>)) -> Result<u128, String> {
+pub fn part_two(input: &(Vec<char>, HashMap<&str, (&str, &str)>)) -> Result<u64, String> {
     let (instructions, network) = input.clone();
     
-    let mut nodes: Vec<(&str, HashMap<(&str, usize), u128>)> = network
+    let mut nodes: Vec<(&str, HashMap<(&str, usize), u64>)> = network
         .keys()
         .filter(|key| key.ends_with("A"))
         .map(|node| (*node, HashMap::new()))
@@ -62,7 +62,7 @@ pub fn part_two(input: &(Vec<char>, HashMap<&str, (&str, &str)>)) -> Result<u128
         node.1.insert((node.0, instruction_index), steps);
 
         // (start_step_of_loop, length_of_loop, distance_to_ends)
-        let mut node_loop: (u128, u128, u128) = (0, 0, 0);
+        let mut node_loop: (u64, u64, u64) = (0, 0, 0);
         loop {
             steps += 1;
 
@@ -95,30 +95,15 @@ pub fn part_two(input: &(Vec<char>, HashMap<&str, (&str, &str)>)) -> Result<u128
         loops.push(node_loop);
     }
 
-    let mut all_loop: (u128, u128, u128) = loops[0];
-    for (n, i) in loops.iter().enumerate() {
-        let i_length_big = i.1 * ((all_loop.2 / i.1) - 1);
-        let mut i_end = i.2 + i_length_big;
-        while all_loop.2 != i_end {
-            if i_end < all_loop.2 {
-                i_end += i.1;
-            }
-            else {
-                all_loop.2 += all_loop.1;
-            }
-        }
-        println!("{}", all_loop.2);
-
-        all_loop.1 = lcm(all_loop.1, i.1);
-        println!("{i:?} -> {all_loop:?} ({n} / {})", loops.len());
+    let mut complete_time = 1;
+    for i in loops {
+        complete_time = lcm(complete_time, i.2);
     }
 
-    println!("{all_loop:?}");
-
-    Ok(all_loop.2)
+    Ok(complete_time)
 }
 
-fn lcm(a: u128, b: u128) -> u128 {
+fn lcm(a: u64, b: u64) -> u64 {
     let mut gcd = 1;
     for i in 1..=a.min(b) {
         if a % i == 0 && b % i == 0 {
