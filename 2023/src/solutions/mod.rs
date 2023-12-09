@@ -8,8 +8,9 @@ mod day_5;
 mod day_6;
 mod day_7;
 mod day_8;
+mod day_9;
 
-pub fn run(day: u8) -> Result<(u64, u64, TimesTaken), String> {
+pub fn run(day: u8) -> Result<(i128, i128, TimesTaken), String> {
     match day {
         1 => run_day!(day_1, 1),
         2 => run_day!(day_2, 2),
@@ -19,6 +20,7 @@ pub fn run(day: u8) -> Result<(u64, u64, TimesTaken), String> {
         6 => run_day!(day_6, 6),
         7 => run_day!(day_7, 7),
         8 => run_day!(day_8, 8),
+        9 => run_day!(day_9, 9),
         _ => Err(String::from("Invalid day number")),
     }
 }
