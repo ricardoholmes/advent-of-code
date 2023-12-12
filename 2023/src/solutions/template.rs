@@ -1,26 +1,34 @@
-pub fn run() {
-    // read input
-    let input_str = include_str!("../../inputs/input_0.txt");
+type Parsed = ();
 
-    // read input and remove trailing newline
-    let input_str = include_str!("../../inputs/input_0.txt")
-        .strip_suffix('\n')
-        .unwrap();
+pub fn parse(input_raw: &str) -> Result<Vec<Parsed>, String> {
+    Err(format!("Not implemented"))
+}
 
-    // if input is a list of strings
-    let input: Vec<&str> = input_str
-        .split(",")
-        .collect();
+pub fn part_one(input: &[Parsed]) -> Result<usize, String> {
+    Ok(0)
+}
 
-    // if input is a list of integers
-    let input: Vec<i32> = input_str
-        .split(",")
-        .map(|s| s.parse().expect("parse error"))
-        .collect();
+pub fn part_two(input: &[Parsed]) -> Result<usize, String> {
+    Ok(0)
+}
 
-    // if input is a list of lists of integers
-    let input: Vec<Vec<u32>> = input_str
-        .lines()
-        .map(|s| s.split(",").map(|x| x.parse().unwrap()).collect::<Vec<u32>>())
-        .collect();
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_part1() {
+        let example = include_str!("../../examples/day_xx_x.txt");
+        let parsed = parse(example).unwrap();
+        let solution = part_one(&parsed);
+        assert_eq!(solution, Ok(0));
+    }
+
+    #[test]
+    fn test_part2() {
+        let example = include_str!("../../examples/day_xx_x.txt");
+        let parsed = parse(example).unwrap();
+        let solution = part_two(&parsed);
+        assert_eq!(solution, Ok(0));
+    }
 }
