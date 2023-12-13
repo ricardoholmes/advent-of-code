@@ -80,54 +80,44 @@ fn search(pattern: &[char], groups: &[usize], cache: &mut HashMap<(Vec<char>, Ve
     }
 
     let next_char = pattern[0];
-    let count = if next_char == '.' {
+    let pattern = pattern
+        .get(1..)
+        .unwrap_or_default();
+
+    let mut count = 0;
+
+    if next_char == '.' || next_char == '?' {
         let empty_end = pattern
             .iter()
             .position(|&c| c != '.')
             .unwrap_or(pattern.len());
 
-        search(
+        count += search(
             pattern.get(empty_end..).unwrap_or_default(),
             groups,
             cache
         )
-    } else if next_char == '#' {
-        let spring_end = pattern
-            .iter()
-            .position(|&c| c != '#')
-            .unwrap_or(pattern.len());
+    }
 
+    if next_char == '#' || next_char == '?' {
         if let Some(&group_size) = groups.get(0) {
-            if group_size > pattern.len() || spring_end > group_size {
-                0
-            }
-            else {
-                let spring_group = pattern.get(..group_size).unwrap_or_default();
-                let next_char = *pattern.get(group_size).unwrap_or(&'.');
+            let spring_group = pattern
+                .get(..group_size.checked_sub(1).unwrap_or_default())
+                .unwrap_or_default();
 
-                if spring_group.contains(&'.') || next_char == '#' {
-                    0
-                }
-                else {
-                    search(
-                        pattern.get(group_size+1..).unwrap_or_default(),
-                        groups.get(1..).unwrap_or_default(),
-                        cache
-                    )
-                }
+            let next_char = *pattern
+                .get(group_size)
+                .unwrap_or(&'.');
+
+            if next_char != '#' && !spring_group.contains(&'.') {
+                count += search(
+                    pattern.get(group_size+1..).unwrap_or_default(),
+                    groups.get(1..).unwrap_or_default(),
+                    cache
+                )
             }
         }
-        else {
-            0
-        }
-    } else if next_char == '?' {
-        let rest_of_pattern = pattern.get(1..).unwrap_or_default();
-        let is_spring = [&['#'], rest_of_pattern].concat();
-
-        search(&is_spring, groups, cache) + search(rest_of_pattern, groups, cache)
-    } else {
-        panic!("Invalid character in pattern!");
-    };
+    }
 
     cache.insert(cache_key, count);
 
