@@ -79,43 +79,40 @@ fn search(pattern: &[char], groups: &[usize], cache: &mut HashMap<(Vec<char>, Ve
         return *count;
     }
 
-    let next_char = pattern[0];
-    let pattern = pattern
-        .get(1..)
-        .unwrap_or_default();
-
     let mut count = 0;
+    let next_char = pattern[0];
 
     if next_char == '.' || next_char == '?' {
         let empty_end = pattern
             .iter()
+            .skip(1)
             .position(|&c| c != '.')
-            .unwrap_or(pattern.len());
+            .unwrap_or(pattern.len() - 1);
 
         count += search(
-            pattern.get(empty_end..).unwrap_or_default(),
+            pattern[1..].get(empty_end..).unwrap_or_default(),
             groups,
             cache
         )
     }
 
     if next_char == '#' || next_char == '?' {
-        if let Some(&group_size) = groups.get(0) {
-            let spring_group = pattern
-                .get(..group_size.checked_sub(1).unwrap_or_default())
-                .unwrap_or_default();
+        let group_size = groups[0];
 
-            let next_char = *pattern
-                .get(group_size)
-                .unwrap_or(&'.');
+        let spring_group = pattern
+            .get(..group_size)
+            .unwrap_or_default();
 
-            if next_char != '#' && !spring_group.contains(&'.') {
-                count += search(
-                    pattern.get(group_size+1..).unwrap_or_default(),
-                    groups.get(1..).unwrap_or_default(),
-                    cache
-                )
-            }
+        let next_char = *pattern
+            .get(group_size)
+            .unwrap_or(&'.');
+
+        if next_char != '#' && !spring_group.contains(&'.') {
+            count += search(
+                pattern.get(group_size+1..).unwrap_or_default(),
+                groups.get(1..).unwrap_or_default(),
+                cache
+            )
         }
     }
 
