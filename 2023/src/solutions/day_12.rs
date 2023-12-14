@@ -97,20 +97,18 @@ fn search(pattern: &[char], groups: &[usize], cache: &mut HashMap<(usize, usize)
     if next_char == '#' || next_char == '?' {
         let group_size = groups[0];
 
-        let spring_group = pattern
-            .get(..group_size)
-            .unwrap_or_default();
+        if let Some(spring_group) = pattern.get(..group_size) {
+            let next_char = *pattern
+                .get(group_size)
+                .unwrap_or(&'.');
 
-        let next_char = *pattern
-            .get(group_size)
-            .unwrap_or(&'.');
-
-        if next_char != '#' && !spring_group.contains(&'.') {
-            count += search(
-                pattern.get(group_size+1..).unwrap_or_default(),
-                groups.get(1..).unwrap_or_default(),
-                cache
-            )
+            if next_char != '#' && !spring_group.contains(&'.') {
+                count += search(
+                    pattern.get(group_size+1..).unwrap_or_default(),
+                    groups.get(1..).unwrap_or_default(),
+                    cache
+                )
+            }
         }
     }
 
