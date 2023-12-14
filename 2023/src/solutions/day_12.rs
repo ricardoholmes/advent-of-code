@@ -53,7 +53,7 @@ pub fn part_two(input: &[Parsed]) -> Result<u64, String> {
     Ok(total)
 }
 
-fn search(pattern: &[char], groups: &[usize], cache: &mut HashMap<(usize, usize), u64>) -> u64 {
+fn search(pattern: &[char], groups: &[usize], cache: &mut HashMap<u16, u64>) -> u64 {
     if pattern.is_empty() {
         if groups.is_empty() {
             return 1;
@@ -72,7 +72,10 @@ fn search(pattern: &[char], groups: &[usize], cache: &mut HashMap<(usize, usize)
         }
     }
 
-    let cache_key = (pattern.len(), groups.len());
+    // all patterns, even when repeated 5 times, have under 255 chars so they can be displayed in 8 bits
+    // same for groups
+    // so u16 is plenty
+    let cache_key = ((pattern.len() << 8) | groups.len()) as u16;
     if let Some(count) = cache.get(&cache_key) {
         return *count;
     }
