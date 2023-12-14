@@ -26,21 +26,19 @@ pub fn parse(input_raw: &str) -> Result<Vec<Parsed>, String> {
 }
 
 pub fn part_one(input: &[Parsed]) -> Result<u64, String> {
-    let mut cache = HashMap::new();
     let mut total = 0;
     for line in input {
         let (pattern, groups) = line;
 
         let pattern: Vec<char> = pattern.chars().collect();
 
-        total += search(&pattern, &groups, &mut cache);
+        total += search(&pattern, &groups, &mut HashMap::new());
     }
 
     Ok(total)
 }
 
 pub fn part_two(input: &[Parsed]) -> Result<u64, String> {
-    let mut cache = HashMap::new();
     let mut total = 0;
     for line in input {
         let (pattern, groups) = line;
@@ -50,12 +48,12 @@ pub fn part_two(input: &[Parsed]) -> Result<u64, String> {
 
         let groups: Vec<usize> = groups.repeat(5);
 
-        total += search(&pattern, &groups, &mut cache);
+        total += search(&pattern, &groups, &mut HashMap::new());
     }
     Ok(total)
 }
 
-fn search(pattern: &[char], groups: &[usize], cache: &mut HashMap<(Vec<char>, Vec<usize>), u64>) -> u64 {
+fn search(pattern: &[char], groups: &[usize], cache: &mut HashMap<(usize, usize), u64>) -> u64 {
     if pattern.is_empty() {
         if groups.is_empty() {
             return 1;
@@ -74,7 +72,7 @@ fn search(pattern: &[char], groups: &[usize], cache: &mut HashMap<(Vec<char>, Ve
         }
     }
 
-    let cache_key = (pattern.to_vec(), groups.to_vec());
+    let cache_key = (pattern.len(), groups.len());
     if let Some(count) = cache.get(&cache_key) {
         return *count;
     }
