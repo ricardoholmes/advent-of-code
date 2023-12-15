@@ -64,36 +64,13 @@ pub fn part_two(input: &Parsed) -> Result<usize, String> {
     let mut cycle = 0;
     while cycle < cycles_needed {
         run_cycle(&mut round_rocks, cubes, *height, *width);
-
         cycle += 1;
-        if cycle % 100 == 0 {
-            println!("On cycle {cycle}");
-        }
-
-        // if cycle <= 3 {
-        //     println!("\n\nCYCLE {cycle}");
-        //     for y in 0..*height {
-        //         for x in 0..*width {
-        //             if round_rocks.contains(&(x, y)) {
-        //                 print!("O");
-        //             }
-        //             else if cubes.contains(&(x, y)) {
-        //                 print!("#");
-        //             }
-        //             else {
-        //                 print!(".");
-        //             }
-        //         }
-        //         println!();
-        //     }
-        // }
 
         let mut round_rocks_vec: Vec<Coord> = round_rocks.iter().cloned().collect();
         round_rocks_vec.sort_unstable();
 
         if let Some(index) = visited.insert(round_rocks_vec, cycle) {
             let cycles_left = (cycles_needed - cycle) % (cycle - index);
-            println!("FOUND LOOP, running last {cycles_left} cycles");
             for _ in 0..cycles_left {
                 run_cycle(&mut round_rocks, cubes, *height, *width);
             }
@@ -111,53 +88,81 @@ pub fn part_two(input: &Parsed) -> Result<usize, String> {
 
 fn run_cycle(round_rocks: &mut HashSet<Coord>, cubes: &HashSet<Coord>, height: usize, width: usize) {
     let mut moved = true;
+    // up
     while moved {
         moved = false;
-        for &(x,  y) in round_rocks.iter() {
-            if y > 0 && !round_rocks.contains(&(x, y - 1)) && !cubes.contains(&(x, y - 1)) {
+        for &(x,  y) in round_rocks.clone().iter() {
+            let mut new_y = y;
+            while new_y > 0 {
+                if round_rocks.contains(&(x, new_y - 1)) || cubes.contains(&(x, new_y - 1)) {
+                    break;
+                }
+                new_y -= 1;
+            }
+            if new_y != y {
                 round_rocks.remove(&(x, y));
-                round_rocks.insert((x, y - 1));
+                round_rocks.insert((x, new_y));
                 moved = true;
-                break;
             }
         }
     }
 
     moved = true;
+    // left
     while moved {
         moved = false;
-        for &(x,  y) in round_rocks.iter() {
-            if x > 0 && !round_rocks.contains(&(x - 1, y)) && !cubes.contains(&(x - 1, y)) {
+        for &(x,  y) in round_rocks.clone().iter() {
+            let mut new_x = x;
+            while new_x > 0 {
+                if round_rocks.contains(&(new_x - 1, y)) || cubes.contains(&(new_x - 1, y)) {
+                    break;
+                }
+                new_x -= 1;
+            }
+            if new_x != x {
                 round_rocks.remove(&(x, y));
-                round_rocks.insert((x - 1, y));
+                round_rocks.insert((new_x, y));
                 moved = true;
-                break;
             }
         }
     }
 
     moved = true;
+    // down
     while moved {
         moved = false;
-        for &(x,  y) in round_rocks.iter() {
-            if y < height - 1 && !round_rocks.contains(&(x, y + 1)) && !cubes.contains(&(x, y + 1)) {
+        for &(x,  y) in round_rocks.clone().iter() {
+            let mut new_y = y;
+            while new_y < height - 1 {
+                if round_rocks.contains(&(x, new_y + 1)) || cubes.contains(&(x, new_y + 1)) {
+                    break;
+                }
+                new_y += 1;
+            }
+            if new_y != y {
                 round_rocks.remove(&(x, y));
-                round_rocks.insert((x, y + 1));
+                round_rocks.insert((x, new_y));
                 moved = true;
-                break;
             }
         }
     }
 
     moved = true;
+    // right
     while moved {
         moved = false;
-        for &(x,  y) in round_rocks.iter() {
-            if x < width - 1 && !round_rocks.contains(&(x + 1, y)) && !cubes.contains(&(x + 1, y)) {
+        for &(x,  y) in round_rocks.clone().iter() {
+            let mut new_x = x;
+            while new_x < width - 1 {
+                if round_rocks.contains(&(new_x + 1, y)) || cubes.contains(&(new_x + 1, y)) {
+                    break;
+                }
+                new_x += 1;
+            }
+            if new_x != x {
                 round_rocks.remove(&(x, y));
-                round_rocks.insert((x + 1, y));
+                round_rocks.insert((new_x, y));
                 moved = true;
-                break;
             }
         }
     }
