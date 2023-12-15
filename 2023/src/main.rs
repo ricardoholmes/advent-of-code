@@ -4,7 +4,7 @@ extern crate scanf;
 mod common;
 mod solutions;
 
-use std::{env, time::{Instant, Duration}};
+use std::{env, time::Instant};
 
 use common::util::*;
 use scanf::scanf;
@@ -96,12 +96,7 @@ fn run_all(settings: &Settings) -> Result<(), String> {
 fn benchmark(mode: Mode) -> Result<(), String> {
     let day_nums = get_all_day_nums()?;
 
-    let mut total_times = TimesTaken {
-        total: Duration::ZERO,
-        parsing: Duration::ZERO,
-        part_one: Duration::ZERO,
-        part_two: Duration::ZERO,
-    };
+    let mut total_times = TimesTaken::ZERO;
 
     match mode {
         Mode::Benchmark(day) => println!("\n--- Benchmarking Day {day} ---\n"),
