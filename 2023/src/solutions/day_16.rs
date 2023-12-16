@@ -31,9 +31,40 @@ pub fn parse(input_raw: &str) -> Result<Vec<Parsed>, String> {
 }
 
 pub fn part_one(input: &[Parsed]) -> Result<usize, String> {
+    let start = ((0, 0), Direction::Right);
+    Ok(get_energized_count(input, start))
+}
+
+pub fn part_two(input: &[Parsed]) -> Result<usize, String> {
+    let max_y = (input.len() - 1) as i32;
+    let max_x = (input[0].len() - 1) as i32;
+
+    let mut most_energized = 0;
+    for y in 0..=max_y {
+        let mut energized = get_energized_count(input, ((0, y), Direction::Right));
+        energized = energized.max(get_energized_count(input, ((max_x, y), Direction::Left)));
+
+        if most_energized < energized {
+            most_energized = energized;
+        }
+    }
+
+    for x in 0..=max_x {
+        let mut energized = get_energized_count(input, ((x, 0), Direction::Down));
+        energized = energized.max(get_energized_count(input, ((x, max_y), Direction::Left)));
+
+        if most_energized < energized {
+            most_energized = energized;
+        }
+    }
+
+    Ok(most_energized)
+}
+
+fn get_energized_count(input: &[Parsed], start: (Coord, Direction)) -> usize {
     let mut energized = HashSet::new();
     let mut past_movements = HashSet::new();
-    let mut movements: Vec<(Coord, Direction)> = vec![((0, 0), Direction::Right)];
+    let mut movements: Vec<(Coord, Direction)> = vec![start];
 
     while !movements.is_empty() {
         let (pos, mut direction) = movements.pop().unwrap();
@@ -88,11 +119,7 @@ pub fn part_one(input: &[Parsed]) -> Result<usize, String> {
         }, direction));
     }
 
-    Ok(energized.len())
-}
-
-pub fn part_two(input: &[Parsed]) -> Result<usize, String> {
-    Ok(0)
+    energized.len()
 }
 
 #[cfg(test)]
@@ -112,6 +139,6 @@ mod tests {
         let example = include_str!("../../examples/day_16_1.txt");
         let parsed = parse(example).unwrap();
         let solution = part_two(&parsed);
-        assert_eq!(solution, Ok(0));
+        assert_eq!(solution, Ok(51));
     }
 }
