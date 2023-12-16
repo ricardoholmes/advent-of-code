@@ -40,17 +40,14 @@ fn main() -> Result<(), String> {
 }
 
 fn run_day(day: u8, settings: &Settings) -> Result<(), String> {
-    if settings.quiet {
-        solutions::run(day)?;
-        return Ok(());
-    }
-
     println!("\n--- Day {day} ---");
 
     let (part_one, part_two, times) = solutions::run(day)?;
 
-    println!("Part one: {}", part_one);
-    println!("Part two: {}", part_two);
+    if !settings.quiet {
+        println!("Part one: {}", part_one);
+        println!("Part two: {}", part_two);
+    }
 
     if settings.verbose {
         print_times_nicely(times);
@@ -65,21 +62,14 @@ fn run_day(day: u8, settings: &Settings) -> Result<(), String> {
 fn run_all(settings: &Settings) -> Result<(), String> {
     let day_nums = get_all_day_nums()?;
 
-    if settings.quiet {
-        for day_num in &day_nums {
-            run_day(*day_num, settings)?;
-        }
-        return Ok(());
-    }
-
     let start_time = Instant::now();
 
     println!("======================================");
     println!("  A D V E N T  O F  C O D E  2 0 2 3  ");
     println!("======================================");
 
-    for day_num in &day_nums {
-        run_day(*day_num, settings)?;
+    for day_num in day_nums {
+        run_day(day_num, settings)?;
     }
 
     println!();
