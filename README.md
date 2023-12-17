@@ -129,4 +129,4 @@
 [2023-14]: ./2023/src/solutions/day_14.rs
 [2023-15]: ./2023/src/solutions/day_15.rs
 [2023-16]: ./2023/src/solutions/day_16.rs
-[2023-16]: ./2023/src/solutions/day_17.rs
+[2023-17]: ./2023/src/solutions/day_17.rs
