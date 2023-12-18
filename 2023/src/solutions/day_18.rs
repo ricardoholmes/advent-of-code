@@ -1,6 +1,4 @@
-use std::collections::HashSet;
-
-type Parsed = (Direction, u32, String);
+type Parsed = ((Direction, i64), (Direction, i64));
 
 pub enum Direction {
     Left,
@@ -26,106 +24,110 @@ pub fn parse(input_raw: &str) -> Result<Vec<Parsed>, String> {
         let amount = line_split.next().unwrap().parse().unwrap();
 
         let mut color = line_split.next().unwrap();
-        color = &color[1..(color.len()-2)];
+        color = &color[2..(color.len()-1)];
 
-        parsed.push((direction, amount, color.to_string()));
+        let part2_direction = match &color[color.len() - 1..] {
+            "0" => Direction::Right,
+            "1" => Direction::Down,
+            "2" => Direction::Left,
+            "3" => Direction::Up,
+            _ => return Err(format!("Invalid input string")),
+        };
+
+        let part2_amount = i64::from_str_radix(&color[..color.len() - 1], 16).unwrap();
+
+        parsed.push(((direction, amount), (part2_direction, part2_amount)));
     }
 
     Ok(parsed)
 }
 
-pub fn part_one(input: &[Parsed]) -> Result<usize, String> {
-    let mut trench_positions = HashSet::new();
-    trench_positions.insert((0, 0));
+pub fn part_one(input: &[Parsed]) -> Result<i64, String> {
+    let mut trench_vertices = vec![];
+    trench_vertices.push((0, 0));
 
     let mut x_bounds = (0, 0);
     let mut y_bounds = (0, 0);
-    let mut position = (0, 0);
-    for i in input {
-        for _ in 0..i.1 {
-            position = match i.0 {
-                Direction::Left => (position.0 - 1, position.1),
-                Direction::Right => (position.0 + 1, position.1),
-                Direction::Up => (position.0, position.1 - 1),
-                Direction::Down => (position.0, position.1 + 1),
-            };
+    let mut position: (i64, i64) = (0, 0);
+    for (i, _) in input {
+        position = match i.0 {
+            Direction::Left => (position.0 - i.1, position.1),
+            Direction::Right => (position.0 + i.1, position.1),
+            Direction::Up => (position.0, position.1 - i.1),
+            Direction::Down => (position.0, position.1 + i.1),
+        };
 
-            if position.0 < x_bounds.0 {
-                x_bounds.0 = position.0;
-            }
-            if position.0 > x_bounds.1 {
-                x_bounds.1 = position.0;
-            }
-            
-            if position.1 < y_bounds.0 {
-                y_bounds.0 = position.1;
-            }
-            if position.1 > y_bounds.1 {
-                y_bounds.1 = position.1;
-            }
-
-            trench_positions.insert(position);
+        if position.0 < x_bounds.0 {
+            x_bounds.0 = position.0;
         }
+        if position.0 > x_bounds.1 {
+            x_bounds.1 = position.0;
+        }
+        
+        if position.1 < y_bounds.0 {
+            y_bounds.0 = position.1;
+        }
+        if position.1 > y_bounds.1 {
+            y_bounds.1 = position.1;
+        }
+
+        trench_vertices.push(position);
     }
 
-    let mut out_of_bounds = HashSet::new();
-    for y in y_bounds.0..=y_bounds.1 {
-        for x in x_bounds.0..=x_bounds.1 {
-            if out_of_bounds.contains(&(x, y)) || trench_positions.contains(&(x, y)) {
-                continue;
-            }
+    let area = get_area(trench_vertices);
 
-            let mut flood = HashSet::new();
-            let mut flood_steps = vec![(x, y)];
-            let mut is_in_trench = true;
-            while !flood_steps.is_empty() {
-                let pos = flood_steps.pop().unwrap();
-                if pos.0 < x_bounds.0 || pos.0 > x_bounds.1 {
-                    is_in_trench = false;
-                    break;
-                }
-                if pos.1 < y_bounds.0 || pos.1 > y_bounds.1 {
-                    is_in_trench = false;
-                    break;
-                }
-
-                if flood.contains(&pos) || trench_positions.contains(&pos) {
-                    continue;
-                }
-
-                flood.insert(pos);
-                flood_steps.push((pos.0 - 1, pos.1));
-                flood_steps.push((pos.0 + 1, pos.1));
-                flood_steps.push((pos.0, pos.1 - 1));
-                flood_steps.push((pos.0, pos.1 + 1));
-            }
-
-            if is_in_trench {
-                trench_positions.extend(flood);
-            }
-            else {
-                out_of_bounds.extend(flood);
-            }
-        }
-    }
-
-    // for y in y_bounds.0..=y_bounds.1 {
-    //     for x in x_bounds.0..=x_bounds.1 {
-    //         if trench_positions.contains(&(x, y)) {
-    //             print!("#");
-    //         }
-    //         else {
-    //             print!(".");
-    //         }
-    //     }
-    //     println!();
-    // }
-
-    Ok(trench_positions.len())
+    Ok(area)
 }
 
-pub fn part_two(input: &[Parsed]) -> Result<usize, String> {
-    Ok(0)
+pub fn part_two(input: &[Parsed]) -> Result<i64, String> {
+    let mut trench_vertices = vec![];
+    trench_vertices.push((0, 0));
+
+    let mut x_bounds = (0, 0);
+    let mut y_bounds = (0, 0);
+    let mut position: (i64, i64) = (0, 0);
+    for (_, i) in input {
+        position = match i.0 {
+            Direction::Left => (position.0 - i.1, position.1),
+            Direction::Right => (position.0 + i.1, position.1),
+            Direction::Up => (position.0, position.1 - i.1),
+            Direction::Down => (position.0, position.1 + i.1),
+        };
+
+        if position.0 < x_bounds.0 {
+            x_bounds.0 = position.0;
+        }
+        if position.0 > x_bounds.1 {
+            x_bounds.1 = position.0;
+        }
+        
+        if position.1 < y_bounds.0 {
+            y_bounds.0 = position.1;
+        }
+        if position.1 > y_bounds.1 {
+            y_bounds.1 = position.1;
+        }
+
+        trench_vertices.push(position);
+    }
+
+    let area = get_area(trench_vertices);
+
+    Ok(area)
+}
+
+fn get_area(trench_vertices: Vec<(i64, i64)>) -> i64 {
+    let mut area = 0;
+    let mut perimeter = 0;
+    for (index, pos) in trench_vertices.iter().enumerate() {
+        let next_pos = trench_vertices[(index + 1) % trench_vertices.len()];
+        area += (next_pos.0 - pos.0) * (next_pos.1 + pos.1);
+
+        // no diagonals so perimeter is trivial
+        perimeter += ((next_pos.0 - pos.0) + (next_pos.1 - pos.1)).abs();
+    }
+
+    (area.abs() + perimeter) / 2 + 1
 }
 
 #[cfg(test)]
@@ -145,6 +147,6 @@ mod tests {
         let example = include_str!("../../examples/day_18_1.txt");
         let parsed = parse(example).unwrap();
         let solution = part_two(&parsed);
-        assert_eq!(solution, Ok(0));
+        assert_eq!(solution, Ok(952408144115));
     }
 }
