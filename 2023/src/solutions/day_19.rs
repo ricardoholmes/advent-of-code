@@ -3,137 +3,23 @@ use std::collections::HashMap;
 use crate::{safe_unpack, try_get_ok};
 
 type Workflow = Vec<(Condition, String)>;
-type Part = [u64;4];
+type Part = [u64; 4];
 type Parsed = (HashMap<String, Workflow>, Vec<Part>);
+type Range = [(u64, u64); 4];
 
 #[derive(Clone, Debug)]
 pub enum Condition {
     None,
-    LessThan(String, u64),
-    GreaterThan(String, u64),
+    LessThan(usize, u64),
+    GreaterThan(usize, u64),
 }
 
 impl Condition {
     fn eval(&self, parts: &[u64]) -> bool {
-        match self {
-            Condition::GreaterThan(cat, n) => (match cat.as_str() {
-                "x" => parts[0],
-                "m" => parts[1],
-                "a" => parts[2],
-                "s" => parts[3],
-                _ => panic!(),
-            }) > *n,
-            Condition::LessThan(cat, n) => (match cat.as_str() {
-                "x" => parts[0],
-                "m" => parts[1],
-                "a" => parts[2],
-                "s" => parts[3],
-                _ => panic!(),
-            }) < *n,
+        match *self {
+            Condition::GreaterThan(cat, n) => parts[cat] > n,
+            Condition::LessThan(cat, n) => parts[cat] < n,
             Condition::None => true,
-        }
-    }
-}
-
-#[derive(Copy, Clone)]
-struct CategoryRanges {
-    x: (u64, u64),
-    m: (u64, u64),
-    a: (u64, u64),
-    s: (u64, u64),
-}
-
-impl CategoryRanges {
-    fn count(&self) -> u64 {
-        let x_count = self.x.1 + 1 - self.x.0;
-        let m_count = self.m.1 + 1 - self.m.0;
-        let a_count = self.a.1 + 1 - self.a.0;
-        let s_count = self.s.1 + 1 - self.s.0;
-
-        x_count * m_count * a_count * s_count
-    }
-
-    fn split_by_cond(&self, cond: &Condition) -> (Option<CategoryRanges>, Option<CategoryRanges>) {
-        match cond {
-            Condition::GreaterThan(cat, n) => {
-                let (lower, upper) = match cat.as_str() {
-                    "x" => self.x,
-                    "m" => self.m,
-                    "a" => self.a,
-                    "s" => self.s,
-                    _ => panic!(),
-                };
-
-                if upper <= *n {
-                    (None, Some(*self))
-                } else if lower > *n {
-                    (Some(*self), None)
-                } else {
-                    let mut first_range = self.clone();
-                    let mut second_range = self.clone();
-                    match cat.as_str() {
-                        "x" => {
-                            first_range.x.0 = n + 1;
-                            second_range.x.1 = *n;
-                        },
-                        "m" => {
-                            first_range.m.0 = n + 1;
-                            second_range.m.1 = *n;
-                        },
-                        "a" => {
-                            first_range.a.0 = n + 1;
-                            second_range.a.1 = *n;
-                        },
-                        "s" => {
-                            first_range.s.0 = n + 1;
-                            second_range.s.1 = *n;
-                        },
-                        _ => panic!(),
-                    };
-
-                    (Some(first_range), Some(second_range))
-                }
-            },
-            Condition::LessThan(cat, n) => {
-                let (lower, upper) = match cat.as_str() {
-                    "x" => self.x,
-                    "m" => self.m,
-                    "a" => self.a,
-                    "s" => self.s,
-                    _ => panic!(),
-                };
-
-                if lower >= *n {
-                    (None, Some(*self))
-                } else if upper < *n {
-                    (Some(*self), None)
-                } else {
-                    let mut first_range = self.clone();
-                    let mut second_range = self.clone();
-                    match cat.as_str() {
-                        "x" => {
-                            first_range.x.1 = n - 1;
-                            second_range.x.0 = *n;
-                        },
-                        "m" => {
-                            first_range.m.1 = n - 1;
-                            second_range.m.0 = *n;
-                        },
-                        "a" => {
-                            first_range.a.1 = n - 1;
-                            second_range.a.0 = *n;
-                        },
-                        "s" => {
-                            first_range.s.1 = n - 1;
-                            second_range.s.0 = *n;
-                        },
-                        _ => panic!(),
-                    };
-
-                    (Some(first_range), Some(second_range))
-                }
-            },
-            Condition::None => (Some(*self), None),
         }
     }
 }
@@ -151,12 +37,24 @@ pub fn parse(input_raw: &str) -> Result<Parsed, String> {
             if cat.contains('>') {
                 safe_unpack!(cat.split(&['>', ':']), name, value, dest);
                 let value = try_get_ok!(value.parse::<u64>());
-                conds.push((Condition::GreaterThan(name.to_string(), value), dest.to_string()));
+                conds.push((Condition::GreaterThan(match name {
+                    "x" => 0,
+                    "m" => 1,
+                    "a" => 2,
+                    "s" => 3,
+                    _ => return Err(format!("Invalid input.")),
+                }, value), dest.to_string()));
             }
             else if cat.contains('<') {
                 safe_unpack!(cat.split(&['<', ':']), name, value, dest);
                 let value = try_get_ok!(value.parse::<u64>());
-                conds.push((Condition::LessThan(name.to_string(), value), dest.to_string()));
+                conds.push((Condition::LessThan(match name {
+                    "x" => 0,
+                    "m" => 1,
+                    "a" => 2,
+                    "s" => 3,
+                    _ => return Err(format!("Invalid input.")),
+                }, value), dest.to_string()));
             }
             else {
                 conds.push((Condition::None, cat.to_string()))
@@ -217,30 +115,36 @@ pub fn part_two(input: &Parsed) -> Result<u64, String> {
     let (workflows, _) = input;
 
     let mut ranges = vec![];
-    ranges.push((CategoryRanges {
-        x: (1, 4000),
-        m: (1, 4000),
-        a: (1, 4000),
-        s: (1, 4000),
-    }, "in".to_string()));
+    ranges.push(([
+        (1, 4000),
+        (1, 4000),
+        (1, 4000),
+        (1, 4000),
+    ], "in".to_string()));
 
     let mut total = 0;
     while !ranges.is_empty() {
         let (mut range, workflow_name) = ranges.pop().unwrap();
+
         if workflow_name == "A" {
-            total += range.count();
+            let num_combinations = range
+                .iter()
+                .fold(1, |count, r| count * (r.1 + 1 - r.0));
+
+            total += num_combinations;
             continue;
         }
         else if workflow_name == "R" {
             continue;
         }
+
         let workflow = workflows.get(&workflow_name).unwrap();
         for (cond, dest) in workflow {
-            let (range_passed, range_failed) = range.split_by_cond(cond);
+            let (range_passed, range_failed) = split_by_cond(&range, cond);
 
             match range_passed {
                 Some(next_range) => ranges.push((next_range, dest.clone())),
-                None => ()
+                None => (),
             };
 
             match range_failed {
@@ -251,6 +155,46 @@ pub fn part_two(input: &Parsed) -> Result<u64, String> {
     }
 
     Ok(total)
+}
+
+fn split_by_cond(range: &Range, cond: &Condition) -> (Option<Range>, Option<Range>) {
+    match *cond {
+        Condition::GreaterThan(cat, n) => {
+            let (lower, upper) = range[cat];
+
+            if upper <= n {
+                (None, Some(*range))
+            } else if lower > n {
+                (Some(*range), None)
+            } else {
+                let mut first_range = range.clone();
+                let mut second_range = range.clone();
+
+                first_range[cat].0 = n + 1;
+                second_range[cat].1 = n;
+
+                (Some(first_range), Some(second_range))
+            }
+        },
+        Condition::LessThan(cat, n) => {
+            let (lower, upper) = range[cat];
+
+            if lower >= n {
+                (None, Some(*range))
+            } else if upper < n {
+                (Some(*range), None)
+            } else {
+                let mut first_range = range.clone();
+                let mut second_range = range.clone();
+
+                first_range[cat].1 = n - 1;
+                second_range[cat].0 = n;
+
+                (Some(first_range), Some(second_range))
+            }
+        },
+        Condition::None => (Some(*range), None),
+    }
 }
 
 #[cfg(test)]
