@@ -35,6 +35,109 @@ impl Condition {
     }
 }
 
+#[derive(Copy, Clone)]
+struct CategoryRanges {
+    x: (u64, u64),
+    m: (u64, u64),
+    a: (u64, u64),
+    s: (u64, u64),
+}
+
+impl CategoryRanges {
+    fn count(&self) -> u64 {
+        let x_count = self.x.1 + 1 - self.x.0;
+        let m_count = self.m.1 + 1 - self.m.0;
+        let a_count = self.a.1 + 1 - self.a.0;
+        let s_count = self.s.1 + 1 - self.s.0;
+
+        x_count * m_count * a_count * s_count
+    }
+
+    fn split_by_cond(&self, cond: &Condition) -> (Option<CategoryRanges>, Option<CategoryRanges>) {
+        match cond {
+            Condition::GreaterThan(cat, n) => {
+                let (lower, upper) = match cat.as_str() {
+                    "x" => self.x,
+                    "m" => self.m,
+                    "a" => self.a,
+                    "s" => self.s,
+                    _ => panic!(),
+                };
+
+                if upper <= *n {
+                    (None, Some(*self))
+                } else if lower > *n {
+                    (Some(*self), None)
+                } else {
+                    let mut first_range = self.clone();
+                    let mut second_range = self.clone();
+                    match cat.as_str() {
+                        "x" => {
+                            first_range.x.0 = n + 1;
+                            second_range.x.1 = *n;
+                        },
+                        "m" => {
+                            first_range.m.0 = n + 1;
+                            second_range.m.1 = *n;
+                        },
+                        "a" => {
+                            first_range.a.0 = n + 1;
+                            second_range.a.1 = *n;
+                        },
+                        "s" => {
+                            first_range.s.0 = n + 1;
+                            second_range.s.1 = *n;
+                        },
+                        _ => panic!(),
+                    };
+
+                    (Some(first_range), Some(second_range))
+                }
+            },
+            Condition::LessThan(cat, n) => {
+                let (lower, upper) = match cat.as_str() {
+                    "x" => self.x,
+                    "m" => self.m,
+                    "a" => self.a,
+                    "s" => self.s,
+                    _ => panic!(),
+                };
+
+                if lower >= *n {
+                    (None, Some(*self))
+                } else if upper < *n {
+                    (Some(*self), None)
+                } else {
+                    let mut first_range = self.clone();
+                    let mut second_range = self.clone();
+                    match cat.as_str() {
+                        "x" => {
+                            first_range.x.1 = n - 1;
+                            second_range.x.0 = *n;
+                        },
+                        "m" => {
+                            first_range.m.1 = n - 1;
+                            second_range.m.0 = *n;
+                        },
+                        "a" => {
+                            first_range.a.1 = n - 1;
+                            second_range.a.0 = *n;
+                        },
+                        "s" => {
+                            first_range.s.1 = n - 1;
+                            second_range.s.0 = *n;
+                        },
+                        _ => panic!(),
+                    };
+
+                    (Some(first_range), Some(second_range))
+                }
+            },
+            Condition::None => (Some(*self), None),
+        }
+    }
+}
+
 pub fn parse(input_raw: &str) -> Result<Parsed, String> {
     safe_unpack!(input_raw.split("\n\n"), workflow_lines, part_lines);
 
@@ -85,7 +188,6 @@ pub fn parse(input_raw: &str) -> Result<Parsed, String> {
 pub fn part_one(input: &Parsed) -> Result<u64, String> {
     let (workflows, parts) = input;
 
-    // println!("{workflows:?}");
     let mut total = 0;
     for part in parts {
         let mut workflow_name = String::from("in");
@@ -111,8 +213,44 @@ pub fn part_one(input: &Parsed) -> Result<u64, String> {
     Ok(total)
 }
 
-pub fn part_two(input: &Parsed) -> Result<usize, String> {
-    Ok(0)
+pub fn part_two(input: &Parsed) -> Result<u64, String> {
+    let (workflows, _) = input;
+
+    let mut ranges = vec![];
+    ranges.push((CategoryRanges {
+        x: (1, 4000),
+        m: (1, 4000),
+        a: (1, 4000),
+        s: (1, 4000),
+    }, "in".to_string()));
+
+    let mut total = 0;
+    while !ranges.is_empty() {
+        let (mut range, workflow_name) = ranges.pop().unwrap();
+        if workflow_name == "A" {
+            total += range.count();
+            continue;
+        }
+        else if workflow_name == "R" {
+            continue;
+        }
+        let workflow = workflows.get(&workflow_name).unwrap();
+        for (cond, dest) in workflow {
+            let (range_passed, range_failed) = range.split_by_cond(cond);
+
+            match range_passed {
+                Some(next_range) => ranges.push((next_range, dest.clone())),
+                None => ()
+            };
+
+            match range_failed {
+                Some(next_range) => range = next_range,
+                None => break,
+            };
+        }
+    }
+
+    Ok(total)
 }
 
 #[cfg(test)]
@@ -132,6 +270,6 @@ mod tests {
         let example = include_str!("../../examples/day_19_1.txt");
         let parsed = parse(example).unwrap();
         let solution = part_two(&parsed);
-        assert_eq!(solution, Ok(0));
+        assert_eq!(solution, Ok(167409079868000));
     }
 }
