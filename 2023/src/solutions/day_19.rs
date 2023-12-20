@@ -66,18 +66,12 @@ pub fn parse(input_raw: &str) -> Result<Parsed, String> {
     let mut parts = vec![];
     for line in part_lines.lines() {
         let line = &line[1..line.len()-1];
-        let mut categories = HashMap::new();
-        for category in line.split(',') {
-            safe_unpack!(category.split('='), name, value);
-            let value = try_get_ok!(value.parse::<u64>());
-            categories.insert(name, value);
+        let mut part = [0; 4];
+        for (i, category) in line.split(',').enumerate() {
+            let value = category.split('=').skip(1).next().unwrap().parse::<u64>().unwrap();
+            part[i] = value;
         }
-        parts.push([
-            *categories.get("x").unwrap(),
-            *categories.get("m").unwrap(),
-            *categories.get("a").unwrap(),
-            *categories.get("s").unwrap(),
-        ]);
+        parts.push(part);
     }
 
     Ok((workflows, parts))
