@@ -66,14 +66,12 @@ pub fn part_one(input: &Parsed) -> Result<usize, String> {
     let mut low_pulses = 0;
     let mut high_pulses = 0;
     let mut buttons_pressed = 0;
-    let mut presses_needed = 1000;
-    while buttons_pressed < presses_needed {
+    while buttons_pressed < 1000 {
         buttons_pressed += 1;
         low_pulses += 1;
         steps.push_back((String::from("broadcaster"), false));
         while !steps.is_empty() {
             let (name, pulse) = steps.pop_front().unwrap();
-            // println!("{name}, {pulse}");
             let mut updated_modules = modules.clone();
             if let Some(module) = modules.get(&name) {
                 let pulse_to_send = match module.module_type.clone() {
@@ -88,7 +86,6 @@ pub fn part_one(input: &Parsed) -> Result<usize, String> {
                 };
 
                 for dest in &*module.destinations {
-                    // println!("{name} -{}-> {dest}", if pulse_to_send { "high" } else { "low" });
                     steps.push_back((dest.to_string(), pulse_to_send));
                     if pulse_to_send {
                         high_pulses += 1;
@@ -106,37 +103,49 @@ pub fn part_one(input: &Parsed) -> Result<usize, String> {
             }
             modules = updated_modules;
         }
-
-        if is_initial_state(&modules) {
-            let loops = presses_needed / buttons_pressed;
-            high_pulses *= loops;
-            low_pulses *= loops;
-            println!("LOOOPP {buttons_pressed}");
-            presses_needed %= buttons_pressed;
-            buttons_pressed = 0;
-        }
     }
     Ok(low_pulses * high_pulses)
 }
 
 pub fn part_two(input: &Parsed) -> Result<usize, String> {
-    Ok(0)
-}
+    let mut modules = input.to_owned();
+    let mut buttons_pressed = 0;
+    loop {
+        buttons_pressed += 1;
+        let mut steps = VecDeque::new();
+        steps.push_back((String::from("broadcaster"), false));
+        while !steps.is_empty() {
+            let (name, pulse) = steps.pop_front().unwrap();
+            let mut updated_modules = modules.clone();
+            if let Some(module) = modules.get(&name) {
+                let pulse_to_send = match module.module_type.clone() {
+                    ModuleType::Broadcast => pulse,
+                    ModuleType::Conjunction(inputs) => inputs.values().any(|&i| !i),
+                    ModuleType::FlipFlop(state) => if !pulse {
+                        updated_modules.get_mut(&name).unwrap().module_type = ModuleType::FlipFlop(!state);
+                        !state
+                    } else {
+                        continue
+                    },
+                };
 
-fn is_initial_state(modules: &HashMap<String, Module>) -> bool {
-    for module in modules.values() {
-        match module.module_type.clone() {
-            ModuleType::Broadcast => (),
-            ModuleType::Conjunction(inputs) => if inputs.values().any(|i| *i) {
-                return false
-            },
-            ModuleType::FlipFlop(state) => if !state {
-                return false
-            },
+                for dest in &*module.destinations {
+                    if !pulse_to_send && dest == "rx" {
+                        return Ok(buttons_pressed);
+                    }
+
+                    steps.push_back((dest.to_string(), pulse_to_send));
+                    if let Some(dest_module) = updated_modules.get_mut(dest) {
+                        if let ModuleType::Conjunction(mut inputs) = dest_module.module_type.clone() {
+                            *inputs.entry(name.clone()).or_insert(false) = pulse_to_send;
+                            dest_module.module_type = ModuleType::Conjunction(inputs);
+                        }
+                    }
+                }
+            }
+            modules = updated_modules;
         }
     }
-
-    true
 }
 
 #[cfg(test)]
@@ -149,13 +158,5 @@ mod tests {
         let parsed = parse(example).unwrap();
         let solution = part_one(&parsed);
         assert_eq!(solution, Ok(11687500));
-    }
-
-    #[test]
-    fn test_part2() {
-        let example = include_str!("../../examples/day_20_1.txt");
-        let parsed = parse(example).unwrap();
-        let solution = part_two(&parsed);
-        assert_eq!(solution, Ok(0));
     }
 }
