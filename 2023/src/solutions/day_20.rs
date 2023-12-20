@@ -10,7 +10,7 @@ pub struct Module {
     destinations: Vec<String>,
 }
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq, Eq)]
 pub enum ModuleType {
     Broadcast,
     FlipFlop(bool),
@@ -107,22 +107,47 @@ pub fn part_one(input: &Parsed) -> Result<usize, String> {
     Ok(low_pulses * high_pulses)
 }
 
-pub fn part_two(input: &Parsed) -> Result<usize, String> {
-    let mut modules = input.to_owned();
-    let mut buttons_pressed = 0;
+// done with the help of https://youtu.be/lxm6i21O83k (HyperNeutrino on YouTube)
+pub fn part_two(input: &Parsed) -> Result<u64, String> {
+    let mut modules = input.clone();
+
+    let rx_connection = input
+        .iter()
+        .find_map(|(name, module)| if module.destinations.contains(&String::from("rx")) {
+            Some(name)
+        } else {
+            None
+        })
+        .unwrap();
+    
+    let mut connections_to_rx_connection = 0;
+    for (_, module) in input {
+        if module.destinations.contains(rx_connection) {
+            connections_to_rx_connection += 1;
+        }
+    }
+
+    let mut cycle_lengths = HashMap::new();
+
+    let start_name = "broadcaster".to_string();
+    let start_module = input.get(&start_name).unwrap();
+
+    let mut presses = 0;
     loop {
-        buttons_pressed += 1;
-        let mut steps = VecDeque::new();
-        steps.push_back((String::from("broadcaster"), false));
-        while !steps.is_empty() {
-            let (name, pulse) = steps.pop_front().unwrap();
+        presses += 1;
+        let mut queue = VecDeque::new();
+        for module in start_module.destinations.clone() {
+            queue.push_back((start_name.to_string(), module, false));
+        }
+        while !queue.is_empty() {
+            let (origin, target, pulse) = queue.pop_front().unwrap();
             let mut updated_modules = modules.clone();
-            if let Some(module) = modules.get(&name) {
+            if let Some(module) = modules.get(&target) {
                 let pulse_to_send = match module.module_type.clone() {
                     ModuleType::Broadcast => pulse,
                     ModuleType::Conjunction(inputs) => inputs.values().any(|&i| !i),
                     ModuleType::FlipFlop(state) => if !pulse {
-                        updated_modules.get_mut(&name).unwrap().module_type = ModuleType::FlipFlop(!state);
+                        updated_modules.get_mut(&target).unwrap().module_type = ModuleType::FlipFlop(!state);
                         !state
                     } else {
                         continue
@@ -130,21 +155,47 @@ pub fn part_two(input: &Parsed) -> Result<usize, String> {
                 };
 
                 for dest in &*module.destinations {
-                    if !pulse_to_send && dest == "rx" {
-                        return Ok(buttons_pressed);
-                    }
-
-                    steps.push_back((dest.to_string(), pulse_to_send));
+                    queue.push_back((target.clone(), dest.to_string(), pulse_to_send));
                     if let Some(dest_module) = updated_modules.get_mut(dest) {
                         if let ModuleType::Conjunction(mut inputs) = dest_module.module_type.clone() {
-                            *inputs.entry(name.clone()).or_insert(false) = pulse_to_send;
+                            *inputs.entry(target.clone()).or_insert(false) = pulse_to_send;
                             dest_module.module_type = ModuleType::Conjunction(inputs);
                         }
                     }
                 }
             }
             modules = updated_modules;
+
+            if &target == rx_connection && pulse {
+                if !cycle_lengths.contains_key(&origin) {
+                    cycle_lengths.insert(origin, presses);
+                }
+            }
         }
+
+        if connections_to_rx_connection == cycle_lengths.len() {
+            break;
+        }
+    }
+
+    let mut total_presses = 1;
+    for i in cycle_lengths.values() {
+        total_presses = lcm(total_presses, *i);
+    }
+
+    Ok(total_presses)
+}
+
+fn lcm(a: u64, b: u64) -> u64 {
+    a * b / gcd(a, b)
+}
+
+fn gcd(a: u64, b: u64) -> u64 {
+    if b == 0 {
+        a
+    }
+    else {
+        gcd(b, a % b)
     }
 }
 
@@ -159,4 +210,6 @@ mod tests {
         let solution = part_one(&parsed);
         assert_eq!(solution, Ok(11687500));
     }
+
+    // no example for testing part 2 :(
 }
