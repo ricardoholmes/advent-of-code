@@ -1,11 +1,11 @@
-use std::collections::HashSet;
+use std::{collections::HashSet, io::Write};
 
 use crate::safe_unpack;
 
 type Cube = (usize, usize, usize);
-type Parsed = Vec<Cube>;
+type Brick = Vec<Cube>;
 
-pub fn parse(input_raw: &str) -> Result<Vec<Parsed>, String> {
+pub fn parse(input_raw: &str) -> Result<Vec<Brick>, String> {
     let mut bricks = vec![];
     for line in input_raw.lines() {
         let mut brick = vec![];
@@ -49,10 +49,54 @@ pub fn parse(input_raw: &str) -> Result<Vec<Parsed>, String> {
     Ok(bricks)
 }
 
-pub fn part_one(input: &[Parsed]) -> Result<usize, String> {
+pub fn part_one(input: &[Brick]) -> Result<usize, String> {
     let mut bricks = input.to_vec();
     bricks.sort_unstable_by(|a, b| a[0].2.cmp(&b[0].2));
 
+    apply_gravity(&mut bricks);
+
+    let vital_bricks = get_vital_bricks(&bricks);
+
+    let destructable = bricks.len() - vital_bricks.len();
+
+    Ok(destructable)
+}
+
+pub fn part_two(input: &[Brick]) -> Result<usize, String> {
+    let mut bricks = input.to_vec();
+    bricks.sort_unstable_by(|a, b| a[0].2.cmp(&b[0].2));
+
+    apply_gravity(&mut bricks);
+
+    let mut fallen = 0;
+    let vital_bricks = get_vital_bricks(&bricks);
+    for (n, &i) in vital_bricks.iter().enumerate() {
+        let mut damaged_bricks = bricks.clone();
+        damaged_bricks.remove(i);
+        apply_gravity(&mut damaged_bricks);
+        for (index, original_brick) in bricks.iter().enumerate() {
+            if index == i {
+                continue;
+            }
+
+            let index = if index > i { index - 1 } else { index };
+
+            if original_brick != &damaged_bricks[index] {
+                fallen += 1;
+            }
+        }
+
+        if (n + 1) % 10 == 0 {
+            print!("\r{}/{}", n + 1, vital_bricks.len());
+            let _ = std::io::stdout().flush();
+        }
+    }
+    print!("\r");
+
+    Ok(fallen)
+}
+
+fn apply_gravity(bricks: &mut Vec<Brick>) {
     let mut moved = true;
     while moved {
         moved = false;
@@ -90,7 +134,9 @@ pub fn part_one(input: &[Parsed]) -> Result<usize, String> {
             }
         }
     }
+}
 
+fn get_vital_bricks(bricks: &[Brick]) -> HashSet<usize> {
     let mut vital_bricks = HashSet::new();
     for (index, brick) in bricks.iter().enumerate() {
         if vital_bricks.contains(&index) {
@@ -118,14 +164,7 @@ pub fn part_one(input: &[Parsed]) -> Result<usize, String> {
             vital_bricks.insert(bricks_below[0]);
         }
     }
-
-    let destructable = bricks.len() - vital_bricks.len();
-
-    Ok(destructable)
-}
-
-pub fn part_two(input: &[Parsed]) -> Result<usize, String> {
-    Ok(0)
+    vital_bricks
 }
 
 #[cfg(test)]
@@ -145,6 +184,6 @@ mod tests {
         let example = include_str!("../../examples/day_22_1.txt");
         let parsed = parse(example).unwrap();
         let solution = part_two(&parsed);
-        assert_eq!(solution, Ok(0));
+        assert_eq!(solution, Ok(7));
     }
 }
