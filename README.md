@@ -25,9 +25,9 @@
 | 21          |                   | [:star2:][2020-21] |                    | [:star2:][2022-21] | [:star2:][2023-21] |
 | 22          |                   | [:star2:][2020-22] |                    | [:star2:][2022-22] | [:star2:][2023-22] |
 | 23          |                   | [:star2:][2020-23] |                    | [:star2:][2022-23] | [:star2:][2023-23] |
-| 24          |                   | [:star2:][2020-24] |                    | [:star2:][2022-24] |                    |
+| 24          |                   | [:star2:][2020-24] |                    | [:star2:][2022-24] | [:star:][2023-24]  |
 | 25          |                   | [:star2:][2020-25] |                    | [:star2:][2022-25] |                    |
-| Total Stars | 15                | 50                 | 34                 | 50                 | 46                 |
+| Total Stars | 15                | 50                 | 34                 | 50                 | 47                 |
 | Language    | C#                | C#                 | Rust :crab:        | Rust :crab:        | Rust :crab:        |
 
 :star: Completed Part 1
@@ -136,3 +136,4 @@
 [2023-21]: ./2023/src/solutions/day_21.rs
 [2023-22]: ./2023/src/solutions/day_22.rs
 [2023-23]: ./2023/src/solutions/day_23.rs
+[2023-23]: ./2023/src/solutions/day_24.rs
