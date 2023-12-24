@@ -5,3 +5,4 @@ version = "0.1.0"
 [dependencies]
 colored = "2.0.4"
 scanf = "1.2.1"
+z3 = "0.12.1"
