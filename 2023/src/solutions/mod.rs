@@ -26,7 +26,7 @@ mod day_23;
 // mod day_24;
 mod day_25;
 
-pub fn run(day: u8) -> Result<(i128, i128, TimesTaken), String> {
+pub fn run(day: u8) -> Result<(String, String, TimesTaken), String> {
     match day {
         1 => run_day!(day_1, 1),
         2 => run_day!(day_2, 2),

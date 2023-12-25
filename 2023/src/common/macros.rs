@@ -47,7 +47,7 @@ macro_rules! run_day {
 
         let total_time = Instant::now() - start_time;
 
-        Ok((answer_part_one as i128, answer_part_two as i128, TimesTaken {
+        Ok((answer_part_one.to_string(), answer_part_two.to_string(), TimesTaken {
             total: total_time,
             parsing: parse_time,
             part_one: part_one_time,

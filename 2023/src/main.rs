@@ -104,7 +104,7 @@ fn benchmark(mode: Mode) -> Result<(), String> {
                     let (_, _, times) = solutions::run(*day)?;
                     total_times += times;
                 }
-                (0, 0, total_times)
+                (String::new(), String::new(), total_times)
             },
             _ => return Err(String::from("Invalid mode.")),
         };

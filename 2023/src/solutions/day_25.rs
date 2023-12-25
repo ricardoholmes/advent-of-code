@@ -59,13 +59,11 @@ pub fn part_one(input: &Parsed) -> Result<usize, String> {
         println!("{split:?}, {cut_size}");
     }
 
-
     Ok(split[0] * split[1])
 }
 
-pub fn part_two(_: &Parsed) -> Result<usize, String> {
-    println!("MERRY CHRISTMAS!");
-    Ok(0)
+pub fn part_two(_: &Parsed) -> Result<&str, String> {
+    Ok("MERRY CHRISTMAS!")
 }
 
 fn kargers_algorithm(nodes: &mut Vec<Node>, edges: &mut Vec<Edge>) {
