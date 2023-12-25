@@ -27,7 +27,7 @@
 | 23          |                   | [:star2:][2020-23] |                    | [:star2:][2022-23] | [:star2:][2023-23] |
 | 24          |                   | [:star2:][2020-24] |                    | [:star2:][2022-24] | [:star2:][2023-24] |
 | 25          |                   | [:star2:][2020-25] |                    | [:star2:][2022-25] | [:star2:][2023-25] |
-| Total Stars | 15                | 50                 | 34                 | 50                 | 47                 |
+| Total Stars | 15                | 50                 | 34                 | 50                 | 50                 |
 | Language    | C#                | C#                 | Rust :crab:        | Rust :crab:        | Rust :crab:        |
 
 :star: Completed Part 1
