@@ -1,6 +1,10 @@
-use crate::safe_unpack;
+extern crate num_bigint;
 
 use std::ops::{Add, Sub, Mul, Div};
+
+use crate::safe_unpack;
+
+use self::num_bigint::{BigInt, Sign};
 
 type Hailstone = (Vector3, Vector3);
 
@@ -170,47 +174,59 @@ pub fn part_two(hailstones: &[Hailstone]) -> Result<i64, String> {
     let (s2, v2) = hailstones[1];
     let (s3, v3) = hailstones[2];
 
-    // not enough precision...
-    // must implement higher precision int (i256?)
-    // note: can be done through a struct holding multiple lower precision ints
-    // note: needs support for sqrt too... (t1 is solved through a quadratic equation)
-    let a=s1.x;
-    let b=v1.x;
-    let c=s2.x;
-    let d=v2.x;
-    let e=s3.x;
-    let f=v3.x;
-    let g=s1.y;
-    let h=v1.y;
-    let i=s2.y;
-    let j=v2.y;
-    let k=s3.y;
-    let l=v3.y;
-    let m=s1.z;
-    let n=v1.z;
-    let o=s2.z;
-    let p=v2.z;
-    let q=s3.z;
-    let r=v3.z;
+    // all of the equations below are derived from:
+    // for i in 0..hailstones.len(), s_i + t_i * v_i = start + t_i * v_rock
+    let a = &BigInt::from(s1.x as i128);
+    let b = &BigInt::from(v1.x as i128);
+    let c = &BigInt::from(s2.x as i128);
+    let d = &BigInt::from(v2.x as i128);
+    let e = &BigInt::from(s3.x as i128);
+    let f = &BigInt::from(v3.x as i128);
+    let g = &BigInt::from(s1.y as i128);
+    let h = &BigInt::from(v1.y as i128);
+    let i = &BigInt::from(s2.y as i128);
+    let j = &BigInt::from(v2.y as i128);
+    let k = &BigInt::from(s3.y as i128);
+    let l = &BigInt::from(v3.y as i128);
+    let m = &BigInt::from(s1.z as i128);
+    let n = &BigInt::from(v1.z as i128);
+    let o = &BigInt::from(s2.z as i128);
+    let p = &BigInt::from(v2.z as i128);
+    let q = &BigInt::from(s3.z as i128);
+    let r = &BigInt::from(v3.z as i128);
 
-    let a1 = a*k-a*i+c*g-c*k-g*e+i*e;
-    let a2 = b*k-b*i+c*h-c*l+f*i-f*k-h*e+l*e;
-    let a3 = j*a-l*a-j*e+l*e-d*g+d*k+f*g-f*k;
-    let a4 = j*b-l*b-d*h+d*l+f*h-f*j;
+    let a1 = &BigInt::from(a*k - a*i + c*g - c*k - g*e + i*e);
+    let a2 = &BigInt::from(b*k - b*i + c*h - c*l + f*i - f*k - h*e + l*e);
+    let a3 = &BigInt::from(j*a - l*a - j*e + l*e - d*g + d*k + f*g - f*k);
+    let a4 = &BigInt::from(j*b - l*b - d*h + d*l + f*h - f*j);
 
-    let b1 = a*q-a*o+c*m-c*q-m*e+o*e;
-    let b2 = b*q-b*o+c*n-c*r+f*o-f*q-n*e+r*e;
-    let b3 = p*a-r*a-p*e+r*e-d*m+d*q+f*m-f*q;
-    let b4 = p*b-r*b-d*n+d*r+f*n-f*p;
+    let b1 = &BigInt::from(a*q - a*o + c*m - c*q - m*e + o*e);
+    let b2 = &BigInt::from(b*q - b*o + c*n - c*r + f*o - f*q - n*e + r*e);
+    let b3 = &BigInt::from(p*a - r*a - p*e + r*e - d*m + d*q + f*m - f*q);
+    let b4 = &BigInt::from(p*b - r*b - d*n + d*r + f*n - f*p);
 
-    let t1 = dbg!(solve_quadratic(a4*b2 - a2*b4, -a1*b4 - a2*b3 + a3*b2 + a4*b1, a3*b1-a1*b3).unwrap()).1;
-    let t2 = (a1 + a2*t1)/(a3 + a4*t1);
-    let t3 = (t2*(a + t1*b - t1*d) - c*t1 + e*(t1-t2)) / (a - c + t1*b - t1*f - t2*d + t2*f);
+    let t1_roots = solve_quadratic(a4*b2 - a2*b4, -a1*b4 - a2*b3 + a3*b2 + a4*b1, a3*b1-a1*b3).unwrap();
 
-    println!("{t1}, {t2}, {t3}");
+    let t1 = if a3 + a4*&t1_roots.0 == BigInt::from(0) {
+        &t1_roots.1
+    } else {
+        &t1_roots.0
+    };
 
-    let t1 = t1 as f64;
-    let t2 = t2 as f64;
+    let t2 = &((a1 + a2*t1)/(a3 + a4*t1));
+
+    // not needed but this it t3 :)
+    // t3 = (t2*(a + t1*b - t1*d) - c*t1 + e*(t1-t2)) / (a - c + t1*b - t1*f - t2*d + t2*f)
+
+    let t1 = match t1.to_u64_digits() {
+        (Sign::Minus, ns) => -(ns[0] as f64),
+        (_, ns) => ns[0] as f64,
+    };
+
+    let t2 = match t2.to_u64_digits() {
+        (Sign::Minus, ns) => -(ns[0] as f64),
+        (_, ns) => ns[0] as f64,
+    };
 
     let v_rock = (s1 + t1 * v1 - s2 - t2 * v2) / (t1 - t2);
     let start = s1 + t1 * v1 - t1 * v_rock;
@@ -265,13 +281,19 @@ fn get_collisions_in_boundaries(hailstones: &[Hailstone], min: f64, max: f64) ->
 }
 
 // get the roots of the quadratic equation ax^2 + bx + c = 0
-fn solve_quadratic(a: f64, b: f64, c: f64) -> Option<(f64, f64)> {
-    let discriminant = (b * b) - (4.0 * a * c);
-    if discriminant < 0.0 {
-        return None;
-    }
+fn solve_quadratic(a: BigInt, b: BigInt, c: BigInt) -> Option<(BigInt, BigInt)> {
+    let discriminant: BigInt = (&b * &b) - (&a * &c * 4);
 
-    Some(((-b + discriminant.sqrt()) / (2.0 * a), (-b - discriminant.sqrt()) / (2.0 * a)))
+    if discriminant < BigInt::from(0) {
+        None
+    } else {
+        let sqrt = discriminant.sqrt();
+        if sqrt.pow(2) == discriminant {
+            Some(((-&b + &sqrt) / (&a * 2), (-&b - &sqrt) / (&a * 2)))
+        } else {
+            panic!();
+        }
+    }
 }
 
 #[cfg(test)]
