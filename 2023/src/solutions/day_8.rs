@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+use crate::common::maths::lcm;
+
 pub fn parse(input_raw: &str) -> Result<(Vec<char>, HashMap<&str, (&str, &str)>), String> {
     let mut lines = input_raw.lines();
 
@@ -77,19 +79,6 @@ pub fn part_two(input: &(Vec<char>, HashMap<&str, (&str, &str)>)) -> Result<u64,
     }
 
     Ok(complete_time)
-}
-
-fn lcm(a: u64, b: u64) -> u64 {
-    a * b / gcd(a, b)
-}
-
-fn gcd(a: u64, b: u64) -> u64 {
-    if b == 0 {
-        a
-    }
-    else {
-        gcd(b, a % b)
-    }
 }
 
 #[cfg(test)]

@@ -1,6 +1,6 @@
 use std::collections::{HashMap, VecDeque};
 
-use crate::safe_unpack;
+use crate::{safe_unpack, common::maths::lcm};
 
 type Parsed = HashMap<String, Module>;
 
@@ -184,19 +184,6 @@ pub fn part_two(input: &Parsed) -> Result<u64, String> {
     }
 
     Ok(total_presses)
-}
-
-fn lcm(a: u64, b: u64) -> u64 {
-    a * b / gcd(a, b)
-}
-
-fn gcd(a: u64, b: u64) -> u64 {
-    if b == 0 {
-        a
-    }
-    else {
-        gcd(b, a % b)
-    }
 }
 
 #[cfg(test)]
