@@ -1,9 +1,6 @@
-extern crate z3;
-
 use crate::safe_unpack;
 
-use std::ops::{Add, Sub, Mul, Div, Rem};
-use self::z3::{ ast::{ Ast, Int }, SatResult };
+use std::ops::{Add, Sub, Mul, Div};
 
 type Hailstone = (Vector3, Vector3);
 
@@ -21,14 +18,6 @@ impl Vector3 {
         z: 0.0
     };
 
-    fn all(&self, pred: fn(f64) -> bool) -> bool {
-        pred(self.x) && pred(self.y) && pred(self.z)
-    }
-
-    fn any(&self, pred: fn(f64) -> bool) -> bool {
-        pred(self.x) || pred(self.y) || pred(self.z)
-    }
-
     fn parallel_to(&self, other: Self) -> bool {
         if *self == other {
             true
@@ -45,7 +34,7 @@ impl Vector3 {
                 other.z / self.z
             };
 
-            self.x * ratio == other.x && self.y * ratio == other.y && self.z * ratio == other.z
+            *self * ratio == other
         }
     }
 }
@@ -162,247 +151,73 @@ pub fn part_one(hailstones: &[Hailstone]) -> Result<u32, String> {
 
 pub fn part_two(hailstones: &[Hailstone]) -> Result<i64, String> {
     // remove parallel hailstones
-    // let hailstones: Vec<Hailstone> = hailstones
-    //     .to_vec()
-    //     .iter()
-    //     .enumerate()
-    //     .filter_map(|(i, &(s, v))| if hailstones.iter().take(i).any(|&(_, other)| v.parallel_to(other)) {
-    //         None
-    //     } else {
-    //         Some((s, v))
-    //     })
-    //     .collect();
+    let hailstones: Vec<Hailstone> = hailstones
+        .to_vec()
+        .iter()
+        .enumerate()
+        .filter_map(|(i, &(s, v))| if hailstones.iter().take(i).any(|&(_, other)| v.parallel_to(other)) {
+            None
+        } else {
+            Some((s, v))
+        })
+        .collect();
 
-    // if hailstones.len() < 3 {
-    //     return Err(format!("Not enough non-parallel hailstones."));
-    // }
-
-    // let (s_i, v_i) = hailstones[0];
-    // let (s_j, v_j) = hailstones[1];
-    // let (s_k, v_k) = hailstones[2];
-
-    // println!("{} + {}a + ((c - a) * ({} + {}a - {} - {}b) / (a - b))) - {} - {}c = 0", s_i.x, v_i.x, s_i.x, v_i.x, s_j.x, v_j.x, s_k.x, v_k.x);
-    // println!("{} + {}a + ((c - a) * ({} + {}a - {} - {}b) / (a - b))) - {} - {}c = 0", s_i.y, v_i.y, s_i.y, v_i.y, s_j.y, v_j.y, s_k.y, v_k.y);
-    // println!("{} + {}a + ((c - a) * ({} + {}a - {} - {}b) / (a - b))) - {} - {}c = 0", s_i.z, v_i.z, s_i.z, v_i.z, s_j.z, v_j.z, s_k.z, v_k.z);
-
-    let context = z3::Context::new(&z3::Config::new());
-    let solver  = z3::Solver::new(&context);
-
-    let rsx = Int::new_const(&context, "rsx");
-    let rsy = Int::new_const(&context, "rsy");
-    let rsz = Int::new_const(&context, "rsz");
-
-    let rvx = Int::new_const(&context, "rvx");
-    let rvy = Int::new_const(&context, "rvy");
-    let rvz = Int::new_const(&context, "rvz");
-
-    let zero = Int::from_i64(&context, 0);
-    for (i, (s, v)) in hailstones.iter().enumerate() {
-        let t = Int::new_const(&context, format!("t{i}"));
-        solver.assert(&t.ge(&zero));
-
-        let sx = Int::from_i64(&context, s.x as i64);
-        let sy = Int::from_i64(&context, s.y as i64);
-        let sz = Int::from_i64(&context, s.z as i64);
-
-        let vx = Int::from_i64(&context, v.x as i64);
-        let vy = Int::from_i64(&context, v.y as i64);
-        let vz = Int::from_i64(&context, v.z as i64);
-
-        solver.assert(&(&sx + &t * &vx)._eq(&(&rsx + &t * &rvx)));
-        solver.assert(&(&sy + &t * &vy)._eq(&(&rsy + &t * &rvy)));
-        solver.assert(&(&sz + &t * &vz)._eq(&(&rsz + &t * &rvz)));
+    if hailstones.len() < 3 {
+        return Err(format!("Not enough non-parallel hailstones."));
     }
 
-    let answer = if solver.check() == SatResult::Sat {
-        solver
-            .get_model()
-            .unwrap()
-            .eval(&(&rsx + &rsy + &rsz), true)
-            .unwrap()
-            .as_i64()
-            .unwrap()
-    } else {
-        return Err(format!("Failed to solve."))
-    };
+    let (s1, v1) = hailstones[0];
+    let (s2, v2) = hailstones[1];
+    let (s3, v3) = hailstones[2];
 
-    Ok(answer)
+    // not enough precision...
+    // must implement higher precision int (i256?)
+    // note: can be done through a struct holding multiple lower precision ints
+    // note: needs support for sqrt too... (t1 is solved through a quadratic equation)
+    let a=s1.x;
+    let b=v1.x;
+    let c=s2.x;
+    let d=v2.x;
+    let e=s3.x;
+    let f=v3.x;
+    let g=s1.y;
+    let h=v1.y;
+    let i=s2.y;
+    let j=v2.y;
+    let k=s3.y;
+    let l=v3.y;
+    let m=s1.z;
+    let n=v1.z;
+    let o=s2.z;
+    let p=v2.z;
+    let q=s3.z;
+    let r=v3.z;
 
-    // let t1 = Int::new_const(&context, "t1");
-    // let t2 = Int::new_const(&context, "t2");
-    // let t3 = Int::new_const(&context, "t3");
+    let a1 = a*k-a*i+c*g-c*k-g*e+i*e;
+    let a2 = b*k-b*i+c*h-c*l+f*i-f*k-h*e+l*e;
+    let a3 = j*a-l*a-j*e+l*e-d*g+d*k+f*g-f*k;
+    let a4 = j*b-l*b-d*h+d*l+f*h-f*j;
 
-    // let ax = Int::from_i64(&context, s_i.x as i64);
-    // let bx = Int::from_i64(&context, v_i.x as i64);
-    // let ay = Int::from_i64(&context, s_i.y as i64);
-    // let by = Int::from_i64(&context, v_i.y as i64);
-    // let az = Int::from_i64(&context, s_i.z as i64);
-    // let bz = Int::from_i64(&context, v_i.z as i64);
-    
-    // let cx = Int::from_i64(&context, s_j.x as i64);
-    // let dx = Int::from_i64(&context, v_j.x as i64);
-    // let cy = Int::from_i64(&context, s_j.y as i64);
-    // let dy = Int::from_i64(&context, v_j.y as i64);
-    // let cz = Int::from_i64(&context, s_j.z as i64);
-    // let dz = Int::from_i64(&context, v_j.z as i64);
+    let b1 = a*q-a*o+c*m-c*q-m*e+o*e;
+    let b2 = b*q-b*o+c*n-c*r+f*o-f*q-n*e+r*e;
+    let b3 = p*a-r*a-p*e+r*e-d*m+d*q+f*m-f*q;
+    let b4 = p*b-r*b-d*n+d*r+f*n-f*p;
 
-    // let ex = Int::from_i64(&context, s_k.x as i64);
-    // let fx = Int::from_i64(&context, v_k.x as i64);
-    // let ey = Int::from_i64(&context, s_k.y as i64);
-    // let fy = Int::from_i64(&context, v_k.y as i64);
-    // let ez = Int::from_i64(&context, s_k.z as i64);
-    // let fz = Int::from_i64(&context, v_k.z as i64);
+    let t1 = dbg!(solve_quadratic(a4*b2 - a2*b4, -a1*b4 - a2*b3 + a3*b2 + a4*b1, a3*b1-a1*b3).unwrap()).1;
+    let t2 = (a1 + a2*t1)/(a3 + a4*t1);
+    let t3 = (t2*(a + t1*b - t1*d) - c*t1 + e*(t1-t2)) / (a - c + t1*b - t1*f - t2*d + t2*f);
 
-    // let zero = Int::from_i64(&context, 0);
+    println!("{t1}, {t2}, {t3}");
 
-    // solver.assert(&(&ax + &(&bx * &t1) + &(&(&t3 - &t1) * &(&(&ax + &(&bx * &t1) - &cx - &(&t2 * &dx)) / &(&t1 - &t2))) - &ex - &(&fx * &t3))._eq(&zero));
-    // solver.assert(&(&ay + &(&by * &t1) + &(&(&t3 - &t1) * &(&(&ay + &(&by * &t1) - &cy - &(&t2 * &dy)) / &(&t1 - &t2))) - &ey - &(&fy * &t3))._eq(&zero));
-    // solver.assert(&(&az + &(&bz * &t1) + &(&(&t3 - &t1) * &(&(&az + &(&bz * &t1) - &cz - &(&t2 * &dz)) / &(&t1 - &t2))) - &ez - &(&fz * &t3))._eq(&zero));
+    let t1 = t1 as f64;
+    let t2 = t2 as f64;
 
-    // println!("finished asserting");
-    // let (t1, t2) = if solver.check() == SatResult::Sat {
-    //     (
-    //         solver
-    //             .get_model()
-    //             .unwrap()
-    //             .eval(&t1, true)
-    //             .unwrap()
-    //             .as_i64()
-    //             .unwrap() as f64,
+    let v_rock = (s1 + t1 * v1 - s2 - t2 * v2) / (t1 - t2);
+    let start = s1 + t1 * v1 - t1 * v_rock;
 
-    //         solver
-    //             .get_model()
-    //             .unwrap()
-    //             .eval(&t2, true)
-    //             .unwrap()
-    //             .as_i64()
-    //             .unwrap() as f64
-    //     )
-    // } else {
-    //     return Err(format!("Failed to solve."))
-    // };
-    // println!("{t1}, {t2}");
+    let ans = start.x + start.y + start.z;
 
-    // let v_rock = (s_i + t1 * v_i - s_j - t2 * v_j) / (t1 - t2);
-    // let start = s_i + t1 * v_i - t1 * v_rock;
-
-    // let a = s_i.x;
-    // let b = v_i.x;
-    // let c = s_j.x;
-    // let d = v_j.x;
-    // let e = s_k.x;
-    // let f = v_k.x;
-
-    // let g = s_i.y;
-    // let h = v_i.y;
-    // let i = s_j.y;
-    // let j = v_j.y;
-    // let k = s_k.y;
-    // let l = v_k.y;
-
-
-    // let a1 = ((d-b)*t1 + e-a)*(-j-l);
-    // let a2 = ((j-h)*t1 + k-g)*(-d-f);
-    // let b1 = ((d-b)*t1 + e-a)*((l-h)*t1 + -g-i) + (c-e)*(-j-l);
-    // let b2 = ((j-h)*t1 + k-g)*((f-b)*t1 + -a-c) + (i-k)*(-d-f);
-    // let c1 = (c-e)*((l-h)*t1 + -g-i)*t1;
-    // let c2 = (i-k)*((f-b)*t1 + -a-c)*t1;
-
-    // let t2 = if let Some(t) = solve_quadratic(a1-a2, b1-b2, c1-c2) {
-    //     println!("{t:?}");
-    //     t.0
-    // } else {
-    //     -1.0
-    // };
-
-    // let t3 = ((c - e) * t1 + ((d - b) * t1 + (e - a)) * t2) / ((f - b) * t1 + (-d-f) * t2 + (-a-c));
-
-    // println!("{t1}, {t2}, {t3}");
-
-    // below is my suffering
-    // 'outer: loop {
-    //     t_i += 1.0;
-    //     let s_i = s_i + (t_i * v_i);
-
-    //     if t_i > 10.0 {
-    //         panic!();
-    //     }
-
-    //     // let mut t_j = 0.0;
-    //     // loop {
-    //     //     t_j += 1.0;
-
-    //     //     // prevent zero division
-    //     //     if t_j == t_i {
-    //     //         continue;
-    //     //     }
-
-    //     //     let s_j = s_j + (t_j * v_j);
-    //     //     let trajectory = s_j - s_i;
-    //     //     let v_rock = trajectory / (t_j - t_i);
-
-    //     //     // if any components are less than 1
-    //     //     if v_rock.any(|n| n.abs() < 1.0) {
-    //     //         println!("less than 1");
-    //     //         if t_j < t_i {
-    //     //             continue;
-    //     //         }
-    //     //         break;
-    //     //     }
-
-    //     //     // if not all components are integers
-    //     //     if !v_rock.all(|n| n.trunc() == n) {
-    //     //         print!("t_j: {t_j} -> ");
-    //     //         t_j += lcm(trajectory.x, lcm(trajectory.y, trajectory.z));
-    //     //         println!("{t_j}");
-    //     //         continue;
-    //     //     }
-
-    //     //     // if it reaches here, all components of velocity are integers and >= 1
-    //     //     start = s_i - (t_i * v_rock);
-
-    //     //     // println!("\n{t_i} - {t_j}");
-    //     //     // println!("start:    {start:?}");
-    //     //     // println!("velocity: {v_rock:?}");
-
-    //     //     let mut all_hailstones_hit = true;
-    //     //     for &(s, v) in hailstones.iter().skip(2) {
-    //     //         if v_rock * v == Vector3::ZERO {
-    //     //             // println!("lines are parallel");
-    //     //             all_hailstones_hit = false;
-    //     //             break;
-    //     //         }
-
-    //     //         // result of solving the simultaneous equations derived from start + (t * v_rock) = s + (t * v)
-    //     //         let s_diff = s - start;
-    //     //         let v_diff = v_rock - v;
-    //     //         let t = if v_diff.x != 0.0 {
-    //     //             s_diff.x / v_diff.x
-    //     //         } else if v_diff.y != 0.0 {
-    //     //             s_diff.y / v_diff.y
-    //     //         } else {
-    //     //             s_diff.z / v_diff.z
-    //     //         };
-
-    //     //         if t < 0.0 {
-    //     //             // println!("hit at bad time {t}");
-    //     //             all_hailstones_hit = false;
-    //     //             break;
-    //     //         }
-
-    //     //         let collision = start + (t * v_rock);
-    //     //         if !collision.all(|n| n.trunc() == n) {
-    //     //             // println!("hit at bad position {t}");
-    //     //             all_hailstones_hit = false;
-    //     //             break;
-    //     //         }
-    //     //     }
-
-    //     //     if all_hailstones_hit {
-    //     //         break 'outer;
-    //     //     }
-    //     // }
-    // }
+    Ok(ans as i64)
 }
 
 fn get_collisions_in_boundaries(hailstones: &[Hailstone], min: f64, max: f64) -> Result<u32, String> {
@@ -449,20 +264,7 @@ fn get_collisions_in_boundaries(hailstones: &[Hailstone], min: f64, max: f64) ->
     Ok(collisions)
 }
 
-fn lcm<T>(a: T, b: T) -> T where T: Copy + Mul<Output=T> + PartialEq + Div<Output=T> + Rem<Output=T> + Default {
-    a * b / gcd(a, b)
-}
-
-fn gcd<T>(a: T, b: T) -> T where T: Copy + PartialEq + Rem<Output=T> + Default {
-    if b == T::default() {
-        a
-    }
-    else {
-        gcd(b, a % b)
-    }
-}
-
-// get the positive root of the quadratic equation ax^2 + bx + c = 0
+// get the roots of the quadratic equation ax^2 + bx + c = 0
 fn solve_quadratic(a: f64, b: f64, c: f64) -> Option<(f64, f64)> {
     let discriminant = (b * b) - (4.0 * a * c);
     if discriminant < 0.0 {
