@@ -7,27 +7,55 @@ pub fn parse(input_raw: &str) -> Result<(Vec<u32>, Vec<u32>), String> {
         right.push(line_split[1].parse().unwrap());
     }
 
+    left.sort_unstable();
+    right.sort_unstable();
+
     Ok((left, right))
 }
 
 pub fn part_one(cols: &(Vec<u32>, Vec<u32>)) -> Result<u32, String> {
-    let (mut left, mut right) = cols.clone();
-    left.sort();
-    right.sort();
+    let (left, right) = cols;
 
-    let mut out = 0;
-    for i in 0..left.len() {
-        out += left[i].abs_diff(right[i])
-    }
-
-    Ok(out)
+    Ok(
+        left.iter()
+            .zip(right)
+            .fold(0,
+                |acc,(&l,&r)| acc + l.abs_diff(r)
+            )
+    )
 }
 
-pub fn part_two(cols: &(Vec<u32>, Vec<u32>)) -> Result<u32, String> {
-    let (left, right) = cols.clone();
+pub fn part_two(cols: &(Vec<u32>, Vec<u32>)) -> Result<usize, String> {
+    let (left, right) = cols;
+
+    let mut left = left.iter();
+    let mut right = right.iter();
+
+    let mut l = left.next();
+    let mut r = left.next();
     let mut total = 0;
-    for n in left {
-        total += n * right.iter().filter(|&&x| x == n).count() as u32
+    while l.is_some() && r.is_some() {
+        if l < r {
+            let rx = r.unwrap();
+            let _ = left.by_ref().skip_while(|&x| x < rx);
+            l = left.next();
+        }
+        else if r < l {
+            let lx = l.unwrap();
+            let _ = right.by_ref().skip_while(|&x| x < lx);
+            r = right.next();
+        }
+        else {
+            let n = l.unwrap();
+
+            let l_count = 1 + left.by_ref().take_while(|&x| x == n).count(); // this seems to only ever be 1 but whatever
+            let r_count = 1 + right.by_ref().take_while(|&x| x == n).count();
+            total += l_count * r_count;
+
+            l = left.next();
+            r = right.next();
+        }
     }
+
     Ok(total)
 }
