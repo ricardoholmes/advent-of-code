@@ -1,5 +1,7 @@
 use std::ops::{Mul, Div, Rem};
 
+#[allow(dead_code)]
+
 pub fn lcm<T>(a: T, b: T) -> T where T: Copy + Mul<Output=T> + PartialEq + Div<Output=T> + Rem<Output=T> + Default {
     a * b / gcd(a, b)
 }
