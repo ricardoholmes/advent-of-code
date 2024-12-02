@@ -9,32 +9,53 @@ pub fn parse(input_raw: &str) -> Result<Vec<Parsed>, String> {
 }
 
 pub fn part_one(input: &[Parsed]) -> Result<usize, String> {
-    let mut unsafe_count = 0;
+    let mut safe_count = 0;
     for l in input {
-        let mut pprev = l[0];
-        let mut prev = l[1];
-        if (prev - pprev).abs() > 3 {
-            unsafe_count += 1;
-            continue;
-        }
-        for x in l.iter().skip(2) {
-            if (prev - pprev) * (x - prev) <= 0 { // one is increasing, other decreasing (or one doing neither)
-                unsafe_count += 1;
-                break;
-            }
-            else if (x - prev).abs() > 3 {
-                unsafe_count += 1;
-                break;
-            }
-            pprev = prev;
-            prev = *x;
+        if check_safe(l) {
+            safe_count += 1;
         }
     }
-    Ok(input.len() - unsafe_count)
+    Ok(safe_count)
 }
 
 pub fn part_two(input: &[Parsed]) -> Result<usize, String> {
-    Ok(0)
+    let mut safe_count = 0;
+    for l in input {
+        if check_safe(l) {
+            safe_count += 1;
+            continue;
+        }
+
+        // not safe by default
+        for i in 0..l.len() {
+            let mut l = l.clone();
+            l.remove(i);
+            if check_safe(&l) {
+                safe_count += 1;
+                break;
+            }
+        }
+    }
+    Ok(safe_count)
+}
+
+fn check_safe(line: &[i32]) -> bool {
+    let mut pprev = line[0];
+    let mut prev = line[1];
+    if (prev - pprev).abs() > 3 {
+        return false;
+    }
+    for x in line.iter().skip(2) {
+        if (prev - pprev) * (x - prev) <= 0 { // one is increasing, other decreasing (or one doing neither)
+            return false;
+        }
+        else if (x - prev).abs() > 3 {
+            return false;
+        }
+        pprev = prev;
+        prev = *x;
+    }
+    return true;
 }
 
 #[cfg(test)]
