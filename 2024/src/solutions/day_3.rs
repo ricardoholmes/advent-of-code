@@ -2,35 +2,57 @@ extern crate regex;
 
 use regex::Regex;
 
-type Parsed = String;
-
-pub fn parse(input_raw: &str) -> Result<Parsed, String> {
-    Ok(input_raw.to_string())
+#[derive(Clone, Copy, Debug)]
+pub enum Token {
+    Mul(u32),
+    Do,
+    Dont
 }
 
-pub fn part_one(input: &Parsed) -> Result<u32, String> {
-    let re = Regex::new(r"mul\(([0-9]{1,3}),([0-9]{1,3})\)").unwrap();
-    let mut total: u32 = 0;
-    for (_, [x, y]) in re.captures_iter(input).map(|c| c.extract()) {
-        total += x.parse::<u32>().unwrap() * y.parse::<u32>().unwrap();
+type Parsed = Token;
+
+pub fn parse(input_raw: &str) -> Result<Vec<Parsed>, String> {
+    let re = Regex::new(r"(?<do>do\(\))|(?<dont>don't\(\))|mul\((?<x>[0-9]{1,3}),(?<y>[0-9]{1,3})\)").unwrap();
+
+    let mut out = vec![];
+    for cap in re.captures_iter(input_raw) {
+        if cap.name("do").is_some() {
+            out.push(Token::Do)
+        }
+        else if cap.name("dont").is_some() {
+            out.push(Token::Dont)
+        }
+        else { // must be mul
+            let x = cap.name("x").unwrap().as_str().parse::<u32>().unwrap();
+            let y = cap.name("y").unwrap().as_str().parse::<u32>().unwrap();
+            out.push(Token::Mul(x * y))
+        }
+    }
+
+    Ok(out)
+}
+
+pub fn part_one(input: &[Parsed]) -> Result<u32, String> {
+    let mut total = 0;
+    for tok in input {
+        if let Token::Mul(x) = tok {
+            total += x;
+        }
     }
     Ok(total)
 }
 
-pub fn part_two(input: &Parsed) -> Result<u32, String> {
-    let re = Regex::new(r"mul\(([0-9]{1,3}),([0-9]{1,3})\)").unwrap();
-    let mut total: u32 = 0;
-
-    let mut start = Some(0);
-    let mut stop_idx;
-    while start.is_some() {
-        let start_idx = start.unwrap();
-        stop_idx = input[start_idx..].find("don't()").and_then(|x| Some(x + start_idx)).unwrap_or(input.len());
-        for (_, [x, y]) in re.captures_iter(&input[start_idx..stop_idx]).map(|c| c.extract()) {
-            total += x.parse::<u32>().unwrap() * y.parse::<u32>().unwrap();
+pub fn part_two(input: &[Parsed]) -> Result<u32, String> {
+    let mut total = 0;
+    let mut enabled = true;
+    for &tok in input {
+        match tok {
+            Token::Do => enabled = true,
+            Token::Dont => enabled = false,
+            Token::Mul(x) => if enabled { total += x },
         }
-        start = input[stop_idx..].find("do()").and_then(|x| Some(x + stop_idx));
     }
+
     Ok(total)
 }
 
