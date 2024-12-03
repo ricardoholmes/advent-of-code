@@ -55,7 +55,7 @@ fn check_safe(line: &[i32]) -> bool {
         pprev = prev;
         prev = *x;
     }
-    return true;
+    true
 }
 
 #[cfg(test)]

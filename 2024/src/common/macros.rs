@@ -27,7 +27,7 @@ macro_rules! run_day {
         let input_file = format!("inputs/input_{}.txt", $day_num);
         let mut input_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
         input_path.push(input_file);
-        let raw_input = crate::try_get_ok!(fs::read_to_string(input_path));
+        let raw_input = $crate::try_get_ok!(fs::read_to_string(input_path));
 
         let start_time = Instant::now();
 

@@ -16,7 +16,7 @@ impl TimesTaken {
         part_two: Duration::ZERO,
     };
 
-    pub fn divide(self: &Self, divisor: u32) -> TimesTaken {
+    pub fn divide(&self, divisor: u32) -> TimesTaken {
         TimesTaken {
             total: self.total / divisor,
             parsing: self.parsing / divisor,

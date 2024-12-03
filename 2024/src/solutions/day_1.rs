@@ -35,25 +35,29 @@ pub fn part_two(cols: &(Vec<u32>, Vec<u32>)) -> Result<usize, String> {
     let mut r = left.next();
     let mut total = 0;
     while l.is_some() && r.is_some() {
-        if l < r {
-            let rx = r.unwrap();
-            let _ = left.by_ref().skip_while(|&x| x < rx);
-            l = left.next();
-        }
-        else if r < l {
-            let lx = l.unwrap();
-            let _ = right.by_ref().skip_while(|&x| x < lx);
-            r = right.next();
-        }
-        else {
-            let n = l.unwrap();
+        let lx = *l.unwrap();
+        let rx = *r.unwrap();
+        match lx.cmp(&rx) {
+            std::cmp::Ordering::Less => {
+                let rx = r.unwrap();
+                let _ = left.by_ref().skip_while(|&x| x < rx);
+                l = left.next();
+            },
+            std::cmp::Ordering::Greater => {
+                let lx = l.unwrap();
+                let _ = right.by_ref().skip_while(|&x| x < lx);
+                r = right.next();
+            },
+            std::cmp::Ordering::Equal => {
+                let n = l.unwrap();
 
-            let l_count = 1 + left.by_ref().take_while(|&x| x == n).count(); // this seems to only ever be 1 but whatever
-            let r_count = 1 + right.by_ref().take_while(|&x| x == n).count();
-            total += l_count * r_count;
+                let l_count = 1 + left.by_ref().take_while(|&x| x == n).count(); // this seems to only ever be 1 but whatever
+                let r_count = 1 + right.by_ref().take_while(|&x| x == n).count();
+                total += l_count * r_count;
 
-            l = left.next();
-            r = right.next();
+                l = left.next();
+                r = right.next();
+            },
         }
     }
 

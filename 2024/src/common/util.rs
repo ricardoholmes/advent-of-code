@@ -14,7 +14,7 @@ pub fn get_all_day_nums() -> Result<Vec<u8>, String> {
                 Some(filename) => extract_day_num(filename),
                 None => None,
             },
-            Err(_) => return None,
+            Err(_) => None,
         })
         .collect();
 

@@ -11,7 +11,7 @@ pub fn parse(input_raw: &str) -> Result<Vec<Parsed>, String> {
     let mut tokenized = vec![];
     let mut start = 0;
     while start < input_raw.len() {
-        if let Some(idx) = input_raw[start..].find(&['d', 'm']) {
+        if let Some(idx) = input_raw[start..].find(['d', 'm']) {
             start += idx;
         } else {
             break;
@@ -27,7 +27,7 @@ pub fn parse(input_raw: &str) -> Result<Vec<Parsed>, String> {
         }
         else if input_raw[start..].starts_with("mul(") {
             start += 4;
-            let Some(idx) = input_raw[start..].find(|c| c == ')') else {
+            let Some(idx) = input_raw[start..].find(')') else {
                 continue;
             };
 
