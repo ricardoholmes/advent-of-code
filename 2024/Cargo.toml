@@ -5,5 +5,4 @@ edition = "2021"
 
 [dependencies]
 colored = "2.0.4"
-regex = "1.11.1"
 scanf = "1.2.1"

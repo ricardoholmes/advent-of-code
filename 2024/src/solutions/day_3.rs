@@ -1,7 +1,3 @@
-extern crate regex;
-
-use regex::Regex;
-
 #[derive(Clone, Copy, Debug)]
 pub enum Token {
     Mul(u32),
@@ -12,24 +8,47 @@ pub enum Token {
 type Parsed = Token;
 
 pub fn parse(input_raw: &str) -> Result<Vec<Parsed>, String> {
-    let re = Regex::new(r"(?<do>do\(\))|(?<dont>don't\(\))|mul\((?<x>[0-9]{1,3}),(?<y>[0-9]{1,3})\)").unwrap();
+    let mut tokenized = vec![];
+    let mut start = 0;
+    while start < input_raw.len() {
+        if let Some(idx) = input_raw[start..].find(&['d', 'm']) {
+            start += idx;
+        } else {
+            break;
+        }
 
-    let mut out = vec![];
-    for cap in re.captures_iter(input_raw) {
-        if cap.name("do").is_some() {
-            out.push(Token::Do)
+        if input_raw[start..].starts_with("do()") {
+            tokenized.push(Token::Do);
+            start += 4;
         }
-        else if cap.name("dont").is_some() {
-            out.push(Token::Dont)
+        else if input_raw[start..].starts_with("don't()") {
+            tokenized.push(Token::Dont);
+            start += 7;
         }
-        else { // must be mul
-            let x = cap.name("x").unwrap().as_str().parse::<u32>().unwrap();
-            let y = cap.name("y").unwrap().as_str().parse::<u32>().unwrap();
-            out.push(Token::Mul(x * y))
+        else if input_raw[start..].starts_with("mul(") {
+            start += 4;
+            let Some(idx) = input_raw[start..].find(|c| c == ')') else {
+                continue;
+            };
+
+            let mut split = input_raw[start..start+idx].split(',');
+            let Some(x) = split.next() else { continue; };
+            let Some(y) = split.next() else { continue; };
+            if split.next().is_some() {
+                continue;
+            }
+
+            let Ok(x) = x.parse::<u32>() else { continue; };
+            let Ok(y) = y.parse::<u32>() else { continue; };
+            tokenized.push(Token::Mul(x * y));
+            start += idx;
+        }
+        else {
+            start += 1;
         }
     }
 
-    Ok(out)
+    Ok(tokenized)
 }
 
 pub fn part_one(input: &[Parsed]) -> Result<u32, String> {
