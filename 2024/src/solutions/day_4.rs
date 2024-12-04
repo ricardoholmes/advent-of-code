@@ -69,7 +69,27 @@ pub fn part_one(input: &[Parsed]) -> Result<usize, String> {
 }
 
 pub fn part_two(input: &[Parsed]) -> Result<usize, String> {
-    Ok(0)
+    let input: Vec<Vec<char>> = input.iter().map(|x| x.chars().collect()).collect();
+    let mut count = 0;
+    for i in 1..input.len()-1 {
+        for j in 1..input[i].len()-1 {
+            if input[i][j] != 'A' {
+                continue;
+            }
+
+            if !(input[i-1][j-1] == 'M' && input[i+1][j+1] == 'S') && !(input[i-1][j-1] == 'S' && input[i+1][j+1] == 'M') {
+                continue;
+            }
+
+            if !(input[i+1][j-1] == 'M' && input[i-1][j+1] == 'S') && !(input[i+1][j-1] == 'S' && input[i-1][j+1] == 'M') {
+                continue;
+            }
+
+            count += 1;
+        }
+    }
+
+    Ok(count)
 }
 
 #[cfg(test)]
@@ -89,6 +109,6 @@ mod tests {
         let example = include_str!("../../examples/day_4_1.txt");
         let parsed = parse(example).unwrap();
         let solution = part_two(&parsed);
-        assert_eq!(solution, Ok(0));
+        assert_eq!(solution, Ok(9));
     }
 }
