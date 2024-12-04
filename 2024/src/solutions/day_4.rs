@@ -5,62 +5,70 @@ pub fn parse(input_raw: &str) -> Result<Vec<Parsed>, String> {
 }
 
 pub fn part_one(input: &[Parsed]) -> Result<usize, String> {
+    let rows = input.len();
+    let cols = input[0].len(); // should be constant across all rows
+
     let mut count = 0;
-    for i in 0..input.len() {
-        for j in 0..input[i].len() {
-            /*
-                XMAS
-            */
-            if input[i].len() - j >= 4 {
-                if input[i][j] == 'X' && input[i][j+1] == 'M' && input[i][j+2] == 'A' && input[i][j+3] == 'S' {
+    for i in 0..rows {
+        for j in 0..cols {
+            if input[i][j] == 'X' { // check for XMAS
+                let can_down = rows - i >= 4;
+
+                // vertical down
+                if can_down && input[i+1][j] == 'M' && input[i+2][j] == 'A' && input[i+3][j] == 'S' {
                     count += 1;
                 }
-                else if input[i][j] == 'S' && input[i][j+1] == 'A' && input[i][j+2] == 'M' && input[i][j+3] == 'X' {
+
+                let can_right = cols - j >= 4;
+                if !can_right {
+                    // every check after here looks right
+                    continue;
+                }
+
+                // horizontal right
+                if input[i][j+1] == 'M' && input[i][j+2] == 'A' && input[i][j+3] == 'S' {
+                    count += 1;
+                }
+
+                // diagonal right down
+                if can_down && input[i+1][j+1] == 'M' && input[i+2][j+2] == 'A' && input[i+3][j+3] == 'S' {
+                    count += 1;
+                }
+                
+                let can_up = i >= 3;
+
+                // diagonal right up
+                if can_up && input[i-1][j+1] == 'M' && input[i-2][j+2] == 'A' && input[i-3][j+3] == 'S' {
                     count += 1;
                 }
             }
+            else if input[i][j] == 'S' { // check for SAMX
+                let can_down = rows - i >= 4;
 
-            /*
-                X
-                M
-                A
-                S
-            */
-            if input.len() - i >= 4 {
-                if input[i][j] == 'X' && input[i+1][j] == 'M' && input[i+2][j] == 'A' && input[i+3][j] == 'S' {
+                // vertical down
+                if can_down && input[i+1][j] == 'A' && input[i+2][j] == 'M' && input[i+3][j] == 'X' {
                     count += 1;
                 }
-                else if input[i][j] == 'S' && input[i+1][j] == 'A' && input[i+2][j] == 'M' && input[i+3][j] == 'X' {
-                    count += 1;
+                
+                let can_right = cols - j >= 4;
+                if !can_right {
+                    continue;
                 }
-            }
 
-            /*
-                X...
-                .M..
-                ..A.
-                ...S
-            */
-            if input.len() - i >= 4 && input[i].len() - j >= 4 {
-                if input[i][j] == 'X' && input[i+1][j+1] == 'M' && input[i+2][j+2] == 'A' && input[i+3][j+3] == 'S' {
+                // horizontal right
+                if input[i][j+1] == 'A' && input[i][j+2] == 'M' && input[i][j+3] == 'X' {
                     count += 1;
                 }
-                else if input[i][j] == 'S' && input[i+1][j+1] == 'A' && input[i+2][j+2] == 'M' && input[i+3][j+3] == 'X' {
-                    count += 1;
-                }
-            }
 
-            /*
-                ...S
-                ..A.
-                .M..
-                X...
-            */
-            if i >= 3 && input[i].len() - j >= 4 {
-                if input[i][j] == 'X' && input[i-1][j+1] == 'M' && input[i-2][j+2] == 'A' && input[i-3][j+3] == 'S' {
+                // diagonal right down
+                if can_down && input[i+1][j+1] == 'A' && input[i+2][j+2] == 'M' && input[i+3][j+3] == 'X' {
                     count += 1;
                 }
-                else if input[i][j] == 'S' && input[i-1][j+1] == 'A' && input[i-2][j+2] == 'M' && input[i-3][j+3] == 'X' {
+
+                let can_up = i >= 3;
+
+                // diagonal right up
+                if can_up && input[i-1][j+1] == 'A' && input[i-2][j+2] == 'M' && input[i-3][j+3] == 'X' {
                     count += 1;
                 }
             }
