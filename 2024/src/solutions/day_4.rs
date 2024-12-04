@@ -1,7 +1,7 @@
-type Parsed = String;
+type Parsed = Vec<char>;
 
 pub fn parse(input_raw: &str) -> Result<Vec<Parsed>, String> {
-    Ok(input_raw.lines().map(|s| s.to_string()).collect())
+    Ok(input_raw.lines().map(|s| s.chars().collect()).collect())
 }
 
 pub fn part_one(input: &[Parsed]) -> Result<usize, String> {
@@ -11,11 +11,13 @@ pub fn part_one(input: &[Parsed]) -> Result<usize, String> {
             /*
                 XMAS
             */
-            if input[i].len() - j >= 4 && &input[i][j..j+4] == "XMAS" {
-                count += 1;
-            }
-            else if input[i].len() - j >= 4 && &input[i][j..j+4] == "SAMX" {
-                count += 1;
+            if input[i].len() - j >= 4 {
+                if input[i][j] == 'X' && input[i][j+1] == 'M' && input[i][j+2] == 'A' && input[i][j+3] == 'S' {
+                    count += 1;
+                }
+                else if input[i][j] == 'S' && input[i][j+1] == 'A' && input[i][j+2] == 'M' && input[i][j+3] == 'X' {
+                    count += 1;
+                }
             }
 
             /*
@@ -25,10 +27,10 @@ pub fn part_one(input: &[Parsed]) -> Result<usize, String> {
                 S
             */
             if input.len() - i >= 4 {
-                if input[i].chars().nth(j).unwrap() == 'X' && input[i+1].chars().nth(j).unwrap() == 'M' && input[i+2].chars().nth(j).unwrap() == 'A' && input[i+3].chars().nth(j).unwrap() == 'S' {
+                if input[i][j] == 'X' && input[i+1][j] == 'M' && input[i+2][j] == 'A' && input[i+3][j] == 'S' {
                     count += 1;
                 }
-                else if input[i].chars().nth(j).unwrap() == 'S' && input[i+1].chars().nth(j).unwrap() == 'A' && input[i+2].chars().nth(j).unwrap() == 'M' && input[i+3].chars().nth(j).unwrap() == 'X' {
+                else if input[i][j] == 'S' && input[i+1][j] == 'A' && input[i+2][j] == 'M' && input[i+3][j] == 'X' {
                     count += 1;
                 }
             }
@@ -40,10 +42,10 @@ pub fn part_one(input: &[Parsed]) -> Result<usize, String> {
                 ...S
             */
             if input.len() - i >= 4 && input[i].len() - j >= 4 {
-                if input[i].chars().nth(j).unwrap() == 'X' && input[i+1].chars().nth(j+1).unwrap() == 'M' && input[i+2].chars().nth(j+2).unwrap() == 'A' && input[i+3].chars().nth(j+3).unwrap() == 'S' {
+                if input[i][j] == 'X' && input[i+1][j+1] == 'M' && input[i+2][j+2] == 'A' && input[i+3][j+3] == 'S' {
                     count += 1;
                 }
-                else if input[i].chars().nth(j).unwrap() == 'S' && input[i+1].chars().nth(j+1).unwrap() == 'A' && input[i+2].chars().nth(j+2).unwrap() == 'M' && input[i+3].chars().nth(j+3).unwrap() == 'X' {
+                else if input[i][j] == 'S' && input[i+1][j+1] == 'A' && input[i+2][j+2] == 'M' && input[i+3][j+3] == 'X' {
                     count += 1;
                 }
             }
@@ -55,10 +57,10 @@ pub fn part_one(input: &[Parsed]) -> Result<usize, String> {
                 X...
             */
             if i >= 3 && input[i].len() - j >= 4 {
-                if input[i].chars().nth(j).unwrap() == 'X' && input[i-1].chars().nth(j+1).unwrap() == 'M' && input[i-2].chars().nth(j+2).unwrap() == 'A' && input[i-3].chars().nth(j+3).unwrap() == 'S' {
+                if input[i][j] == 'X' && input[i-1][j+1] == 'M' && input[i-2][j+2] == 'A' && input[i-3][j+3] == 'S' {
                     count += 1;
                 }
-                else if input[i].chars().nth(j).unwrap() == 'S' && input[i-1].chars().nth(j+1).unwrap() == 'A' && input[i-2].chars().nth(j+2).unwrap() == 'M' && input[i-3].chars().nth(j+3).unwrap() == 'X' {
+                else if input[i][j] == 'S' && input[i-1][j+1] == 'A' && input[i-2][j+2] == 'M' && input[i-3][j+3] == 'X' {
                     count += 1;
                 }
             }
@@ -69,7 +71,6 @@ pub fn part_one(input: &[Parsed]) -> Result<usize, String> {
 }
 
 pub fn part_two(input: &[Parsed]) -> Result<usize, String> {
-    let input: Vec<Vec<char>> = input.iter().map(|x| x.chars().collect()).collect();
     let mut count = 0;
     for i in 1..input.len()-1 {
         for j in 1..input[i].len()-1 {
