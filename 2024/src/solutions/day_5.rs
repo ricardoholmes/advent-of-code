@@ -54,7 +54,6 @@ pub fn part_two(input: &Parsed) -> Result<usize, String> {
                         let j = page.iter().position(|&n| n == x).unwrap();
                         page.swap(i, j);
                         valid = false;
-                        break;
                     }
                 }
                 nums_past.insert(num);
