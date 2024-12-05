@@ -40,15 +40,18 @@ pub fn part_two(input: &Parsed) -> Result<usize, String> {
             continue;
         }
 
-        page.sort_unstable_by(|&a, &b|
-            if rules.contains(&(a,b)) {
-                Ordering::Less
-            } else {
-                Ordering::Greater
+        let midpoint = page.len() / 2;
+        let (_, median, _) = page.select_nth_unstable_by(
+            midpoint,
+            |&a, &b| {
+                if rules.contains(&(a,b)) {
+                    Ordering::Less
+                } else {
+                    Ordering::Greater
+                }
             }
         );
-
-        total += page[page.len() / 2];
+        total += *median;
     }
 
     Ok(total)
