@@ -1,4 +1,4 @@
-use std::{collections::HashSet, ops::Add};
+use std::{collections::{HashMap, HashSet}, ops::Add};
 
 #[derive(PartialEq, Eq, Hash, Clone, Copy, Debug)]
 pub struct Point {
@@ -77,7 +77,55 @@ pub fn part_one(input: &Parsed) -> Result<usize, String> {
 }
 
 pub fn part_two(input: &Parsed) -> Result<usize, String> {
-    Ok(0)
+    let ((w, h), walls, mut pos) = input;
+
+    let mut loops = 0;
+    let mut positions: HashSet<Point> = HashSet::new();
+    let mut direction = Point::new(0, -1);
+    while pos.x >= 0 && pos.x < *w && pos.y >= 0 && pos.y < *h {
+        positions.insert(pos);
+
+        let new_pos = pos + direction;
+        if walls.contains(&new_pos) {
+            direction = direction.rotate90();
+        }
+        else {
+            if !positions.contains(&new_pos) {
+                let mut walls_with_obstruction = walls.clone();
+                walls_with_obstruction.insert(new_pos);
+                if check_for_loop(pos, direction, &walls_with_obstruction, *w, *h) {
+                    loops += 1;
+                }
+            }
+            pos = new_pos;
+        }
+    }
+
+    Ok(loops)
+}
+
+fn check_for_loop(pos: Point, direction: Point, walls: &HashSet<Point>, w: i32, h: i32) -> bool {
+    let mut pos = pos.clone();
+    let mut direction = direction.clone();
+
+    // key = pos, value = directions used to reach that point
+    let mut positions: HashMap<Point, HashSet<Point>> = HashMap::new();
+    while pos.x >= 0 && pos.x < w && pos.y >= 0 && pos.y < h {
+        let entry = positions.entry(pos).or_insert(HashSet::new());
+        if !entry.insert(direction) { // insert returns false if value was already present
+            return true;
+        }
+
+        let new_pos = pos + direction;
+        if walls.contains(&new_pos) {
+            direction = direction.rotate90();
+        }
+        else {
+            pos = new_pos;
+        }
+    }
+
+    false
 }
 
 #[cfg(test)]
@@ -97,6 +145,6 @@ mod tests {
         let example = include_str!("../../examples/day_6_1.txt");
         let parsed = parse(example).unwrap();
         let solution = part_two(&parsed);
-        assert_eq!(solution, Ok(0));
+        assert_eq!(solution, Ok(6));
     }
 }
