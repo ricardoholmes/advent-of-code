@@ -105,13 +105,13 @@ pub fn part_two(input: &Parsed) -> Result<usize, String> {
 }
 
 fn check_for_loop(pos: Point, direction: Point, walls: &HashSet<Point>, w: i32, h: i32) -> bool {
-    let mut pos = pos.clone();
-    let mut direction = direction.clone();
+    let mut pos = pos;
+    let mut direction = direction;
 
     // key = pos, value = directions used to reach that point
     let mut positions: HashMap<Point, HashSet<Point>> = HashMap::new();
     while pos.x >= 0 && pos.x < w && pos.y >= 0 && pos.y < h {
-        let entry = positions.entry(pos).or_insert(HashSet::new());
+        let entry = positions.entry(pos).or_default();
         if !entry.insert(direction) { // insert returns false if value was already present
             return true;
         }

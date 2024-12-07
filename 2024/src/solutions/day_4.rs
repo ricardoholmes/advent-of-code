@@ -86,11 +86,11 @@ pub fn part_two(input: &[Parsed]) -> Result<usize, String> {
                 continue;
             }
 
-            if !(input[i-1][j-1] == 'M' && input[i+1][j+1] == 'S') && !(input[i-1][j-1] == 'S' && input[i+1][j+1] == 'M') {
+            if !((input[i-1][j-1] == 'M' && input[i+1][j+1] == 'S') || (input[i-1][j-1] == 'S' && input[i+1][j+1] == 'M')) {
                 continue;
             }
 
-            if !(input[i+1][j-1] == 'M' && input[i-1][j+1] == 'S') && !(input[i+1][j-1] == 'S' && input[i-1][j+1] == 'M') {
+            if !((input[i+1][j-1] == 'M' && input[i-1][j+1] == 'S') || (input[i+1][j-1] == 'S' && input[i-1][j+1] == 'M')) {
                 continue;
             }
 
