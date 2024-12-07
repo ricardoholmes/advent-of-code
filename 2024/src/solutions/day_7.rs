@@ -1,20 +1,13 @@
-type Parsed = (i64, Vec<String>, bool); // goal, nums, valid for part 1
+type Parsed = (i64, Vec<i64>); // goal, numbers (reversed)
 
 pub fn parse(input_raw: &str) -> Result<Vec<Parsed>, String> {
     Ok(
         input_raw.lines()
                  .map(|l| {
-                    let (goal, ns) = l.split_once(": ").unwrap();
-
-                    let goal = goal.parse().unwrap();
-                    let ns: Vec<String> = ns.split(' ').map(|x| x.to_string()).collect();
-
-                    let ns_rev: Vec<i64> = ns.iter().rev().map(|x| x.parse::<i64>().unwrap()).collect();
-
+                    let (goal,ns) = l.split_once(": ").unwrap();
                     (
-                        goal,
-                        ns,
-                        is_possible_p1(goal, &ns_rev),
+                        goal.parse::<i64>().unwrap(),
+                        ns.split(' ').rev().map(|x| x.parse::<i64>().unwrap()).collect()
                     )
                   }).collect()
     )
@@ -22,56 +15,62 @@ pub fn parse(input_raw: &str) -> Result<Vec<Parsed>, String> {
 
 pub fn part_one(input: &[Parsed]) -> Result<i64, String> {
     let mut total = 0;
-    for (goal, _, valid) in input {
-        if *valid {
+    for (goal, ns) in input {
+        if is_possible(*goal, ns, false) {
             total += goal;
         }
     }
     Ok(total)
-}
-
-fn is_possible_p1(goal: i64, ns_rev: &[i64]) -> bool {
-    if ns_rev.is_empty() {
-        goal == 0
-    }
-    else if is_possible_p1(goal - ns_rev[0], &ns_rev[1..]) {
-        true
-    }
-    else if goal % ns_rev[0] == 0 {
-        is_possible_p1(goal / ns_rev[0], &ns_rev[1..])
-    }
-    else {
-        false
-    }
 }
 
 pub fn part_two(input: &[Parsed]) -> Result<i64, String> {
     let mut total = 0;
-    for (goal, ns, valid_p1) in input {
-        if *valid_p1 || is_possible_p2(ns[0].parse().unwrap(), &ns[1..], goal) {
+    for (goal, ns) in input {
+        if is_possible(*goal, ns, true) {
             total += goal;
         }
     }
     Ok(total)
 }
 
-fn is_possible_p2(n: i64, ns: &[String], goal: &i64) -> bool {
+// checks validity, walking through the list backwards
+fn is_possible(goal: i64, ns: &[i64], part_2: bool) -> bool {
     if ns.is_empty() {
-        n == *goal
+        return goal == 0;
+    }
+    else if goal < 0 {
+        return false;
+    }
+
+    // order of checks is intentional to ensure fastest performance
+
+    if part_2 {
+        // deal with concatenation
+        // interpret it as "a || b = a * (10^len(b)) + b"
+        // where "||" is the concatenation operator
+        // then, making "a" the subject of "a || b = c" gives:
+        // "a = (c - b) / len(b)"
+
+        let n = ns[0];
+        let n_len = n.checked_ilog10().unwrap_or(0) + 1;
+        let mult = 10_i64.pow(n_len);
+
+        if (goal - n) % mult == 0 && is_possible((goal - n) / mult, &ns[1..], part_2) {
+            return true;
+        }
+    }
+
+    // more likely to fail than addition, so checking first is faster
+    if goal % ns[0] == 0 && is_possible(goal / ns[0], &ns[1..], part_2) {
+        // multiplication
+        true
+    }
+    else if is_possible(goal - ns[0], &ns[1..], part_2) {
+        // addition
+        true
     }
     else {
-        let x = ns[0].parse::<i64>().unwrap();
-        if is_possible_p2(n + x, &ns[1..], goal) {
-            true
-        }
-        else if is_possible_p2(n * x, &ns[1..], goal) {
-            true
-        }
-        else {
-            let lshift = (10 as i64).pow(x.to_string().len() as u32);
-            let n = (n * lshift) + x;
-            is_possible_p2(n, &ns[1..], goal)
-        }
+        false
     }
 }
 
