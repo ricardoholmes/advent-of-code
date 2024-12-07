@@ -1,13 +1,20 @@
-type Parsed = (i64, Vec<String>);
+type Parsed = (i64, Vec<String>, bool); // goal, nums, valid for part 1
 
 pub fn parse(input_raw: &str) -> Result<Vec<Parsed>, String> {
     Ok(
         input_raw.lines()
                  .map(|l| {
-                    let (goal,ns) = l.split_once(": ").unwrap();
+                    let (goal, ns) = l.split_once(": ").unwrap();
+
+                    let goal = goal.parse().unwrap();
+                    let ns: Vec<String> = ns.split(' ').map(|x| x.to_string()).collect();
+
+                    let ns_rev: Vec<i64> = ns.iter().rev().map(|x| x.parse::<i64>().unwrap()).collect();
+
                     (
-                        goal.parse::<i64>().unwrap(),
-                        ns.split(' ').map(|x| x.to_string()).collect()
+                        goal,
+                        ns,
+                        is_possible_p1(goal, &ns_rev),
                     )
                   }).collect()
     )
@@ -15,9 +22,8 @@ pub fn parse(input_raw: &str) -> Result<Vec<Parsed>, String> {
 
 pub fn part_one(input: &[Parsed]) -> Result<i64, String> {
     let mut total = 0;
-    for (goal, ns) in input {
-        let ns_rev: Vec<i64> = ns.iter().rev().map(|x| x.parse::<i64>().unwrap()).collect();
-        if is_possible_p1(*goal, &ns_rev) {
+    for (goal, _, valid) in input {
+        if *valid {
             total += goal;
         }
     }
@@ -41,8 +47,8 @@ fn is_possible_p1(goal: i64, ns_rev: &[i64]) -> bool {
 
 pub fn part_two(input: &[Parsed]) -> Result<i64, String> {
     let mut total = 0;
-    for (goal, ns) in input {
-        if is_possible_p2(ns[0].parse().unwrap(), &ns[1..], goal) {
+    for (goal, ns, valid_p1) in input {
+        if *valid_p1 || is_possible_p2(ns[0].parse().unwrap(), &ns[1..], goal) {
             total += goal;
         }
     }
