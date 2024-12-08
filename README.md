@@ -146,4 +146,4 @@
 [2024-5]: ./2024/src/solutions/day_5.rs
 [2024-6]: ./2024/src/solutions/day_6.rs
 [2024-7]: ./2024/src/solutions/day_7.rs
-[2024-7]: ./2024/src/solutions/day_8.rs
+[2024-8]: ./2024/src/solutions/day_8.rs
