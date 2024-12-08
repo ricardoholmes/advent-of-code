@@ -1,34 +1,6 @@
-use std::{collections::{HashMap, HashSet}, ops::Add};
+use std::collections::{HashMap, HashSet};
 
-#[derive(PartialEq, Eq, Hash, Clone, Copy, Debug)]
-pub struct Point {
-    x: i32,
-    y: i32
-}
-
-impl Point {
-    fn new(x: i32, y: i32) -> Self {
-        Point { x, y }
-    }
-
-    fn rotate90(self) -> Self {
-        Point {
-            x: -self.y,
-            y: self.x
-        }
-    }
-}
-
-impl Add for Point {
-    type Output = Self;
-
-    fn add(self, rhs: Self) -> Self::Output {
-        Point {
-            x: self.x + rhs.x,
-            y: self.y + rhs.y
-        }
-    }
-}
+use crate::common::grid::Point;
 
 type Parsed = ((i32, i32), HashSet<Point>, Point);
 

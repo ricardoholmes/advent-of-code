@@ -1,52 +1,6 @@
-use std::{collections::{HashMap, HashSet}, ops::{Add, AddAssign, Sub, SubAssign}};
+use std::collections::{HashMap, HashSet};
 
-use crate::common::maths::gcd;
-
-#[derive(PartialEq, Eq, Hash, Clone, Copy, Debug)]
-pub struct Point {
-    x: i32,
-    y: i32
-}
-
-impl Point {
-    fn new(x: i32, y: i32) -> Self {
-        Point { x, y }
-    }
-}
-
-impl Add for Point {
-    type Output = Self;
-
-    fn add(self, rhs: Self) -> Self::Output {
-        Point {
-            x: self.x + rhs.x,
-            y: self.y + rhs.y
-        }
-    }
-}
-
-impl Sub for Point {
-    type Output = Self;
-
-    fn sub(self, rhs: Self) -> Self::Output {
-        Point {
-            x: self.x - rhs.x,
-            y: self.y - rhs.y
-        }
-    }
-}
-
-impl AddAssign for Point {
-    fn add_assign(&mut self, rhs: Self) {
-        *self = *self + rhs;
-    }
-}
-
-impl SubAssign for Point {
-    fn sub_assign(&mut self, rhs: Self) {
-        *self = *self - rhs;
-    }
-}
+use crate::common::{grid::Point, maths::gcd};
 
 type Parsed = (i32, i32, Vec<Vec<Point>>);
 
