@@ -78,7 +78,7 @@ fn run_all(settings: &Settings) -> Result<(), String> {
     println!("=================");
 
     println!();
-    println!("Done in {:?}", Instant::now() - start_time);
+    println!("Done in {}", color_time_taken(Instant::now() - start_time));
 
     Ok(())
 }
