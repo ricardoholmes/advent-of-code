@@ -1,4 +1,6 @@
-use std::{collections::{HashMap, HashSet}, ops::{Add, Sub}};
+use std::{collections::{HashMap, HashSet}, ops::{Add, AddAssign, Sub, SubAssign}};
+
+use crate::common::maths::gcd;
 
 #[derive(PartialEq, Eq, Hash, Clone, Copy, Debug)]
 pub struct Point {
@@ -31,6 +33,18 @@ impl Sub for Point {
             x: self.x - rhs.x,
             y: self.y - rhs.y
         }
+    }
+}
+
+impl AddAssign for Point {
+    fn add_assign(&mut self, rhs: Self) {
+        *self = *self + rhs;
+    }
+}
+
+impl SubAssign for Point {
+    fn sub_assign(&mut self, rhs: Self) {
+        *self = *self - rhs;
     }
 }
 
@@ -80,7 +94,36 @@ pub fn part_one(input: &Parsed) -> Result<usize, String> {
 }
 
 pub fn part_two(input: &Parsed) -> Result<usize, String> {
-    Ok(0)
+    let (w, h, nodes) = input;
+
+    let mut antinodes = HashSet::new();
+    for ns in nodes {
+        let mut points = vec![];
+        for (i, &n1) in ns.iter().enumerate() {
+            for &n2 in &ns[i+1..] {
+                let divisor = gcd(n1.x - n2.x, n1.y - n2.y);
+                let x_offset = (n1.x - n2.x) / divisor;
+                let y_offset = (n1.y - n2.y) / divisor;
+                points.push((n1, Point::new(x_offset, y_offset)));
+            }
+        }
+
+        for (p, offset) in points {
+            let mut pos = p;
+            while pos.x >= 0 && pos.x < *w && pos.y >= 0 && pos.y < *h {
+                antinodes.insert(pos);
+                pos += offset;
+            }
+
+            pos = p;
+            while pos.x >= 0 && pos.x < *w && pos.y >= 0 && pos.y < *h {
+                antinodes.insert(pos);
+                pos -= offset;
+            }
+        }
+    }
+
+    Ok(antinodes.len())
 }
 
 #[cfg(test)]
@@ -100,6 +143,6 @@ mod tests {
         let example = include_str!("../../examples/day_8_1.txt");
         let parsed = parse(example).unwrap();
         let solution = part_two(&parsed);
-        assert_eq!(solution, Ok(0));
+        assert_eq!(solution, Ok(34));
     }
 }
