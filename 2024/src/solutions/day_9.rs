@@ -40,7 +40,65 @@ pub fn part_one(input: &[Parsed]) -> Result<usize, String> {
 }
 
 pub fn part_two(input: &[Parsed]) -> Result<usize, String> {
-    Ok(0)
+    let mut grouped: Vec<(Option<usize>,usize)> = vec![];
+    let mut input_iter = input.iter();
+
+    while input_iter.len() > 0 {
+        // println!("{:?}", input_iter.clone().collect::<Vec<&Option<usize>>>());
+        let value = input_iter.next().unwrap().clone();
+        let count = 1 + input_iter.clone().take_while(|v| **v == value).count();
+        if count > 1 {
+            input_iter.nth(count-2); // -2 since next consumed one already and 0 index
+        }
+        grouped.push((value, count));
+    }
+
+    let mut index = grouped.len() - 1;
+    while index > 0 {
+        let (id, len) = grouped[index];
+        
+        if id.is_some() {
+            let mut dest = None;
+            for (j, &(y, l)) in grouped[0..index].iter().enumerate() {
+                if y.is_some() || l < len {
+                    continue;
+                }
+
+                dest = Some(j);
+                break;
+            }
+
+            if let Some(j) = dest {
+                if grouped[j].1 == len {
+                    grouped[index].0 = None;
+                    grouped[j].0 = id;
+                }
+                else { // need to split the new segment
+                    grouped[index].0 = None;
+                    grouped[j].0 = None;
+                    grouped[j].1 = grouped[j].1 - len;
+                    grouped.insert(j, (id, len));
+                    index += 1; // avoid decrementing index
+                }
+            }
+        }
+
+        index -= 1;
+    }
+
+
+    Ok(
+        grouped.iter().fold((0,0), |(p,t), &(id,l)| {
+            (
+                p + l,
+                if let Some(x) = id {
+                    t + x * (p..p+l).sum::<usize>()
+                } else {
+                    t
+                }
+            )
+        }).1
+    )
 }
 
 #[cfg(test)]
@@ -53,6 +111,14 @@ mod tests {
         let parsed = parse(example).unwrap();
         let solution = part_one(&parsed);
         assert_eq!(solution, Ok(1928));
+    }
+
+    #[test]
+    fn test_part2() {
+        let example = include_str!("../../examples/day_9_1.txt");
+        let parsed = parse(example).unwrap();
+        let solution = part_two(&parsed);
+        assert_eq!(solution, Ok(2858));
     }
 }
 
