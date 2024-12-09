@@ -44,8 +44,7 @@ pub fn part_two(input: &[Parsed]) -> Result<usize, String> {
     let mut input_iter = input.iter();
 
     while input_iter.len() > 0 {
-        // println!("{:?}", input_iter.clone().collect::<Vec<&Option<usize>>>());
-        let value = input_iter.next().unwrap().clone();
+        let value = *input_iter.next().unwrap();
         let count = 1 + input_iter.clone().take_while(|v| **v == value).count();
         if count > 1 {
             input_iter.nth(count-2); // -2 since next consumed one already and 0 index
@@ -76,7 +75,7 @@ pub fn part_two(input: &[Parsed]) -> Result<usize, String> {
                 else { // need to split the new segment
                     grouped[index].0 = None;
                     grouped[j].0 = None;
-                    grouped[j].1 = grouped[j].1 - len;
+                    grouped[j].1 -= len;
                     grouped.insert(j, (id, len));
                     index += 1; // avoid decrementing index
                 }
