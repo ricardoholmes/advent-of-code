@@ -56,8 +56,45 @@ fn trailhead_score(map: &[Parsed], destinations: &mut HashSet<(usize,usize)>, x:
 }
 
 pub fn part_two(input: &[Parsed]) -> Result<usize, String> {
-    Ok(0)
+    let mut count = 0;
+    for (y, row) in input.iter().enumerate() {
+        for (x, &cell) in row.iter().enumerate() {
+            if cell != 0 {
+                continue;
+            }
+
+            count += distinct_path_count(input, cell, x, y);
+        }
+    }
+    Ok(count)
 }
+
+fn distinct_path_count(map: &[Parsed], cell: u32, x: usize, y: usize) -> usize {
+    if cell == 9 {
+        return 1;
+    }
+
+    let mut score = 0;
+
+    if x > 0 && map[y][x-1] == cell + 1 {
+        score += distinct_path_count(map, map[y][x-1], x-1, y);
+    }
+
+    if x + 1 < map[y].len() && map[y][x+1] == cell + 1 {
+        score += distinct_path_count(map, map[y][x+1], x+1, y);
+    }
+
+    if y > 0 && map[y-1][x] == cell + 1 {
+        score += distinct_path_count(map, map[y-1][x], x, y-1);
+    }
+
+    if y + 1 < map.len() && map[y+1][x] == cell + 1 {
+        score += distinct_path_count(map, map[y+1][x], x, y+1);
+    }
+
+    score
+}
+
 
 #[cfg(test)]
 mod tests {
@@ -76,6 +113,6 @@ mod tests {
         let example = include_str!("../../examples/day_10_1.txt");
         let parsed = parse(example).unwrap();
         let solution = part_two(&parsed);
-        assert_eq!(solution, Ok(0));
+        assert_eq!(solution, Ok(81));
     }
 }
