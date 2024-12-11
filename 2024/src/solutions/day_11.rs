@@ -1,52 +1,34 @@
 use std::collections::HashMap;
 
-type Parsed = usize;
+type Parsed = HashMap<usize, usize>;
 
-pub fn parse(input_raw: &str) -> Result<Vec<Parsed>, String> {
+pub fn parse(input_raw: &str) -> Result<Parsed, String> {
+    let mut stones = HashMap::new();
+    for i in input_raw.split_ascii_whitespace() {
+        let stone = i.parse().unwrap();
+        *stones.entry(stone).or_default() += 1
+    }
+
+    Ok(stones)
+}
+
+pub fn part_one(input: &Parsed) -> Result<usize, String> {
     Ok(
-        input_raw.trim().split_ascii_whitespace().map(|n| n.parse().unwrap()).collect()
+        blink(input, 25)
     )
 }
 
-pub fn part_one(input: &[Parsed]) -> Result<usize, String> {
-    let mut stones = input.to_vec();
-
-    // iterate for each blink
-    for _ in 0..25 {
-        let mut new_stones = vec![];
-        for stone in stones {
-            // if engraved with 0, replaced by stone with 1
-            if stone == 0 {
-                new_stones.push(1);
-                continue;
-            }
-
-            // if stone's length is even, split it in two
-            let n_len = stone.checked_ilog10().unwrap_or(0) + 1;
-            if n_len % 2 == 0 {
-                let factor_10 = 10_usize.pow(n_len / 2);
-                new_stones.push(stone / factor_10);
-                new_stones.push(stone % factor_10);
-                continue;
-            }
-
-            // otherwise, multiply stone by 2024
-            new_stones.push(stone * 2024);
-        }
-        stones = new_stones;
-    }
-
-    Ok(stones.len())
+pub fn part_two(input: &Parsed) -> Result<usize, String> {
+    Ok(
+        blink(input, 75)
+    )
 }
 
-pub fn part_two(input: &[Parsed]) -> Result<usize, String> {
-    let mut stones = HashMap::new();
-    for &i in input {
-        *stones.entry(i).or_default() += 1
-    }
+fn blink(input: &Parsed, blink_count: usize) -> usize {
+    let mut stones = input.clone();
 
     // iterate for each blink
-    for _ in 0..75 {
+    for _ in 0..blink_count {
         let mut new_stones = HashMap::new();
         for (stone, count) in stones {
             // if engraved with 0, replaced by stone with 1
@@ -70,7 +52,7 @@ pub fn part_two(input: &[Parsed]) -> Result<usize, String> {
         stones = new_stones;
     }
 
-    Ok(stones.values().sum())
+    stones.values().sum()
 }
 
 #[cfg(test)]
