@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 
 use crate::common::grid::Point;
 
@@ -53,9 +53,11 @@ pub fn part_two(input: &Parsed) -> Result<usize, String> {
 
     let mut loops = 0;
     let mut positions: HashSet<Point> = HashSet::new();
+    let mut pos_with_dirs: HashSet<(Point, Point)> = HashSet::new(); // positions with directions
     let mut direction = Point::new(0, -1);
     while pos.x >= 0 && pos.x < *w && pos.y >= 0 && pos.y < *h {
         positions.insert(pos);
+        pos_with_dirs.insert((pos, direction));
 
         let new_pos = pos + direction;
         if walls.contains(&new_pos) {
@@ -65,7 +67,7 @@ pub fn part_two(input: &Parsed) -> Result<usize, String> {
             if !positions.contains(&new_pos) {
                 let mut walls_with_obstruction = walls.clone();
                 walls_with_obstruction.insert(new_pos);
-                if check_for_loop(pos, direction, &walls_with_obstruction, *w, *h) {
+                if check_for_loop(pos, direction.rotate90(), &walls_with_obstruction, pos_with_dirs.clone(), *w, *h) {
                     loops += 1;
                 }
             }
@@ -76,15 +78,12 @@ pub fn part_two(input: &Parsed) -> Result<usize, String> {
     Ok(loops)
 }
 
-fn check_for_loop(pos: Point, direction: Point, walls: &HashSet<Point>, w: i32, h: i32) -> bool {
+fn check_for_loop(pos: Point, direction: Point, walls: &HashSet<Point>, mut positions: HashSet<(Point, Point)>, w: i32, h: i32) -> bool {
     let mut pos = pos;
     let mut direction = direction;
 
-    // key = pos, value = directions used to reach that point
-    let mut positions: HashMap<Point, HashSet<Point>> = HashMap::new();
     while pos.x >= 0 && pos.x < w && pos.y >= 0 && pos.y < h {
-        let entry = positions.entry(pos).or_default();
-        if !entry.insert(direction) { // insert returns false if value was already present
+        if !positions.insert((pos, direction)) { // insert returns false if value was already present
             return true;
         }
 

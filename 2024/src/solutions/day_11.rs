@@ -66,12 +66,4 @@ mod tests {
         let solution = part_one(&parsed);
         assert_eq!(solution, Ok(55312));
     }
-
-    #[test]
-    fn test_part2() {
-        let example = include_str!("../../examples/day_11_1.txt");
-        let parsed = parse(example).unwrap();
-        let solution = part_two(&parsed);
-        assert_eq!(solution, Ok(0));
-    }
 }
