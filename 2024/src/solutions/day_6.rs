@@ -87,13 +87,15 @@ fn check_for_loop(pos: Point, direction: Point, walls: &HashSet<Point>, mut posi
             return true;
         }
 
-        let new_pos = pos + direction;
-        if walls.contains(&new_pos) {
-            direction = direction.rotate90();
-        }
-        else {
-            pos = new_pos;
-        }
+        pos += direction;
+        while !walls.contains(&pos) {
+            if pos.x < 0 || pos.x >= w || pos.y < 0 || pos.y >= h {
+                return false;
+            }
+            pos += direction;
+        };
+        pos -= direction;
+        direction = direction.rotate90();
     }
 
     false
