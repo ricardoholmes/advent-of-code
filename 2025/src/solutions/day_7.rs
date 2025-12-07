@@ -1,7 +1,5 @@
-use std::collections::{HashSet, VecDeque};
-
-// x start, list of splitter y positions per column, max depth
-type Parsed = (usize, Vec<Vec<usize>>, usize);
+// x start, splitter map
+type Parsed = (usize, Vec<Vec<bool>>);
 
 pub fn parse(input_raw: &str) -> Result<Parsed, String> {
     let mut lines = input_raw.lines();
@@ -9,72 +7,53 @@ pub fn parse(input_raw: &str) -> Result<Parsed, String> {
     let first_line = lines.next().unwrap();
     let start_x = first_line.find('S').unwrap();
 
-    let mut splitters = vec![vec![]; first_line.len()];
-    let mut y = 1;
+    let mut splitters = vec![];
     for line in lines {
-        for (x, c) in line.char_indices() {
-            if c == '^' {
-                splitters[x].push(y);
-            }
+        let line_splitters: Vec<bool> = line.chars().map(|c| c == '^').collect();
+        if line_splitters.iter().any(|&b| b) {
+            splitters.push(line_splitters);
         }
-        y += 1;
     }
 
-    Ok((start_x, splitters, input_raw.lines().count()))
+    Ok((start_x, splitters))
 }
 
 pub fn part_one(input: &Parsed) -> Result<usize, String> {
-    let (start_x, splitters, _) = input;
+    let (start_x, splitters) = input;
+    let width = splitters[0].len();
 
     let mut out = 0;
-    let mut beams = VecDeque::new();
-    beams.push_front((*start_x, 0));
-    let mut visited = HashSet::new();
-    let mut visited_splitter = HashSet::new();
-
-    while !beams.is_empty() {
-        let (x, y) = beams.pop_front().unwrap();
-        for &splitter_y in &splitters[x] {
-            if splitter_y > y {
-                if !visited_splitter.insert((x, splitter_y)) {
-                    break;
-                }
-
-                let left = (x-1, splitter_y);
-                if visited.insert(left) {
-                    beams.push_back(left);
-                }
-
-                let right = (x+1, splitter_y);
-                if visited.insert(right) {
-                    beams.push_back(right);
-                }
-
+    let mut beams = vec![false; width];
+    beams[*start_x] = true;
+    for line in splitters {
+        let mut next_beams = beams.clone();
+        for x in (0..width).filter(|&i| beams[i]) {
+            if line[x] {
                 out += 1;
-                break;
+                next_beams[x] = false;
+                next_beams[x-1] = true;
+                next_beams[x+1] = true;
             }
         }
+        beams = next_beams;
     }
 
     Ok(out)
 }
 
 pub fn part_two(input: &Parsed) -> Result<usize, String> {
-    let (start_x, splitters, max_depth) = input;
-    let width = splitters.len();
+    let (start_x, splitters) = input;
+    let width = splitters[0].len();
 
     let mut counts = vec![0; width];
     counts[*start_x] = 1;
-    for depth in 1..*max_depth {
+    for line in splitters {
         let mut next_counts = counts.clone();
-        for x in 0..width {
-            for &splitter_y in &splitters[x] {
-                if splitter_y == depth {
-                    next_counts[x] = 0;
-                    next_counts[x-1] += counts[x];
-                    next_counts[x+1] += counts[x];
-                    break;
-                }
+        for x in (0..width).filter(|&i| counts[i] != 0) {
+            if line[x] {
+                next_counts[x] = 0;
+                next_counts[x-1] += counts[x];
+                next_counts[x+1] += counts[x];
             }
         }
         counts = next_counts;
